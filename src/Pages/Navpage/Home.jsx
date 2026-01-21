@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router';
-import banner from '../assets/banner.png'
+import banner from '../../assets/banner.png'
 import {
     FiHome,
     FiTrendingUp,
@@ -30,7 +30,7 @@ const Home = () => {
 
 
 
-    const cardStyle = "bg-white border border-gray-100 rounded-2xl p-6 flex flex-col items-center text-center hover:border-orange-200 transition-all shadow-sm";
+    const cardStyle = "bg-white border border-gray-100 hover:shadow-xl rounded-2xl p-6 flex flex-col items-center text-center hover:border-orange-200 transition-all shadow-sm";
     const iconBg = "w-16 h-16 bg-orange-50 rounded-full flex items-center justify-center text-3xl text-orange-500 mb-4 relative";
 
     const categories = [
@@ -613,7 +613,7 @@ const Home = () => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiShield />
                                     </div>
@@ -625,7 +625,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-green-50 text-green-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiTruck />
                                     </div>
@@ -637,7 +637,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-purple-50 text-purple-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiCreditCard />
                                     </div>
@@ -649,7 +649,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-orange-50 text-orange-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiHeadphones />
                                     </div>
@@ -661,7 +661,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-pink-50 text-pink-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiRefreshCw />
                                     </div>
@@ -673,7 +673,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-yellow-50 text-yellow-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiAward />
                                     </div>
@@ -685,7 +685,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiClock />
                                     </div>
@@ -697,7 +697,7 @@ const Home = () => {
                                 </div>
 
 
-                                <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
+                                <div className="bg-white hover:shadow-xl p-6 rounded-2xl shadow-sm border border-gray-50 flex flex-col items-center">
                                     <div className="w-12 h-12 bg-red-50 text-red-500 rounded-xl flex items-center justify-center text-2xl mb-4">
                                         <FiHeart />
                                     </div>
@@ -751,7 +751,7 @@ const Home = () => {
 
 
 
-                <section className="bg-white py-12 px-4">
+                <section className="bg-white py-12 rounded-2xl mt-25 px-4">
 
                     <div className="max-w-6xl mx-auto border border-gray-50 rounded-[32px] p-8 md:p-12 shadow-sm">
 
@@ -784,7 +784,7 @@ const Home = () => {
                             </div>
 
 
-                            <div className="bg-white border border-orange-200 rounded-2xl p-6 flex flex-col items-center text-center shadow-sm">
+                            <div className={cardStyle}>
                                 <div className={iconBg}>
                                     <div className="absolute inset-0 bg-orange-100/40 rounded-full blur-sm"></div>
                                     <FiHeadphones className="relative z-10" />
