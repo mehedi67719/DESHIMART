@@ -94,9 +94,9 @@ const Home = () => {
                     className='w-full h-full object-cover'
                     alt="Fresh Deshi Products"
                 />
-                <div className='absolute inset-0 flex flex-col items-end justify-center px-[10%] bg-gradient-to-r from-transparent to-black/10'>
+                <div className='absolute inset-0 flex animate-pulse flex-col items-end justify-center px-[10%] bg-gradient-to-r from-transparent to-black/10'>
                     <div className='text-right animate-fadeIn'>
-                        <button className='mt-50 mr-70 bg-green-500 text-white py-4 px-10 text-xl font-bold rounded-full shadow-xl hover:bg-gray-900 transition-all duration-300 transform hover:-translate-y-1 active:scale-95'>
+                        <button className='lg:mt-50 md:mt-35 mt-15 lg:mr-70 bg-green-500 text-white lg:py-4 lg:px-10 md:py-4 md:px-10 py-2 px-5 text-xl font-bold rounded-full shadow-xl hover:bg-gray-900 transition-all duration-300 transform hover:-translate-y-1 active:scale-95'>
                             Shop Now
                         </button>
                     </div>
