@@ -29,6 +29,7 @@ import Swal from 'sweetalert2';
 import { MdCollectionsBookmark } from 'react-icons/md';
 import { LiaStoreSolid } from 'react-icons/lia';
 import { BiSolidContact } from 'react-icons/bi';
+import { IoNotifications } from 'react-icons/io5';
 
 const Navbar = () => {
   const { user, logout } = Useauth();
@@ -92,9 +93,17 @@ const Navbar = () => {
               </span>
             </div>
 
+
             <div className='relative md:flex lg:flex hidden'>
               <Link className='text-3xl font-bold hover:text-green-500'> <LuMessageCircleMore /></Link>
               <p className='text-white bg-green-500  -right-4 -top-4 px-2 py-0.5 absolute rounded-full text-center'>5</p>
+            </div>
+
+            <div className="relative md:flex lg:flex hidden">
+              <IoNotifications className="text-4xl font-bold hover:text-green-500" />
+              <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
+                0
+              </span>
             </div>
 
             <div className="hidden md:flex">
@@ -194,8 +203,8 @@ const Navbar = () => {
 
       <hr className="mt-5 opacity-20" />
 
-      <div className="lg:max-w-[70%] md:max-w-[95%] max-w-[98%] mx-auto px-4">
-        <div className="my-2.5 md:hidden lg:hidden flex items-center justify-between">
+      <div className="container py-0">
+        <div className="mb-2 mt-5 md:hidden lg:hidden flex items-center justify-between">
           <HiOutlineBars3
             onClick={() => setopen(true)}
             className="text-4xl font-bold"
@@ -204,6 +213,13 @@ const Navbar = () => {
           <div className='relative'>
             <Link className='text-4xl font-bold'> <LuMessageCircleMore /></Link>
             <p className='text-white bg-green-500 right-0 -top-3 px-2 py-0.5 absolute rounded-full text-center'>5</p>
+          </div>
+
+          <div className="relative ">
+            <IoNotifications className="text-4xl font-bold hover:text-green-500" />
+            <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
+              0
+            </span>
           </div>
 
         </div>
