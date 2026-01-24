@@ -14,6 +14,15 @@ export const products = async ({ pageParam = null, category = "", brand='', pric
 
 
 
+
+export const singleproducts=async(id)=>{
+  
+    const res=await useaxios.get(`products/${id}`);
+    return res.data
+}
+
+
+
 export const categorys=async ()=>{
   const res= await useaxios.get("categorys");
   return res.data
@@ -25,3 +34,7 @@ export const brands=async()=>{
   const res=await useaxios.get("brands");
   return res.data
 }
+
+
+
+

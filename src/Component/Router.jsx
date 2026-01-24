@@ -9,6 +9,7 @@ import Collection from "../Pages/Navpage/Collection";
 import Localstores from "../Pages/Navpage/Localstores";
 import Blog from "../Pages/Navpage/Blog";
 import Contact from "../Pages/Navpage/Contact";
+import ViewProductsDetels from "../Pages/DynamicPage/ViewProductsDetels";
 
 
 
@@ -53,6 +54,10 @@ export const router = createBrowserRouter([
             {
                 path:'/contact',
                 Component:Contact
+            },
+            {
+                path:"/productsdetels/:id",
+                Component:ViewProductsDetels
             }
 
         ]
