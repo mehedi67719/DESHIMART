@@ -37,4 +37,15 @@ export const brands=async()=>{
 
 
 
+export const hotproducts=async(pageParams=null)=>{
+  const res=await useaxios.get("products/hotproducts",{
+    params:{cursor:pageParams}
+  })
+  return res.data;
+}
+
+
+
+
+
 
