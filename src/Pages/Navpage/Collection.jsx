@@ -61,7 +61,7 @@ const Collection = () => {
             </div>
 
             <div className='bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden'>
-                <div className='bg-gradient-to-r from-green-50 to-white px-4 py-6'>
+                <div className=' px-4 py-6'>
                     <div className='flex flex-col md:flex-row gap-6 items-center justify-between'>
                         <div className='relative w-full md:w-2/3'>
                             <input 
