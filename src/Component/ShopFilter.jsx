@@ -27,7 +27,7 @@ const ShopFilter = ({
     return (
         <>
            
-            <div className="bg-white rounded-xl shadow h-[calc(100vh-200px)] sticky top-0 flex flex-col">
+            <div className="bg-white rounded-xl shadow h-[calc(100vh-100px)] sticky top-0 flex flex-col">
                 <div className="py-4 bg-green-100 sticky top-0 z-10">
                     <h2 className="text-black text-2xl font-bold text-center flex items-center justify-center gap-2">
                         <FaFilter /> Filters

@@ -25,7 +25,7 @@ const HOtdeal = () => {
 
     const products = data?.pages.flat();
 
-    products?.map(p => console.log(p.name));
+    // products?.map(p => console.log(p.name));
 
 
 

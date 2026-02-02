@@ -3,11 +3,13 @@ import React, { useEffect, useRef, useState } from 'react';
 import { products, categorys, brands } from '../../Component/Api';
 import ShopFilter from '../../Component/ShopFilter';
 import ShopCard from '../../Component/ShopCard';
+import { FiFilter } from 'react-icons/fi';
 
 const Shop = () => {
     const [activeCategory, setActiveCategory] = useState("");
     const [activeBrand, setActiveBrand] = useState('');
     const [priceRange, setPriceRange] = useState([0, 10000]);
+    const [showMobileFilter, setShowMobileFilter] = useState(false);
     const loadMoreRef = useRef(null);
 
     const { data: categories, isLoading, error } = useQuery({
@@ -74,11 +76,47 @@ const Shop = () => {
                     />
                 </div>
 
-             
+                {showMobileFilter && (
+                    <div className="fixed inset-0 z-50 md:hidden">
+                        <div className="fixed inset-0 bg-black bg-opacity-50"></div>
+                        <div className="fixed inset-y-0 left-0 w-72 bg-white p-6 overflow-y-auto">
+                            <div className="flex justify-between items-center mb-4">
+                                <h3 className="text-lg font-bold text-gray-800">Filters</h3>
+                                <button 
+                                    onClick={() => setShowMobileFilter(false)}
+                                    className="text-gray-500 hover:text-gray-700"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                            <ShopFilter
+                                activeCategory={activeCategory}
+                                setActiveCategory={setActiveCategory}
+                                activeBrand={activeBrand}
+                                setActiveBrand={setActiveBrand}
+                                priceRange={priceRange}
+                                setPriceRange={setPriceRange}
+                                categories={categories}
+                                isLoading={isLoading}
+                                error={error}
+                                Brands={Brands}
+                                brandsloading={brandsloading}
+                                branderror={branderror}
+                            />
+                        </div>
+                    </div>
+                )}
 
                 <div className="lg:w-3/4 md:w-3/4 w-full rounded pb-4 shadow bg-white">
                     <div className="py-4 px-4 bg-green-100 pb-6 flex justify-between items-center">
                         <h2 className="text-black text-2xl font-bold">{productsList.length} Products Found</h2>
+                        <button
+                            onClick={() => setShowMobileFilter(true)}
+                            className="md:hidden flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded"
+                        >
+                            <FiFilter />
+                            Filter
+                        </button>
                     </div>
 
                     {isError ? <p className='text-center text-red-500'>{productserror.message || "Something went wrong"}</p> :
