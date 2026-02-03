@@ -10,6 +10,10 @@ import Localstores from "../Pages/Navpage/Localstores";
 import Blog from "../Pages/Navpage/Blog";
 import Contact from "../Pages/Navpage/Contact";
 import ViewProductsDetels from "../Pages/DynamicPage/ViewProductsDetels";
+import Cart from "../Pages/Navpage/Cart";
+import Favorite from "../Pages/Navpage/Favorite";
+import Messenger from "../Pages/Navpage/Messenger";
+import Notification from "../Pages/Navpage/Notification";
 
 
 
@@ -58,6 +62,22 @@ export const router = createBrowserRouter([
             {
                 path:"/productsdetels/:id",
                 Component:ViewProductsDetels
+            },
+            {
+                path:"/cart",
+                Component:Cart
+            },
+            {
+                path:'/favorite',
+                Component:Favorite
+            },
+            {
+                path:'/massenger',
+                Component:Messenger
+            },
+            {
+                path:"/notification",
+                Component:Notification
             }
 
         ]

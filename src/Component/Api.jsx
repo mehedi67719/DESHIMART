@@ -58,5 +58,16 @@ export const collection = async ({ pageParam = null, type }) => {
 };
 
 
+export const storesapi= async ({pageParam = null})=>{
+  const res=await useaxios.get('Stores',{
+    params:{
+      cursor:pageParam,
+    }
+  })
+
+  return res.data
+}
+
+
 
 

@@ -1,5 +1,8 @@
 import React from 'react';
 import { FaMapMarkerAlt, FaPhone, FaClock, FaCar, FaStore, FaStar } from 'react-icons/fa';
+import Stores from '../../Component/Stores';
+import { useInfiniteQuery } from '@tanstack/react-query';
+import { storesapi } from '../../Component/Api';
 
 const Localstores = () => {
     const stores = [
@@ -77,6 +80,26 @@ const Localstores = () => {
         }
     ];
 
+
+
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, isError, error } = useInfiniteQuery({
+        queryKey: ["localstores"],
+        queryFn: ({ pageParam = null }) => storesapi({
+            pageParam
+        }),
+        getNextPageParam: (lastPage) => lastPage?.length ? lastPage[lastPage.length - 1]._id : undefined
+    });
+
+
+
+    // console.log(data)
+
+
+  const allStores = data?.pages.flatMap((page) => page.stores || page) || [];
+console.log("All stores after flatMap:", allStores);
+
+    console.log(allStores)
+
     return (
         <div className="container mx-auto px-4 mb-16">
             <div className="text-center mb-12">
@@ -123,8 +146,8 @@ const Localstores = () => {
                                 <div className="mb-4">
                                     <label className="block text-gray-700 text-sm font-medium mb-2">Enter Your Location</label>
                                     <div className="relative">
-                                        <input 
-                                            type="text" 
+                                        <input
+                                            type="text"
                                             className="w-full p-3 pl-10 border-2 border-gray-200 rounded-xl focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-100"
                                             placeholder="City, State or ZIP Code"
                                         />
@@ -141,72 +164,73 @@ const Localstores = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {stores.map((store) => (
-                    <div key={store.id} className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
-                        <div className="relative h-48 overflow-hidden">
-                            <img 
-                                src={store.image} 
-                                alt={store.name}
-                                className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-                            />
-                            <div className="absolute top-4 right-4">
-                                <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
-                                    <FaStar className="text-yellow-500" />
-                                    <span className="font-bold text-gray-800">{store.rating}</span>
-                                </div>
-                            </div>
-                            {store.delivery && (
-                                <div className="absolute top-4 left-4">
-                                    <div className="bg-green-600 text-white rounded-full px-3 py-1 text-sm font-semibold">
-                                        Delivery Available
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                        
-                        <div className="p-6">
-                            <h3 className="text-xl font-bold text-gray-800 mb-2">{store.name}</h3>
-                            <p className="text-gray-600 mb-4">{store.distance} away</p>
-                            
-                            <div className="space-y-3 mb-6">
-                                <div className="flex items-center gap-3">
-                                    <FaMapMarkerAlt className="text-gray-400" />
-                                    <span className="text-gray-700">{store.address}</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <FaPhone className="text-gray-400" />
-                                    <span className="text-gray-700">{store.phone}</span>
-                                </div>
-                                <div className="flex items-center gap-3">
-                                    <FaClock className="text-gray-400" />
-                                    <span className="text-gray-700">{store.hours}</span>
-                                </div>
-                            </div>
-                            
-                            <div className="mb-6">
-                                <h4 className="font-semibold text-gray-800 mb-3">Store Features</h4>
-                                <div className="flex flex-wrap gap-2">
-                                    {store.features.map((feature, index) => (
-                                        <span 
-                                            key={index}
-                                            className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
-                                        >
-                                            {feature}
-                                        </span>
-                                    ))}
-                                </div>
-                            </div>
-                            
-                            <div className="flex gap-3">
-                                <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition duration-300">
-                                    Get Directions
-                                </button>
-                                <button className="flex-1 bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 font-semibold py-3 px-4 rounded-xl transition duration-300">
-                                    Call Now
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                {stores?.map((store) => (
+                    <Stores key={store._id} store={store} />
+                    // <div key={store.id} className="bg-white rounded-3xl shadow-lg border border-gray-100 overflow-hidden hover:shadow-xl transition-shadow duration-300">
+                    //     <div className="relative h-48 overflow-hidden">
+                    //         <img 
+                    //             src={store.image} 
+                    //             alt={store.name}
+                    //             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
+                    //         />
+                    //         <div className="absolute top-4 right-4">
+                    //             <div className="bg-white/90 backdrop-blur-sm rounded-full px-3 py-1 flex items-center gap-1">
+                    //                 <FaStar className="text-yellow-500" />
+                    //                 <span className="font-bold text-gray-800">{store.rating}</span>
+                    //             </div>
+                    //         </div>
+                    //         {store.delivery && (
+                    //             <div className="absolute top-4 left-4">
+                    //                 <div className="bg-green-600 text-white rounded-full px-3 py-1 text-sm font-semibold">
+                    //                     Delivery Available
+                    //                 </div>
+                    //             </div>
+                    //         )}
+                    //     </div>
+
+                    //     <div className="p-6">
+                    //         <h3 className="text-xl font-bold text-gray-800 mb-2">{store.name}</h3>
+                    //         <p className="text-gray-600 mb-4">{store.distance} away</p>
+
+                    //         <div className="space-y-3 mb-6">
+                    //             <div className="flex items-center gap-3">
+                    //                 <FaMapMarkerAlt className="text-gray-400" />
+                    //                 <span className="text-gray-700">{store.address}</span>
+                    //             </div>
+                    //             <div className="flex items-center gap-3">
+                    //                 <FaPhone className="text-gray-400" />
+                    //                 <span className="text-gray-700">{store.phone}</span>
+                    //             </div>
+                    //             <div className="flex items-center gap-3">
+                    //                 <FaClock className="text-gray-400" />
+                    //                 <span className="text-gray-700">{store.hours}</span>
+                    //             </div>
+                    //         </div>
+
+                    //         <div className="mb-6">
+                    //             <h4 className="font-semibold text-gray-800 mb-3">Store Features</h4>
+                    //             <div className="flex flex-wrap gap-2">
+                    //                 {store.features.map((feature, index) => (
+                    //                     <span 
+                    //                         key={index}
+                    //                         className="bg-gray-100 text-gray-700 text-sm px-3 py-1 rounded-full"
+                    //                     >
+                    //                         {feature}
+                    //                     </span>
+                    //                 ))}
+                    //             </div>
+                    //         </div>
+
+                    //         <div className="flex gap-3">
+                    //             <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-4 rounded-xl transition duration-300">
+                    //                 Get Directions
+                    //             </button>
+                    //             <button className="flex-1 bg-white border-2 border-green-600 text-green-600 hover:bg-green-50 font-semibold py-3 px-4 rounded-xl transition duration-300">
+                    //                 Call Now
+                    //             </button>
+                    //         </div>
+                    //     </div>
+                    // </div>
                 ))}
             </div>
 

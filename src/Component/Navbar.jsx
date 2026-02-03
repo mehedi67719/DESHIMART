@@ -80,14 +80,14 @@ const Navbar = () => {
 
           <div className="flex items-center  gap-4">
             <div className="relative">
-              <LuShoppingCart className="text-3xl font-bold hover:text-green-500" />
+              <Link to='/cart'><LuShoppingCart  className="text-4xl font-bold hover:text-green-500" /></Link>
               <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
                 0
               </span>
             </div>
 
             <div className="relative hidden md:flex">
-              <FaRegHeart className="text-3xl font-bold hover:text-green-500" />
+              <Link to='/favorite'><FaRegHeart className="text-4xl font-bold hover:text-green-500" /></Link>
               <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
                 1
               </span>
@@ -95,12 +95,12 @@ const Navbar = () => {
 
 
             <div className='relative md:flex lg:flex hidden'>
-              <Link className='text-3xl font-bold hover:text-green-500'> <LuMessageCircleMore /></Link>
+              <Link to='/massenger'> <LuMessageCircleMore className='text-4xl font-bold hover:text-green-500'/></Link>
               <p className='text-white bg-green-500  -right-4 -top-4 px-2 py-0.5 absolute rounded-full text-center'>5</p>
             </div>
 
             <div className="relative md:flex lg:flex hidden">
-              <IoNotifications className="text-4xl font-bold hover:text-green-500" />
+              <Link to="/notification"><IoNotifications className="text-4xl font-bold hover:text-green-500" /></Link>
               <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
                 0
               </span>
