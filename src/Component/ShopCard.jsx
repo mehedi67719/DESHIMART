@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FaHeart, FaRegStar, FaShoppingCart, FaStar, FaStarHalf } from 'react-icons/fa';
 import { Link } from 'react-router';
 
-
-
 const ShopCard = ({ item }) => {
+    const [isLiked, setIsLiked] = useState(false);
+
     const Stars = ({ rating }) => {
         const stars = [];
         for (let i = 1; i <= 5; i++) {
@@ -12,7 +12,15 @@ const ShopCard = ({ item }) => {
             else if (rating >= i - 0.5) stars.push(<FaStarHalf key={i} className="text-yellow-400" />);
             else stars.push(<FaRegStar key={i} className="text-yellow-400" />);
         }
-        return <div className="flex items-center ">{stars}</div>;
+        return <div className="flex items-center">{stars}</div>;
+    };
+
+    const handleLikeClick = (e) => {
+        e.preventDefault(); // লিঙ্কে যাওয়া বন্ধ করে
+        e.stopPropagation(); // ইভেন্ট bubbling বন্ধ করে
+        setIsLiked(!isLiked);
+        // এখানে আপনি API কল করতে পারেন ফেভারিটে যোগ করার জন্য
+        console.log('Liked item:', item._id);
     };
 
     return (
@@ -38,8 +46,16 @@ const ShopCard = ({ item }) => {
                         )}
                     </div>
 
-                    <div className="absolute top-3 right-3 z-10 text-[#1E40AF] hover:text-red-500 transition-colors duration-300 cursor-pointer">
-                        <FaHeart className="w-6 h-6" />
+                    {/* হার্ট আইকন - আলাদা ইভেন্ট হ্যান্ডলার */}
+                    <div 
+                        className="absolute top-3 right-3 z-10 transition-colors duration-300 cursor-pointer"
+                        onClick={handleLikeClick}
+                    >
+                        {isLiked ? (
+                            <FaHeart className="w-6 h-6 text-red-500" />
+                        ) : (
+                            <FaHeart className="w-6 h-6 text-[#1E40AF] hover:text-red-500" />
+                        )}
                     </div>
                 </div>
 
@@ -63,7 +79,15 @@ const ShopCard = ({ item }) => {
             </Link>
 
             <div className="px-4 pb-4">
-                <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95">
+                <button 
+                    className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95"
+                    onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        // এখানে Add to Cart লজিক যোগ করুন
+                        console.log('Add to cart:', item._id);
+                    }}
+                >
                     <FaShoppingCart /> Add to Cart
                 </button>
             </div>

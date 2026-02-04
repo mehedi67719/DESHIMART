@@ -71,3 +71,38 @@ export const storesapi= async ({pageParam = null})=>{
 
 
 
+export const addtocart=async (cartdata)=>{
+  try{
+    const res=await useaxios.post("cart",cartdata);
+    return res.data;
+  }
+  catch(error){
+    console.log(error);
+    throw error;
+  }
+}
+
+export const cartdata= async (useremail)=>{
+  try{
+    const res=await useaxios.get(`cart/${useremail}`)
+    return res.data;
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+
+
+export const removecart = async (id) => {
+  try {
+    const res = await useaxios.delete(`/cart/${id}`); // ✅ DELETE method
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+
+

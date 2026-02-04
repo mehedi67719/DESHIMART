@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { use, useState } from "react";
 import { useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { singleproducts } from "../../Component/Api";
+import { addtocart, singleproducts } from "../../Component/Api";
 import {
   FaStar,
   FaStarHalfAlt,
@@ -26,8 +26,10 @@ import {
 } from "react-icons/fa";
 import { MdLocalShipping, MdPayment, MdSecurity } from "react-icons/md";
 import { LuMessageCircleMore } from "react-icons/lu";
+import Useauth from "../../Component/Useauth";
 
 const ViewProductsDetels = () => {
+  const { user } = Useauth()
   const { id } = useParams();
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -93,15 +95,39 @@ const ViewProductsDetels = () => {
     }
   };
 
-  const handleAddToCart = () => {
-  
-    alert(`Added ${quantity} ${product.unit} of ${product.name} to cart!`);
+  const handleAddToCart = async (product) => {
+    if (!user) {
+      return alert("please login first")
+    }
+
+    const cartdata = {
+      userEmail: user.email,
+      productId: product._id,
+      ProductName:product.name,
+      quantity: quantity,
+      Productimg: product.image,
+      price: product.price * quantity
+    }
+
+    try {
+      const result = await addtocart(cartdata)
+      console.log(result)
+      alert("cart added successfull")
+    }
+    catch (err) {
+      console.log(err)
+      alert(err)
+    }
+
   };
+
+
+  // console.log(user)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <div className="container mx-auto px-4 py-8">
-       
+
         <nav className="flex mb-8 text-sm text-gray-500">
           <a href="/" className="hover:text-green-600">Shop</a>
           <span className="mx-2">/</span>
@@ -112,12 +138,12 @@ const ViewProductsDetels = () => {
           <span className="text-gray-700 font-medium truncate">{product.name}</span>
         </nav>
 
-     
+
         <div className="bg-white rounded-2xl shadow-2xl overflow-hidden border border-gray-100">
           <div className="grid grid-cols-1 lg:grid-cols-2">
-           
+
             <div className="relative p-6 md:p-10 bg-gradient-to-br from-gray-50 to-gray-100">
-            
+
               <div className="absolute top-6 left-6 flex flex-col gap-2 z-10">
                 {product.isNew && (
                   <div className="bg-green-500 text-white px-4 py-2 rounded-full text-sm font-bold flex items-center gap-2 shadow-lg">
@@ -131,7 +157,7 @@ const ViewProductsDetels = () => {
                 )}
               </div>
 
-         
+
               <button
                 onClick={() => setIsFavorite(!isFavorite)}
                 className="absolute top-6 right-6 bg-white p-3 rounded-full shadow-lg hover:shadow-xl transition-all z-10"
@@ -139,7 +165,7 @@ const ViewProductsDetels = () => {
                 <FaHeart className={`text-xl ${isFavorite ? 'text-red-500 fill-red-500' : 'text-gray-400'}`} />
               </button>
 
-             
+
               <div className="relative h-[400px] md:h-[500px] rounded-2xl overflow-hidden border-4 border-white shadow-2xl">
                 <img
                   src={product.image}
@@ -149,7 +175,7 @@ const ViewProductsDetels = () => {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
               </div>
 
-            
+
               <div className="flex justify-center mt-6 gap-4">
                 <button
                   onClick={handleShare}
@@ -166,9 +192,9 @@ const ViewProductsDetels = () => {
               </div>
             </div>
 
-          
+
             <div className="p-6 md:p-10">
-              
+
               <div className="flex flex-wrap items-center gap-4 mb-4">
                 <span className="px-4 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-medium">
                   {product.category}
@@ -183,12 +209,12 @@ const ViewProductsDetels = () => {
                 )}
               </div>
 
-           
+
               <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3 leading-tight">
                 {product.name}
               </h1>
 
-           
+
               <div className="flex items-center gap-4 mb-6">
                 <div className="flex items-center gap-2">
                   <div className="flex">{renderStars(product.rating)}</div>
@@ -200,7 +226,7 @@ const ViewProductsDetels = () => {
                 <span className="text-green-600 font-medium">{product.sold} sold</span>
               </div>
 
-             
+
               <div className="mb-8 p-6 bg-gradient-to-r from-green-50 to-blue-50 rounded-2xl border border-green-100">
                 <div className="flex flex-wrap items-center gap-6">
                   <div>
@@ -233,7 +259,7 @@ const ViewProductsDetels = () => {
                 </div>
               </div>
 
-              
+
               <div className="mb-8">
                 <label className="block text-gray-700 font-medium mb-3">Quantity</label>
                 <div className="flex items-center gap-4">
@@ -258,10 +284,10 @@ const ViewProductsDetels = () => {
                 </div>
               </div>
 
-            
+
               <div className="flex flex-col sm:flex-row gap-4 mb-10">
                 <button
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart(product)}
                   className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white py-4 rounded-xl text-lg font-bold flex items-center justify-center gap-3 transition-all active:scale-95 shadow-lg hover:shadow-xl"
                 >
                   <FaShoppingCart className="text-xl" />
@@ -272,7 +298,7 @@ const ViewProductsDetels = () => {
                 </button>
               </div>
 
-          
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                 <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-200">
                   <div className="p-3 bg-green-100 rounded-lg">
@@ -305,7 +331,7 @@ const ViewProductsDetels = () => {
                 </div>
               </div>
 
-         
+
               <div className="p-6 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl border border-blue-200">
                 <div className="flex flex-col sm:flex-row justify-between items-center gap-6">
                   <div>
@@ -335,9 +361,9 @@ const ViewProductsDetels = () => {
 
 
         <div className="mt-12 grid grid-cols-1 lg:grid-cols-3 gap-8">
-     
+
           <div className="lg:col-span-2 space-y-8">
-       
+
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <h2 className="text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
                 <div className="p-2 bg-green-100 rounded-lg">
@@ -347,7 +373,7 @@ const ViewProductsDetels = () => {
               </h2>
               <div className="prose max-w-none text-gray-700 leading-relaxed">
                 <p className="text-lg mb-6">{product.description}</p>
-                
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                   <div className="space-y-4">
                     <h3 className="font-bold text-gray-900 text-lg flex items-center gap-2">
@@ -406,7 +432,7 @@ const ViewProductsDetels = () => {
               </div>
             </div>
 
-  
+
             <div className="bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">Usage & Storage</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -454,9 +480,9 @@ const ViewProductsDetels = () => {
             </div>
           </div>
 
-      
+
           <div className="space-y-8">
-      
+
             <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-100">
               <h3 className="text-xl font-bold text-gray-900 mb-6">Specifications</h3>
               <div className="space-y-4">
@@ -485,7 +511,7 @@ const ViewProductsDetels = () => {
               </div>
             </div>
 
- 
+
             <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl shadow-lg p-6 border border-green-200">
               <h3 className="text-xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <FaTruck className="text-green-600" />
@@ -522,7 +548,7 @@ const ViewProductsDetels = () => {
               </div>
             </div>
 
-  
+
             <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl shadow-lg p-6 border border-blue-200">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Need Help?</h3>
               <p className="text-gray-600 mb-6">Our customer support team is here to help you!</p>
@@ -537,7 +563,7 @@ const ViewProductsDetels = () => {
           </div>
         </div>
 
-    
+
         <div className="mt-16">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-3xl font-bold text-gray-900">You May Also Like</h2>
