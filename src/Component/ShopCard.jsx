@@ -1,9 +1,12 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FaHeart, FaRegStar, FaShoppingCart, FaStar, FaStarHalf } from 'react-icons/fa';
 import { Link } from 'react-router';
+import Useauth from './Useauth';
+import { addfavorite, addtocart, getfavorite, removeFavorite } from './Api';
 
 const ShopCard = ({ item }) => {
-    const [isLiked, setIsLiked] = useState(false);
+    const [isFavorite, setIsFavorite] = useState(false);
+    const { user } = Useauth();
 
     const Stars = ({ rating }) => {
         const stars = [];
@@ -15,12 +18,90 @@ const ShopCard = ({ item }) => {
         return <div className="flex items-center">{stars}</div>;
     };
 
-    const handleLikeClick = (e) => {
-        e.preventDefault(); // লিঙ্কে যাওয়া বন্ধ করে
-        e.stopPropagation(); // ইভেন্ট bubbling বন্ধ করে
-        setIsLiked(!isLiked);
-        // এখানে আপনি API কল করতে পারেন ফেভারিটে যোগ করার জন্য
-        console.log('Liked item:', item._id);
+    const handleFavoriteClick = async (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (!user) {
+            alert("Please login first");
+            return;
+        }
+
+        try {
+            if (isFavorite) {
+         
+                await removeFavorite({
+                    productId: item._id,
+                    userEmail: user.email,
+                });
+                setIsFavorite(false);
+                alert("Removed from favorites 💔");
+            } else {
+         
+                const favorite = {
+                    productId: item._id,
+                    userEmail: user.email,
+                };
+                await addfavorite(favorite);
+                setIsFavorite(true);
+                alert("Added to favorites ❤️");
+            }
+        } catch (error) {
+            console.log(error);
+            alert("Failed to update favorite");
+        }
+    };
+
+    useEffect(() => {
+        if (!user) {
+            setIsFavorite(false);
+            return;
+        }
+
+        const loadFavorite = async () => {
+            try {
+                const data = await getfavorite({
+                    productId: item._id,
+                    userEmail: user.email,
+                });
+
+    
+                if (data?.exists || data?.favorited) {
+                    setIsFavorite(true);
+                } else {
+                    setIsFavorite(false);
+                }
+            } catch (err) {
+                console.log("Error loading favorite:", err);
+                setIsFavorite(false);
+            }
+        };
+
+        loadFavorite();
+    }, [user, item._id]);
+
+    const handleAddToCart = async (product) => {
+        if (!user) {
+            return alert("Please login first");
+        }
+
+        const cartdata = {
+            userEmail: user.email,
+            productId: product._id,
+            ProductName: product.name,
+            quantity: 1,
+            Productimg: product.image,
+            price: product.price
+        };
+
+        try {
+            const result = await addtocart(cartdata);
+            console.log(result);
+            alert("Added to cart successfully");
+        } catch (err) {
+            console.log(err);
+            alert(err.message || "Failed to add to cart");
+        }
     };
 
     return (
@@ -46,17 +127,18 @@ const ShopCard = ({ item }) => {
                         )}
                     </div>
 
-                    {/* হার্ট আইকন - আলাদা ইভেন্ট হ্যান্ডলার */}
-                    <div 
-                        className="absolute top-3 right-3 z-10 transition-colors duration-300 cursor-pointer"
-                        onClick={handleLikeClick}
+                   
+                    <button
+                        onClick={handleFavoriteClick}
+                        className="absolute top-3 right-3 z-20 p-2 bg-white/80 backdrop-blur-sm rounded-full transition-all duration-300 hover:bg-white hover:shadow-md"
+                        aria-label={isFavorite ? "Remove from favorites" : "Add to favorites"}
                     >
-                        {isLiked ? (
-                            <FaHeart className="w-6 h-6 text-red-500" />
+                        {isFavorite ? (
+                            <FaHeart className="w-5 h-5 text-red-500 fill-red-500" />
                         ) : (
-                            <FaHeart className="w-6 h-6 text-[#1E40AF] hover:text-red-500" />
+                            <FaHeart className="w-5 h-5 text-gray-600 hover:text-red-500" />
                         )}
-                    </div>
+                    </button>
                 </div>
 
                 <div className="p-4 flex flex-col flex-1 justify-between">
@@ -79,13 +161,12 @@ const ShopCard = ({ item }) => {
             </Link>
 
             <div className="px-4 pb-4">
-                <button 
+                <button
                     className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95"
                     onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        // এখানে Add to Cart লজিক যোগ করুন
-                        console.log('Add to cart:', item._id);
+                        handleAddToCart(item);
                     }}
                 >
                     <FaShoppingCart /> Add to Cart

@@ -1,140 +1,127 @@
-import React, { useState } from 'react';
-import { FaHeart, FaShoppingCart, FaTag, FaEye, FaTrash, FaStar, FaFire, FaPercentage, FaTruck, FaEdit, FaFilter, FaSort, FaChevronDown, FaChevronUp, FaCheck, FaTimes } from 'react-icons/fa';
+import React, { useEffect, useState } from 'react';
+import { FaHeart, FaShoppingCart, FaTag, FaEye, FaTrash, FaStar, FaPercentage, FaTruck, FaFilter, FaSort, FaChevronDown, FaChevronUp, FaSpinner } from 'react-icons/fa';
 import { useNavigate } from 'react-router';
-
+import Useauth from '../../Component/Useauth';
+import { getUserFavorites, removeFavorite, toggleFavorite, addtocart } from '../../Component/Api';
 
 const Favorite = () => {
     const navigate = useNavigate();
-    const [favorites, setFavorites] = useState([
-        {
-            id: 1,
-            name: "Premium Leather Jacket",
-            description: "Genuine leather jacket with premium finish",
-            price: 299.99,
-            originalPrice: 399.99,
-            image: "https://images.unsplash.com/photo-1551028719-00167b16eac5?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            rating: 4.8,
-            reviewCount: 128,
-            inStock: true,
-            isNew: true,
-            category: "Fashion",
-            discount: 25,
-            freeShipping: true,
-            addedDate: "2024-01-15",
-            brand: "LeatherWorks"
-        },
-        {
-            id: 2,
-            name: "Wireless Bluetooth Headphones",
-            description: "Noise cancelling with 30hr battery life",
-            price: 149.99,
-            originalPrice: 199.99,
-            image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            rating: 4.6,
-            reviewCount: 256,
-            inStock: true,
-            isNew: false,
-            category: "Electronics",
-            discount: 25,
-            freeShipping: true,
-            addedDate: "2024-01-14",
-            brand: "SoundMax"
-        },
-        {
-            id: 3,
-            name: "Smart Watch Series 5",
-            description: "Fitness tracker with heart rate monitor",
-            price: 249.99,
-            originalPrice: 299.99,
-            image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            rating: 4.9,
-            reviewCount: 342,
-            inStock: true,
-            isNew: true,
-            category: "Electronics",
-            discount: 17,
-            freeShipping: true,
-            addedDate: "2024-01-13",
-            brand: "TechWear"
-        },
-        {
-            id: 4,
-            name: "Designer Sunglasses",
-            description: "UV protection polarized sunglasses",
-            price: 89.99,
-            originalPrice: 129.99,
-            image: "https://images.unsplash.com/photo-1572635196237-14b3f281503f?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            rating: 4.7,
-            reviewCount: 89,
-            inStock: false,
-            isNew: false,
-            category: "Accessories",
-            discount: 31,
-            freeShipping: false,
-            addedDate: "2024-01-12",
-            brand: "SunStyle"
-        },
-        {
-            id: 5,
-            name: "Running Shoes Pro",
-            description: "Lightweight running shoes with cushion",
-            price: 129.99,
-            originalPrice: 159.99,
-            image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            rating: 4.5,
-            reviewCount: 217,
-            inStock: true,
-            isNew: true,
-            category: "Sports",
-            discount: 19,
-            freeShipping: true,
-            addedDate: "2024-01-11",
-            brand: "RunFast"
-        },
-        {
-            id: 6,
-            name: "Luxury Perfume",
-            description: "Premium fragrance with long lasting scent",
-            price: 79.99,
-            originalPrice: 99.99,
-            image: "https://images.unsplash.com/photo-1541643600914-78b084683601?ixlib=rb-4.0.3&auto=format&fit=crop&w=500&q=80",
-            rating: 4.4,
-            reviewCount: 156,
-            inStock: true,
-            isNew: false,
-            category: "Beauty",
-            discount: 20,
-            freeShipping: false,
-            addedDate: "2024-01-10",
-            brand: "ScentLux"
-        }
-    ]);
-
-    const [sortConfig, setSortConfig] = useState({ key: 'addedDate', direction: 'desc' });
+    const { user } = Useauth();
+    const [favorites, setFavorites] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
     const [selectedItems, setSelectedItems] = useState([]);
     const [showFilters, setShowFilters] = useState(false);
-    const [filters, setFilters] = useState({
-        category: 'all',
-        inStock: 'all',
-        freeShipping: 'all',
-        minPrice: '',
-        maxPrice: ''
-    });
+    const [filters, setFilters] = useState({ category: 'all', minPrice: '', maxPrice: '' });
 
-    const categories = ['all', ...new Set(favorites.map(item => item.category))];
-    const brands = ['all', ...new Set(favorites.map(item => item.brand))];
+    useEffect(() => {
+        if (user?.email) {
+            loadFavorites();
+        } else {
+            setLoading(false);
+        }
+    }, [user]);
+
+    const loadFavorites = async () => {
+        try {
+            setLoading(true);
+            const data = await getUserFavorites(user.email);
+            setFavorites(data || []);
+        } catch (error) {
+            console.error("Failed to load favorites:", error);
+            setFavorites([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleRemoveItem = async (itemId) => {
+        try {
+            await removeFavorite({ productId: itemId, userEmail: user.email });
+            setFavorites(prev => prev.filter(item => item._id !== itemId));
+            setSelectedItems(prev => prev.filter(id => id !== itemId));
+        } catch (error) {
+            console.error("Failed to remove item:", error);
+        }
+    };
+
+    const removeSelected = async () => {
+        try {
+            for (const itemId of selectedItems) {
+                await removeFavorite({ productId: itemId, userEmail: user.email });
+            }
+            setFavorites(prev => prev.filter(item => !selectedItems.includes(item._id)));
+            setSelectedItems([]);
+        } catch (error) {
+            console.error("Failed to remove selected items:", error);
+        }
+    };
+
+    const handleAddToCart = async (item) => {
+        if (!user) {
+            alert("Please login first");
+            return;
+        }
+
+        try {
+            const cartdata = {
+                userEmail: user.email,
+                productId: item._id,
+                ProductName: item.name,
+                quantity: 1,
+                Productimg: item.image,
+                price: item.price
+            };
+            await addtocart(cartdata);
+            alert("Added to cart successfully");
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            alert("Failed to add to cart");
+        }
+    };
+
+    const handleAddSelectedToCart = async () => {
+        if (!user) {
+            alert("Please login first");
+            return;
+        }
+
+        if (selectedItems.length === 0) {
+            alert("Please select items to add to cart");
+            return;
+        }
+
+        try {
+            for (const itemId of selectedItems) {
+                const item = favorites.find(f => f._id === itemId);
+                if (item) {
+                    const cartdata = {
+                        userEmail: user.email,
+                        productId: item._id,
+                        ProductName: item.name,
+                        quantity: 1,
+                        Productimg: item.image,
+                        price: item.price
+                    };
+                    await addtocart(cartdata);
+                }
+            }
+            alert(`${selectedItems.length} items added to cart successfully`);
+        } catch (error) {
+            console.error("Failed to add to cart:", error);
+            alert("Failed to add items to cart");
+        }
+    };
 
     const handleSort = (key) => {
         let direction = 'asc';
-        if (sortConfig.key === key && sortConfig.direction === 'asc') {
-            direction = 'desc';
-        }
+        if (sortConfig.key === key && sortConfig.direction === 'asc') direction = 'desc';
         setSortConfig({ key, direction });
     };
 
     const handleSelectAll = (e) => {
         if (e.target.checked) {
-            setSelectedItems(filteredFavorites.map(item => item.id));
+            setSelectedItems(filteredFavorites.map(item => item._id));
         } else {
             setSelectedItems([]);
         }
@@ -148,447 +135,224 @@ const Favorite = () => {
         }
     };
 
-    const removeSelected = () => {
-        setFavorites(favorites.filter(item => !selectedItems.includes(item.id)));
-        setSelectedItems([]);
-    };
-
-    const moveSelectedToCart = () => {
-        console.log("Moving to cart:", selectedItems);
-        // Add to cart logic here
-        removeSelected();
+    const calculateTotalSavings = () => {
+        return favorites.reduce((total, item) => total + ((item.oldPrice || item.price) - item.price), 0);
     };
 
     const filteredFavorites = favorites
         .filter(item => {
             if (filters.category !== 'all' && item.category !== filters.category) return false;
-            if (filters.inStock === 'yes' && !item.inStock) return false;
-            if (filters.inStock === 'no' && item.inStock) return false;
-            if (filters.freeShipping === 'yes' && !item.freeShipping) return false;
-            if (filters.freeShipping === 'no' && item.freeShipping) return false;
             if (filters.minPrice && item.price < parseFloat(filters.minPrice)) return false;
             if (filters.maxPrice && item.price > parseFloat(filters.maxPrice)) return false;
             return true;
         })
         .sort((a, b) => {
-            if (sortConfig.key === 'price') {
-                return sortConfig.direction === 'asc' ? a.price - b.price : b.price - a.price;
-            }
-            if (sortConfig.key === 'rating') {
-                return sortConfig.direction === 'asc' ? a.rating - b.rating : b.rating - a.rating;
-            }
-            if (sortConfig.key === 'discount') {
-                return sortConfig.direction === 'asc' ? a.discount - b.discount : b.discount - a.discount;
-            }
-            if (sortConfig.key === 'addedDate') {
-                return sortConfig.direction === 'asc' 
-                    ? new Date(a.addedDate) - new Date(b.addedDate)
-                    : new Date(b.addedDate) - new Date(a.addedDate);
-            }
+            if (sortConfig.key === 'price') return sortConfig.direction === 'asc' ? a.price - b.price : b.price - a.price;
+            if (sortConfig.key === 'rating') return sortConfig.direction === 'asc' ? a.rating - b.rating : b.rating - a.rating;
+            if (sortConfig.key === 'discount') return sortConfig.direction === 'asc' ? a.discount - b.discount : b.discount - a.discount;
+            if (sortConfig.key === 'createdAt') return sortConfig.direction === 'asc' ? new Date(a.createdAt) - new Date(b.createdAt) : new Date(b.createdAt) - new Date(a.createdAt);
             return 0;
         });
 
-    const calculateTotalSavings = () => {
-        return favorites.reduce((total, item) => 
-            total + (item.originalPrice - item.price), 0
-        );
+    const categories = ['all', ...new Set(favorites.map(item => item.category).filter(Boolean))];
+
+    const getSortIcon = (key) => {
+        if (sortConfig.key !== key) return <FaSort className="text-gray-400" />;
+        return sortConfig.direction === 'asc' ? <FaChevronUp className="text-black" /> : <FaChevronDown className="text-black" />;
     };
 
-    const calculateSelectedTotal = () => {
-        return filteredFavorites
-            .filter(item => selectedItems.includes(item.id))
-            .reduce((total, item) => total + item.price, 0);
+    const truncateText = (text, maxLength) => {
+        if (!text) return '';
+        if (text.length <= maxLength) return text;
+        return text.substring(0, maxLength) + '...';
     };
+
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-20 flex items-center justify-center">
+                <div className="text-center">
+                    <FaSpinner className="animate-spin text-black text-5xl mx-auto mb-6" />
+                    <p className="text-gray-600 text-lg">Loading your favorites...</p>
+                </div>
+            </div>
+        );
+    }
+
+    if (!user) {
+        return (
+            <div className="min-h-screen bg-gray-50 py-8">
+                <div className="container mx-auto px-4 text-center py-20">
+                    <div className="w-24 h-24 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                        <FaHeart className="text-black text-4xl" />
+                    </div>
+                    <h2 className="text-3xl font-bold text-gray-800 mb-4">Please Login First</h2>
+                    <p className="text-gray-600 mb-8 max-w-md mx-auto">You need to login to view your favorite items</p>
+                    <button onClick={() => navigate('/login')} className="px-8 py-3 bg-black text-white font-bold rounded-xl transition duration-300 shadow-lg hover:bg-gray-800">
+                        Login Now
+                    </button>
+                </div>
+            </div>
+        );
+    }
 
     const EmptyState = () => (
         <div className="text-center py-20">
-            <div className="w-32 h-32 mx-auto mb-6 bg-gradient-to-r from-pink-100 to-red-100 rounded-full flex items-center justify-center">
-                <FaHeart className="text-red-400 text-5xl" />
+            <div className="w-32 h-32 mx-auto mb-6 bg-gray-100 rounded-full flex items-center justify-center">
+                <FaHeart className="text-black text-5xl" />
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-3">Your Wishlist is Empty</h3>
-            <p className="text-gray-600 mb-8 max-w-md mx-auto">
-                Start adding items you love to your favorites list. They'll be saved here for you to revisit later.
-            </p>
-            <button
-                onClick={() => navigate('/products')}
-                className="px-8 py-3 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-bold rounded-xl transition duration-300 shadow-lg hover:shadow-xl"
-            >
+            <p className="text-gray-600 mb-8 max-w-md mx-auto">Start adding items you love to your favorites list</p>
+            <button onClick={() => navigate('/products')} className="px-8 py-3 bg-black text-white font-bold rounded-xl transition duration-300 shadow-lg hover:bg-gray-800">
                 Explore Products
             </button>
         </div>
     );
 
-    const getSortIcon = (key) => {
-        if (sortConfig.key !== key) return <FaSort className="text-gray-400" />;
-        return sortConfig.direction === 'asc' 
-            ? <FaChevronUp className="text-pink-600" /> 
-            : <FaChevronDown className="text-pink-600" />;
-    };
-
     return (
-        <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white py-8">
+        <div className="min-h-screen bg-gray-50 py-8">
             <div className="container mx-auto px-4">
-                {/* Header */}
-                <div className="text-center mb-12">
-                    <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl mb-6 shadow-lg">
-                        <FaHeart className="text-white text-3xl" />
+                <div className="text-center mb-8">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-green-500 rounded-xl mb-4 shadow-lg">
+                        <FaHeart className="text-white text-2xl" />
                     </div>
-                    <h1 className="text-5xl font-bold text-gray-800 mb-3">My Favorites</h1>
-                    <p className="text-gray-600 text-lg max-w-2xl mx-auto">
-                        Manage your wishlist in a structured table view
-                    </p>
+                    <h1 className="text-3xl font-bold text-gray-800 mb-2">My Favorites</h1>
+                    <p className="text-gray-600">{favorites.length} items in your wishlist</p>
                 </div>
 
-                {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center">
-                                <FaHeart className="text-pink-600 text-xl" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold text-gray-800">{favorites.length}</p>
-                                <p className="text-gray-600 text-sm">Total Items</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center">
-                                <FaTag className="text-green-600 text-xl" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold text-gray-800">${calculateTotalSavings().toFixed(2)}</p>
-                                <p className="text-gray-600 text-sm">Total Savings</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center">
-                                <FaShoppingCart className="text-blue-600 text-xl" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold text-gray-800">{selectedItems.length}</p>
-                                <p className="text-gray-600 text-sm">Selected Items</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="bg-white rounded-2xl shadow-lg p-6">
-                        <div className="flex items-center gap-4">
-                            <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center">
-                                <FaTruck className="text-purple-600 text-xl" />
-                            </div>
-                            <div>
-                                <p className="text-2xl font-bold text-gray-800">
-                                    {favorites.filter(item => item.freeShipping).length}
-                                </p>
-                                <p className="text-gray-600 text-sm">Free Shipping</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Filters Section */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-8">
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-lg font-bold text-gray-800">Filters</h3>
-                        <button
-                            onClick={() => setShowFilters(!showFilters)}
-                            className="flex items-center gap-2 text-pink-600 hover:text-pink-700"
-                        >
-                            <FaFilter />
-                            {showFilters ? 'Hide Filters' : 'Show Filters'}
-                        </button>
-                    </div>
+                <div className="mb-6">
+                    <button onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2 text-black hover:text-gray-700">
+                        <FaFilter />{showFilters ? 'Hide Filters' : 'Show Filters'}
+                    </button>
                     
                     {showFilters && (
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 p-4 bg-gray-50 rounded-xl">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-lg mt-2">
                             <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">Category</label>
-                                <select
-                                    value={filters.category}
-                                    onChange={(e) => setFilters({...filters, category: e.target.value})}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                >
-                                    {categories.map(cat => (
-                                        <option key={cat} value={cat}>
-                                            {cat === 'all' ? 'All Categories' : cat}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            <div>
-                                <label className="block text-gray-700 text-sm font-medium mb-2">Stock Status</label>
-                                <select
-                                    value={filters.inStock}
-                                    onChange={(e) => setFilters({...filters, inStock: e.target.value})}
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                >
-                                    <option value="all">All</option>
-                                    <option value="yes">In Stock</option>
-                                    <option value="no">Out of Stock</option>
+                                <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})} className="w-full p-2 border border-gray-300 rounded">
+                                    {categories.map(cat => <option key={cat} value={cat}>{cat === 'all' ? 'All Categories' : cat}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">Min Price</label>
-                                <input
-                                    type="number"
-                                    value={filters.minPrice}
-                                    onChange={(e) => setFilters({...filters, minPrice: e.target.value})}
-                                    placeholder="0"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                />
+                                <input type="number" value={filters.minPrice} onChange={(e) => setFilters({...filters, minPrice: e.target.value})} placeholder="0" className="w-full p-2 border border-gray-300 rounded" />
                             </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">Max Price</label>
-                                <input
-                                    type="number"
-                                    value={filters.maxPrice}
-                                    onChange={(e) => setFilters({...filters, maxPrice: e.target.value})}
-                                    placeholder="1000"
-                                    className="w-full p-2 border border-gray-300 rounded-lg"
-                                />
+                                <input type="number" value={filters.maxPrice} onChange={(e) => setFilters({...filters, maxPrice: e.target.value})} placeholder="1000" className="w-full p-2 border border-gray-300 rounded" />
+                            </div>
+                            <div className="flex items-end">
+                                <button onClick={() => setFilters({ category: 'all', minPrice: '', maxPrice: '' })} className="w-full p-2 bg-black text-white rounded hover:bg-gray-800">
+                                    Clear Filters
+                                </button>
                             </div>
                         </div>
                     )}
                 </div>
 
-                {/* Action Bar */}
-                <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
-                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                            <div className="flex items-center">
-                                <input
-                                    type="checkbox"
-                                    checked={selectedItems.length === filteredFavorites.length && filteredFavorites.length > 0}
-                                    onChange={handleSelectAll}
-                                    className="w-5 h-5 text-pink-600 rounded"
-                                />
-                                <span className="ml-2 text-gray-700">
-                                    Select All ({selectedItems.length}/{filteredFavorites.length})
-                                </span>
-                            </div>
-                            {selectedItems.length > 0 && (
-                                <div className="text-lg font-bold text-pink-600">
-                                    Selected Total: ${calculateSelectedTotal().toFixed(2)}
+                {favorites.length > 0 && (
+                    <div className="bg-white rounded-xl shadow-lg p-4 mb-4">
+                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                            <div className="flex items-center gap-4">
+                                <div className="flex items-center">
+                                    <input type="checkbox" checked={selectedItems.length === filteredFavorites.length && filteredFavorites.length > 0} onChange={handleSelectAll} className="w-5 h-5 text-black rounded" />
+                                    <span className="ml-2 text-gray-700">Select All ({selectedItems.length}/{filteredFavorites.length})</span>
                                 </div>
-                            )}
-                        </div>
-                        <div className="flex gap-3">
-                            {selectedItems.length > 0 && (
-                                <>
-                                    <button
-                                        onClick={moveSelectedToCart}
-                                        className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-lg flex items-center gap-2"
-                                    >
-                                        <FaShoppingCart />
-                                        Add to Cart ({selectedItems.length})
-                                    </button>
-                                    <button
-                                        onClick={removeSelected}
-                                        className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg flex items-center gap-2"
-                                    >
-                                        <FaTrash />
-                                        Remove ({selectedItems.length})
-                                    </button>
-                                </>
-                            )}
-                            <button
-                                onClick={() => navigate('/products')}
-                                className="px-4 py-2 border border-gray-300 text-gray-700 hover:bg-gray-50 rounded-lg"
-                            >
-                                Add More Items
-                            </button>
+                            </div>
+                            <div className="flex gap-2">
+                                {selectedItems.length > 0 && (
+                                    <>
+                                        <button onClick={handleAddSelectedToCart} className="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm rounded flex items-center gap-1">
+                                            <FaShoppingCart /> Add to Cart ({selectedItems.length})
+                                        </button>
+                                        <button onClick={removeSelected} className="px-4 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded flex items-center gap-1">
+                                            <FaTrash /> Remove ({selectedItems.length})
+                                        </button>
+                                    </>
+                                )}
+                                <button onClick={() => navigate('/products')} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 rounded">
+                                    Add More Items
+                                </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+                )}
 
-                {/* Table */}
-                {favorites.length === 0 ? (
-                    <EmptyState />
-                ) : (
-                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                {favorites.length === 0 ? <EmptyState /> : (
+                    <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                         <div className="overflow-x-auto">
                             <table className="w-full">
-                                <thead className="bg-gray-50">
+                                <thead className="bg-gray-100">
                                     <tr>
-                                        <th className="p-4 text-left">
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedItems.length === filteredFavorites.length && filteredFavorites.length > 0}
-                                                    onChange={handleSelectAll}
-                                                    className="w-4 h-4 text-pink-600 rounded"
-                                                />
-                                            </div>
+                                        <th className="p-3 text-left">
+                                            <input type="checkbox" checked={selectedItems.length === filteredFavorites.length && filteredFavorites.length > 0} onChange={handleSelectAll} className="w-4 h-4 text-black rounded" />
                                         </th>
-                                        <th className="p-4 text-left text-gray-700 font-semibold">
-                                            Product
+                                        <th className="p-3 text-left text-gray-700 font-semibold">Product</th>
+                                        <th className="p-3 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-200" onClick={() => handleSort('category')}>
+                                            <div className="flex items-center gap-1">Category{getSortIcon('category')}</div>
                                         </th>
-                                        <th 
-                                            className="p-4 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-100"
-                                            onClick={() => handleSort('category')}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                Category
-                                                {getSortIcon('category')}
-                                            </div>
+                                        <th className="p-3 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-200" onClick={() => handleSort('price')}>
+                                            <div className="flex items-center gap-1">Price{getSortIcon('price')}</div>
                                         </th>
-                                        <th 
-                                            className="p-4 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-100"
-                                            onClick={() => handleSort('price')}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                Price
-                                                {getSortIcon('price')}
-                                            </div>
+                                        <th className="p-3 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-200" onClick={() => handleSort('discount')}>
+                                            <div className="flex items-center gap-1">Discount{getSortIcon('discount')}</div>
                                         </th>
-                                        <th 
-                                            className="p-4 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-100"
-                                            onClick={() => handleSort('discount')}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                Discount
-                                                {getSortIcon('discount')}
-                                            </div>
+                                        <th className="p-3 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-200" onClick={() => handleSort('rating')}>
+                                            <div className="flex items-center gap-1">Rating{getSortIcon('rating')}</div>
                                         </th>
-                                        <th 
-                                            className="p-4 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-100"
-                                            onClick={() => handleSort('rating')}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                Rating
-                                                {getSortIcon('rating')}
-                                            </div>
+                                        <th className="p-3 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-200" onClick={() => handleSort('createdAt')}>
+                                            <div className="flex items-center gap-1">Added Date{getSortIcon('createdAt')}</div>
                                         </th>
-                                        <th className="p-4 text-left text-gray-700 font-semibold">
-                                            Stock
-                                        </th>
-                                        <th 
-                                            className="p-4 text-left text-gray-700 font-semibold cursor-pointer hover:bg-gray-100"
-                                            onClick={() => handleSort('addedDate')}
-                                        >
-                                            <div className="flex items-center gap-2">
-                                                Added Date
-                                                {getSortIcon('addedDate')}
-                                            </div>
-                                        </th>
-                                        <th className="p-4 text-left text-gray-700 font-semibold">
-                                            Actions
-                                        </th>
+                                        <th className="p-3 text-left text-gray-700 font-semibold">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody className="divide-y divide-gray-100">
+                                <tbody className="divide-y divide-gray-200">
                                     {filteredFavorites.map((item) => (
-                                        <tr key={item.id} className="hover:bg-gray-50 transition-colors">
-                                            <td className="p-4">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedItems.includes(item.id)}
-                                                    onChange={() => handleSelectItem(item.id)}
-                                                    className="w-4 h-4 text-pink-600 rounded"
-                                                />
+                                        <tr key={item._id} className="hover:bg-gray-50">
+                                            <td className="p-3">
+                                                <input type="checkbox" checked={selectedItems.includes(item._id)} onChange={() => handleSelectItem(item._id)} className="w-4 h-4 text-black rounded" />
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-4">
-                                                    <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
-                                                        <img
-                                                            src={item.image}
-                                                            alt={item.name}
-                                                            className="w-full h-full object-cover"
-                                                        />
+                                            <td className="p-3">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
+                                                        <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                                                     </div>
                                                     <div>
-                                                        <div className="font-medium text-gray-800">{item.name}</div>
-                                                        <div className="text-sm text-gray-500">{item.brand}</div>
-                                                        <div className="text-xs text-gray-400 mt-1">{item.description}</div>
+                                                        <div className="font-medium text-gray-800">{truncateText(item.name, 20)}</div>
+                                                        <div className="text-xs text-gray-500 mt-1">{truncateText(item.description || '', 30)}</div>
+                                                        <div className="text-xs text-gray-400 mt-1">{item.brand}</div>
                                                     </div>
                                                 </div>
                                             </td>
-                                            <td className="p-4">
-                                                <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
-                                                    {item.category}
-                                                </span>
+                                            <td className="p-3">
+                                                <span className="px-2 py-1 bg-gray-100 text-gray-700 rounded text-xs">{item.category}</span>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-3">
                                                 <div>
-                                                    <div className="font-bold text-gray-800">${item.price.toFixed(2)}</div>
-                                                    {item.originalPrice > item.price && (
-                                                        <div className="text-sm text-gray-500 line-through">
-                                                            ${item.originalPrice.toFixed(2)}
-                                                        </div>
-                                                    )}
+                                                    <div className="font-bold text-gray-800">${item.price?.toFixed(2)}</div>
+                                                    {item.oldPrice && item.oldPrice > item.price && <div className="text-xs text-gray-500 line-through">${item.oldPrice.toFixed(2)}</div>}
                                                 </div>
                                             </td>
-                                            <td className="p-4">
+                                            <td className="p-3">
                                                 {item.discount > 0 ? (
-                                                    <div className="flex items-center gap-2 text-red-600 font-bold">
-                                                        <FaPercentage className="text-xs" />
-                                                        {item.discount}%
+                                                    <div className="flex items-center gap-1 text-red-600 font-bold text-sm">
+                                                        <FaPercentage className="text-xs" />{item.discount}%
                                                     </div>
-                                                ) : (
-                                                    <span className="text-gray-400">-</span>
-                                                )}
+                                                ) : <span className="text-gray-400 text-sm">-</span>}
                                             </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-2">
-                                                    <FaStar className="text-yellow-400" />
-                                                    <span className="font-medium">{item.rating}</span>
-                                                    <span className="text-gray-400 text-sm">({item.reviewCount})</span>
+                                            <td className="p-3">
+                                                <div className="flex items-center gap-1">
+                                                    <FaStar className="text-yellow-400 text-sm" />
+                                                    <span className="font-medium text-sm">{item.rating?.toFixed(1) || '0.0'}</span>
                                                 </div>
                                             </td>
-                                            <td className="p-4">
-                                                <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-sm font-medium ${item.inStock ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>
-                                                    {item.inStock ? (
-                                                        <>
-                                                            <FaCheck />
-                                                            In Stock
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <FaTimes />
-                                                            Out of Stock
-                                                        </>
-                                                    )}
-                                                </div>
-                                                {item.freeShipping && item.inStock && (
-                                                    <div className="flex items-center gap-1 text-green-600 text-xs mt-1">
-                                                        <FaTruck />
-                                                        Free Shipping
-                                                    </div>
-                                                )}
+                                            <td className="p-3">
+                                                <div className="text-gray-700 text-sm">{new Date(item.createdAt).toLocaleDateString()}</div>
                                             </td>
-                                            <td className="p-4">
-                                                <div className="text-gray-700">{item.addedDate}</div>
-                                                {item.isNew && (
-                                                    <div className="text-xs text-green-600 font-medium mt-1">NEW</div>
-                                                )}
-                                            </td>
-                                            <td className="p-4">
-                                                <div className="flex items-center gap-2">
-                                                    <button
-                                                        onClick={() => navigate(`/product/${item.id}`)}
-                                                        className="w-8 h-8 flex items-center justify-center text-blue-600 hover:bg-blue-50 rounded-lg"
-                                                        title="View Details"
-                                                    >
-                                                        <FaEye />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => moveSelectedToCart([item.id])}
-                                                        disabled={!item.inStock}
-                                                        className={`w-8 h-8 flex items-center justify-center rounded-lg ${item.inStock ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 cursor-not-allowed'}`}
-                                                        title="Add to Cart"
-                                                    >
-                                                        <FaShoppingCart />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleSelectItem(item.id)}
-                                                        className="w-8 h-8 flex items-center justify-center text-red-600 hover:bg-red-50 rounded-lg"
-                                                        title="Remove"
-                                                    >
-                                                        <FaTrash />
-                                                    </button>
+                                            <td className="p-3">
+                                                <div className="flex items-center gap-1">
+                                                    <button onClick={() => navigate(`/productsdetels/${item._id}`)} className="w-7 h-7 flex items-center justify-center text-blue-600 hover:bg-blue-50 rounded" title="View Details"><FaEye className="text-sm" /></button>
+                                                    <button onClick={() => handleAddToCart(item)} className="w-7 h-7 flex items-center justify-center text-green-600 hover:bg-green-50 rounded" title="Add to Cart"><FaShoppingCart className="text-sm" /></button>
+                                                    <button onClick={() => handleRemoveItem(item._id)} className="w-7 h-7 flex items-center justify-center text-red-600 hover:bg-red-50 rounded" title="Remove"><FaTrash className="text-sm" /></button>
                                                 </div>
                                             </td>
                                         </tr>
@@ -596,26 +360,15 @@ const Favorite = () => {
                                 </tbody>
                             </table>
                         </div>
-
-                        {/* Table Footer */}
-                        <div className="border-t border-gray-200 p-4">
-                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                <div className="text-gray-600">
-                                    Showing <span className="font-bold">{filteredFavorites.length}</span> of{" "}
-                                    <span className="font-bold">{favorites.length}</span> items
+                        
+                        <div className="border-t border-gray-200 p-3">
+                            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                                <div className="text-gray-600 text-sm">
+                                    Showing <span className="font-bold">{filteredFavorites.length}</span> of <span className="font-bold">{favorites.length}</span> items
                                 </div>
-                                <div className="flex items-center gap-4">
-                                    <div className="text-gray-700">
-                                        Selected: <span className="font-bold text-pink-600">{selectedItems.length}</span> items
-                                    </div>
-                                    <div className="text-gray-700">
-                                        Total Value: <span className="font-bold">${calculateSelectedTotal().toFixed(2)}</span>
-                                    </div>
-                                    <button
-                                        onClick={() => navigate('/cart')}
-                                        className="px-6 py-2 bg-gradient-to-r from-pink-500 to-red-500 hover:from-pink-600 hover:to-red-600 text-white font-medium rounded-lg transition duration-300"
-                                    >
-                                        Proceed to Checkout
+                                <div className="flex items-center gap-3">
+                                    <button onClick={() => navigate('/cart')} className="px-4 py-2 bg-green-500 text-white text-sm rounded hover:bg-gray-800">
+                                        View Cart
                                     </button>
                                 </div>
                             </div>
@@ -623,43 +376,38 @@ const Favorite = () => {
                     </div>
                 )}
 
-                {/* Summary Section */}
                 {favorites.length > 0 && (
-                    <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
-                        <div className="bg-gradient-to-r from-pink-500 to-red-500 rounded-2xl p-6 text-white">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="bg-green-500 rounded-xl p-4 text-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
                                     <FaTag className="text-white" />
                                 </div>
                                 <div>
-                                    <h4 className="text-lg font-bold">Biggest Savings</h4>
-                                    <p className="text-white/90 text-sm">You saved ${calculateTotalSavings().toFixed(2)} in total</p>
+                                    <h4 className="text-md font-bold">Total Savings</h4>
+                                    <p className="text-white/90 text-sm">${calculateTotalSavings().toFixed(2)} saved</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl p-6 text-white">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <FaFire className="text-white" />
+                        <div className="bg-green-500 rounded-xl p-4 text-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                                    <FaHeart className="text-white" />
                                 </div>
                                 <div>
-                                    <h4 className="text-lg font-bold">New Arrivals</h4>
-                                    <p className="text-white/90 text-sm">
-                                        {favorites.filter(item => item.isNew).length} new items in your list
-                                    </p>
+                                    <h4 className="text-md font-bold">Total Items</h4>
+                                    <p className="text-white/90 text-sm">{favorites.length} favorites</p>
                                 </div>
                             </div>
                         </div>
-                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white">
-                            <div className="flex items-center gap-4 mb-4">
-                                <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                                    <FaTruck className="text-white" />
+                        <div className="bg-green-500 rounded-xl p-4 text-white">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center">
+                                    <FaShoppingCart className="text-white" />
                                 </div>
                                 <div>
-                                    <h4 className="text-lg font-bold">Free Shipping</h4>
-                                    <p className="text-white/90 text-sm">
-                                        {favorites.filter(item => item.freeShipping).length} items qualify for free shipping
-                                    </p>
+                                    <h4 className="text-md font-bold">Ready to Buy</h4>
+                                    <p className="text-white/90 text-sm">{selectedItems.length} selected</p>
                                 </div>
                             </div>
                         </div>
