@@ -19,7 +19,8 @@ import DashboardRoot from "../Pages/Dashboard/DashboardRoot";
 import { Component } from "react";
 import DasboardHome from "../Pages/Dashboard/DasboardHome";
 import PaymentCancle from "./Payment/PaymentCancle";
-import { createHashRouter } from "react-router";
+import PaymentFail from "./Payment/PaymentFail";
+
 
 
 export const router = createBrowserRouter([
@@ -91,6 +92,10 @@ export const router = createBrowserRouter([
             {
                 path:"/payment-cancel",
                 Component:PaymentCancle
+            },
+            {
+                path:"/payment-fail",
+                Component:PaymentFail
             }
 
 
