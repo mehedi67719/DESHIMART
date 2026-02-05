@@ -187,7 +187,7 @@ const Favorite = () => {
                     </div>
                     <h2 className="text-3xl font-bold text-gray-800 mb-4">Please Login First</h2>
                     <p className="text-gray-600 mb-8 max-w-md mx-auto">You need to login to view your favorite items</p>
-                    <button onClick={() => navigate('/login')} className="px-8 py-3 bg-black text-white font-bold rounded-xl transition duration-300 shadow-lg hover:bg-gray-800">
+                    <button onClick={() => navigate('/sign-in')} className="px-8 py-3 bg-black text-white font-bold rounded-xl transition duration-300 shadow-lg hover:bg-gray-800">
                         Login Now
                     </button>
                 </div>
@@ -269,7 +269,7 @@ const Favorite = () => {
                                         </button>
                                     </>
                                 )}
-                                <button onClick={() => navigate('/products')} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 rounded">
+                                <button onClick={() => navigate('/shop')} className="px-4 py-2 border border-gray-300 text-gray-700 text-sm hover:bg-gray-50 rounded">
                                     Add More Items
                                 </button>
                             </div>

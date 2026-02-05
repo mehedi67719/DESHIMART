@@ -14,7 +14,12 @@ import Cart from "../Pages/Navpage/Cart";
 import Favorite from "../Pages/Navpage/Favorite";
 import Messenger from "../Pages/Navpage/Messenger";
 import Notification from "../Pages/Navpage/Notification";
-
+import Paymentsuccess from "./Payment/Paymentsuccess";
+import DashboardRoot from "../Pages/Dashboard/DashboardRoot";
+import { Component } from "react";
+import DasboardHome from "../Pages/Dashboard/DasboardHome";
+import PaymentCancle from "./Payment/PaymentCancle";
+import { createHashRouter } from "react-router";
 
 
 export const router = createBrowserRouter([
@@ -26,60 +31,84 @@ export const router = createBrowserRouter([
                 index: true,
                 Component: Home,
             },
-            
+
             {
-                path:'/sign-in',
-                Component:Signin
+                path: '/sign-in',
+                Component: Signin
             },
             {
-                path:'/sign-up',
-                Component:Signup
+                path: '/sign-up',
+                Component: Signup
             },
             {
-                path:"/shop",
-                Component:Shop
+                path: "/shop",
+                Component: Shop
             },
             {
-                path:"/hot-deal",
-                Component:HOtdeal
+                path: "/hot-deal",
+                Component: HOtdeal
             },
             {
-                path:"/collection",
-                Component:Collection
+                path: "/collection",
+                Component: Collection
             },
             {
-                path:'/local-stores',
-                Component:Localstores
+                path: '/local-stores',
+                Component: Localstores
             },
             {
-                path:"/blog",
-                Component:Blog
+                path: "/blog",
+                Component: Blog
             },
             {
-                path:'/contact',
-                Component:Contact
+                path: '/contact',
+                Component: Contact
             },
             {
-                path:"/productsdetels/:id",
-                Component:ViewProductsDetels
+                path: "/productsdetels/:id",
+                Component: ViewProductsDetels
             },
             {
-                path:"/cart",
-                Component:Cart
+                path: "/cart",
+                Component: Cart
             },
             {
-                path:'/favorite',
-                Component:Favorite
+                path: '/favorite',
+                Component: Favorite
             },
             {
-                path:'/massenger',
-                Component:Messenger
+                path: '/massenger',
+                Component: Messenger
             },
             {
-                path:"/notification",
-                Component:Notification
+                path: "/notification",
+                Component: Notification
+            },
+            {
+                path: "/success",
+                Component: Paymentsuccess
+            },
+            {
+                path:"cancel",
+                Component:PaymentCancle
             }
 
+
         ]
+
+
     },
+
+
+
+    {
+        path: "/dashboard",
+        Component: DashboardRoot,
+        children: [
+            {
+                index: true,
+                Component: DasboardHome
+            }
+        ]
+    }
 ]);

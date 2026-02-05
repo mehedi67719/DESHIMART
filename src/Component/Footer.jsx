@@ -1,6 +1,7 @@
 import React from 'react';
 import { CiLocationOn, CiMail, CiPhone, CiSearch } from 'react-icons/ci';
 import { FaFacebookF, FaGithub, FaLinkedinIn, FaSlack, FaYoutube } from 'react-icons/fa';
+import Logo from './Logo';
 
 const Footer = () => {
     return (
@@ -11,9 +12,7 @@ const Footer = () => {
 
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-10">
                     <div className="col-span-1">
-                        <h2 className="text-2xl font-bold text-green-500 mb-4">
-                            DESHIMART
-                        </h2>
+                       <Logo></Logo>
                         <p className="text-gray-500 text-[13px] leading-relaxed mb-6">
                             Discover fresh, organic farm products at DeshiMart, your trusted online destination for quality agricultural products.
                         </p>

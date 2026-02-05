@@ -184,3 +184,14 @@ export const getProductsByIds = async (productIds) => {
     throw err;
   }
 };
+
+
+
+export const paymemtinit = async (payload) => {
+  try {
+    const res = await useaxios.post("payment/init", payload);
+    return res.data;
+  } catch (err) {
+    console.log(err)
+  }
+}

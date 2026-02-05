@@ -30,6 +30,7 @@ import { MdCollectionsBookmark } from 'react-icons/md';
 import { LiaStoreSolid } from 'react-icons/lia';
 import { BiSolidContact } from 'react-icons/bi';
 import { IoNotifications } from 'react-icons/io5';
+import Logo from './Logo';
 
 const Navbar = () => {
   const { user, logout } = Useauth();
@@ -66,7 +67,7 @@ const Navbar = () => {
       <div className="lg:max-w-[70%] md:max-w-[95%] max-w-[98%] mx-auto px-4">
         <div className="flex items-center justify-between">
           <Link to="/">
-            <h2 className="text-2xl font-bold text-green-500">DESHIMART</h2>
+            <Logo></Logo>
           </Link>
 
           <div className="flex flex-1 items-center gap-2 border border-green-500 rounded px-2 mx-2 md:mx-4">
