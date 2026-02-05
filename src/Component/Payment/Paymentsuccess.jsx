@@ -85,28 +85,10 @@ const Paymentsuccess = () => {
               </button>
             </div>
             
-            <div className="pt-6 border-t border-gray-200">
-              <p className="text-center text-gray-500 text-xs mb-4">Need assistance with your order?</p>
-              <div className="flex justify-center space-x-8">
-                <button className="text-green-600 hover:text-green-800 font-medium text-sm transition duration-300 flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path>
-                  </svg>
-                  Support
-                </button>
-                <button className="text-green-600 hover:text-green-800 font-medium text-sm transition duration-300 flex items-center gap-1">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                  </svg>
-                  Invoice
-                </button>
-              </div>
-            </div>
+           
           </div>
           
-          <div className="bg-gray-900 text-white text-center py-4">
-            <p className="text-xs">© 2023 Your Brand. All rights reserved.</p>
-          </div>
+   
         </div>
         
         <div className="mt-6 flex justify-center">

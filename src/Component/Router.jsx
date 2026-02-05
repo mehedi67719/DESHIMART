@@ -85,11 +85,11 @@ export const router = createBrowserRouter([
                 Component: Notification
             },
             {
-                path: "/success",
+                path: "/payment-success",
                 Component: Paymentsuccess
             },
             {
-                path:"cancel",
+                path:"/payment-cancel",
                 Component:PaymentCancle
             }
 
