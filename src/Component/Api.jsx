@@ -1,4 +1,4 @@
-import { appendErrors } from "react-hook-form";
+
 import useaxios from "./Useaxios";
 
 export const products = async ({ pageParam = null, category = "", brand = '', priceRange = '' }) => {
@@ -97,7 +97,7 @@ export const cartdata = async (useremail) => {
 
 export const removecart = async (id) => {
   try {
-    const res = await useaxios.delete(`/cart/${id}`); // ✅ DELETE method
+    const res = await useaxios.delete(`/cart/${id}`);
     return res.data;
   } catch (err) {
     console.log(err);
@@ -195,3 +195,29 @@ export const paymemtinit = async (payload) => {
     console.log(err)
   }
 }
+
+
+
+
+export const userpost = async (user) => {
+  try {
+    const res = await useaxios.post("user", user);
+    return res.data;
+  } catch (err) {
+    console.error("User post error:", err);
+    throw err;
+  }
+};
+
+
+export const getuser = async (email) => {
+  try {
+    const res = await useaxios.get("/user",{
+       params: { email } 
+    });
+    return res.data;
+  } catch (err) {
+    console.error("Get user error:", err);
+    throw err;
+  }
+};

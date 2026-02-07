@@ -158,8 +158,8 @@ const Navbar = () => {
                       </div>
 
                       <nav className="p-4 space-y-1">
-                        <ProfileLink to="/" icon={<FaUser />} text="My Profile" close={() => setprofileopen(false)} />
-                        <ProfileLink to="/orders" icon={<FaBox />} text="My Orders" close={() => setprofileopen(false)} />
+                        <ProfileLink to="/dashboard/my-profile" icon={<FaUser />} text="My Profile" close={() => setprofileopen(false)} />
+                        <ProfileLink to="/dashboard/myorder" icon={<FaBox />} text="My Orders" close={() => setprofileopen(false)} />
                         <ProfileLink to="/wishlist" icon={<FaHeart />} text="Wishlist" close={() => setprofileopen(false)} />
                         <ProfileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" close={() => setprofileopen(false)} />
                         <ProfileLink to="/settings" icon={<FaCog />} text="Settings" close={() => setprofileopen(false)} />

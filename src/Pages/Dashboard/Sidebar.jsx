@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
     FaHome,
     FaBox,
@@ -10,9 +10,9 @@ import {
     FaCog,
     FaSignOutAlt,
     FaUserCircle,
-    FaChevronRight
+    FaChevronRight,
+    FaUser
 } from 'react-icons/fa';
-
 import Logo from '../../Component/Logo';
 import { Link, useLocation } from 'react-router';
 
@@ -20,10 +20,15 @@ const Sidebar = ({ onItemClick }) => {
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(location.pathname);
 
+    useEffect(() => {
+        setActiveItem(location.pathname);
+    }, [location.pathname]);
+
     const menuItems = [
         { path: "/dashboard", label: "Dashboard", icon: <FaHome /> },
+        { path: "/dashboard/my-profile", label: "My Profile", icon: <FaUser /> },
         { path: "/dashboard/products", label: "Products", icon: <FaBox /> },
-        { path: "/dashboard/orders", label: "Orders", icon: <FaShoppingBag /> },
+        { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag /> },
         { path: "/dashboard/customers", label: "Customers", icon: <FaUsers /> },
         { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar /> },
         { path: "/dashboard/payments", label: "Payments", icon: <FaCreditCard /> },
@@ -38,12 +43,10 @@ const Sidebar = ({ onItemClick }) => {
 
     return (
         <div className="h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
-        
             <div className="p-5">
                 <h2 className='text-3xl font-black text-black '>Dashboard</h2>
             </div>
 
-          
             <nav className="flex-1 px-3">
                 <ul className="space-y-2">
                     {menuItems.map((item) => (

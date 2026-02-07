@@ -14,12 +14,15 @@ import Cart from "../Pages/Navpage/Cart";
 import Favorite from "../Pages/Navpage/Favorite";
 import Messenger from "../Pages/Navpage/Messenger";
 import Notification from "../Pages/Navpage/Notification";
-import Paymentsuccess from "./Payment/Paymentsuccess";
 import DashboardRoot from "../Pages/Dashboard/DashboardRoot";
 import { Component } from "react";
 import DasboardHome from "../Pages/Dashboard/DasboardHome";
-import PaymentCancle from "./Payment/PaymentCancle";
-import PaymentFail from "./Payment/PaymentFail";
+import Paymentsuccess from "../Pages/Payment/Paymentsuccess";
+import PaymentCancle from "../Pages/Payment/PaymentCancle";
+import PaymentFail from "../Pages/Payment/PaymentFail";
+import Myorder from "../Pages/Dashboard/Myorder";
+import Myprofile from "../Pages/Dashboard/Myprofile";
+
 
 
 
@@ -113,6 +116,14 @@ export const router = createBrowserRouter([
             {
                 index: true,
                 Component: DasboardHome
+            },
+            {
+                path:'/dashboard/myorder',
+                Component:Myorder
+            },
+            {
+                path:'/dashboard/my-profile',
+                Component:Myprofile
             }
         ]
     }

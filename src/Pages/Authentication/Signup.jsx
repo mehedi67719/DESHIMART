@@ -17,6 +17,7 @@ const Signup = () => {
 
     const onsubmit = (data) => {
         signupwithemail(data.email, data.password,data.name)
+
             .then(() => {
                 Swal.fire({
 
