@@ -24,6 +24,7 @@ import Myorder from "../Pages/Dashboard/Myorder";
 import Myprofile from "../Pages/Dashboard/Myprofile";
 import Products from "../Pages/Dashboard/Products";
 import Setting from "../Pages/Dashboard/Setting";
+import PaymentHistory from "../Pages/Dashboard/PaymentHistory";
 
 
 
@@ -135,6 +136,10 @@ export const router = createBrowserRouter([
             {
                 path: "/dashboard/settings",
                 Component: Setting
+            },
+            {
+                path:"/dashboard/payments",
+                Component:PaymentHistory
             }
         ]
     }

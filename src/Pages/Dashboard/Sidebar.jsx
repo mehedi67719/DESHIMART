@@ -27,12 +27,11 @@ const Sidebar = ({ onItemClick }) => {
     const menuItems = [
         { path: "/dashboard", label: "Dashboard", icon: <FaHome /> },
         { path: "/dashboard/my-profile", label: "My Profile", icon: <FaUser /> },
-        { path: "/dashboard/products", label: "Products", icon: <FaBox /> },
+        { path: "/dashboard/products", label: "My Uploaded Products", icon: <FaBox /> },
         { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag /> },
         { path: "/dashboard/customers", label: "Customers", icon: <FaUsers /> },
         { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar /> },
-        { path: "/dashboard/payments", label: "Payments", icon: <FaCreditCard /> },
-        { path: "/dashboard/notifications", label: "Notifications", icon: <FaBell /> },
+        { path: "/dashboard/payments", label: "Payment History", icon: <FaCreditCard /> },
         { path: "/dashboard/settings", label: "Settings", icon: <FaCog /> },
     ];
 

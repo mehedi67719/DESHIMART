@@ -221,3 +221,34 @@ export const getuser = async (email) => {
     throw err;
   }
 };
+
+
+
+
+export const order=async(email)=>{
+  try{
+    const res=await useaxios.get("payment/order",{
+      params:{email}
+    })
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+export const paymentHistory=async(email)=>{
+  try{
+    const res=await useaxios.get("payment/history",{
+      params:{email}
+    })
+
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err
+  }
+}

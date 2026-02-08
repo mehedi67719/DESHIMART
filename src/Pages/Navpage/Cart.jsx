@@ -35,6 +35,7 @@ const Cart = () => {
     };
 
 
+
     const removeItem = async (id) => {
         try {
 
@@ -46,6 +47,7 @@ const Cart = () => {
         }
     };
 
+    console.log(cartItems)
 
 
 
@@ -62,7 +64,8 @@ const Cart = () => {
             userEmail: user.email,
             items: cartItems.map((i) => ({
                 id: i._id,
-                name: i.name,
+                name: i.ProductName,
+                Productimg:i.Productimg,
                 price: i.price,
                 quantity: i.quantity,
             })),
