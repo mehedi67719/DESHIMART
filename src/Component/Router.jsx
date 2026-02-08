@@ -22,6 +22,7 @@ import PaymentCancle from "../Pages/Payment/PaymentCancle";
 import PaymentFail from "../Pages/Payment/PaymentFail";
 import Myorder from "../Pages/Dashboard/Myorder";
 import Myprofile from "../Pages/Dashboard/Myprofile";
+import Products from "../Pages/Dashboard/Products";
 
 
 
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
             {
                 path:'/dashboard/my-profile',
                 Component:Myprofile
+            },
+            {
+                path:"/dashboard/products",
+                Component:Products
             }
         ]
     }
