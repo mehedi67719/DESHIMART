@@ -711,9 +711,9 @@ const Home = () => {
 
 
                             <div className="flex flex-wrap gap-4">
-                                <button className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-bold transition-all shadow-lg shadow-green-100">
+                                <Link to="/dashboard/becomeaseller" className="flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white px-8 py-4 rounded-lg font-bold transition-all shadow-lg shadow-green-100">
                                     Become a Seller <FiArrowRight strokeWidth={3} />
-                                </button>
+                                </Link>
                                 <button className="px-8 py-4 rounded-lg font-bold border-2 border-green-500 text-green-500 hover:bg-green-50 transition-all">
                                     Learn More
                                 </button>

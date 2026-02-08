@@ -26,18 +26,45 @@ import { RxCross2 } from 'react-icons/rx';
 import { Link, NavLink } from 'react-router';
 import Useauth from './Useauth';
 import Swal from 'sweetalert2';
-import { MdCollectionsBookmark } from 'react-icons/md';
+import { MdCollectionsBookmark, MdSell } from 'react-icons/md';
 import { LiaStoreSolid } from 'react-icons/lia';
 import { BiSolidContact } from 'react-icons/bi';
 import { IoNotifications } from 'react-icons/io5';
 import Logo from './Logo';
+import { getuser } from './Api';
 
 const Navbar = () => {
-  const { user, logout } = Useauth();
+
   const dropdownRef = useRef(null);
 
   const [open, setopen] = useState(false);
   const [profileopen, setprofileopen] = useState(false);
+
+  const { user } = Useauth();
+  const [User, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+
+  useEffect(() => {
+    if (!user?.email) return;
+
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const data = await getuser(user.email);
+        setUser(data);
+      } catch (err) {
+        console.error("Error fetching user:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUser();
+  }, [user]);
+
+
+
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -81,7 +108,7 @@ const Navbar = () => {
 
           <div className="flex items-center  gap-4">
             <div className="relative">
-              <Link to='/cart'><LuShoppingCart  className="text-4xl font-bold hover:text-green-500" /></Link>
+              <Link to='/cart'><LuShoppingCart className="text-4xl font-bold hover:text-green-500" /></Link>
               <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
                 0
               </span>
@@ -96,7 +123,7 @@ const Navbar = () => {
 
 
             <div className='relative md:flex lg:flex hidden'>
-              <Link to='/massenger'> <LuMessageCircleMore className='text-4xl font-bold hover:text-green-500'/></Link>
+              <Link to='/massenger'> <LuMessageCircleMore className='text-4xl font-bold hover:text-green-500' /></Link>
               <p className='text-white bg-green-500  -right-4 -top-4 px-2 py-0.5 absolute rounded-full text-center'>5</p>
             </div>
 
@@ -120,7 +147,14 @@ const Navbar = () => {
                           ? user.displayName.split(' ')[0]
                           : 'User'}
                       </h3>
-                      <p>Local User</p>
+                      {loading ? (
+                        <div className="flex items-center justify-center py-4">
+                          <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                        </div>
+                      ) : (
+                        <p>{User?.role}</p>
+                      )
+                      }
                     </div>
 
                     {user.photoURL ? (
@@ -147,14 +181,21 @@ const Navbar = () => {
                         ) : (
                           <FaRegUserCircle className="text-4xl text-white" />
                         )}
-                        <div>
-                          <h2 className="text-white font-bold text-lg">
-                            Mehadi Hasan
-                          </h2>
-                          <p className="text-white/80 text-sm">
-                            meh67719@gmail.com
-                          </p>
-                        </div>
+                        {
+                          loading ? (<div className="flex items-center justify-center py-4">
+                            <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                          </div>) : (
+                            <div>
+                              <h2 className="text-white font-bold text-lg">
+                                {User?.displayName}
+                              </h2>
+                              <p className="text-white/80 text-sm">
+                                {User.email}
+                              </p>
+                            </div>
+                          )
+                        }
+
                       </div>
 
                       <nav className="p-4 space-y-1">
@@ -162,7 +203,9 @@ const Navbar = () => {
                         <ProfileLink to="/dashboard/myorder" icon={<FaBox />} text="My Orders" close={() => setprofileopen(false)} />
                         <ProfileLink to="/favorite" icon={<FaHeart />} text="Wishlist" close={() => setprofileopen(false)} />
                         <ProfileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" close={() => setprofileopen(false)} />
+                        <ProfileLink to="/dashboard/becomeaseller" icon={<MdSell />} text="Become a Seller" close={() => setprofileopen(false)} />
                         <ProfileLink to="/dashboard/settings" icon={<FaCog />} text="Settings" close={() => setprofileopen(false)} />
+
 
                         <hr className="my-2" />
 

@@ -63,12 +63,14 @@ const Favorite = () => {
             return;
         }
 
+        
+
         try {
             const cartdata = {
                 userEmail: user.email,
                 productId: item._id,
                 ProductName: item.name,
-                quantity: 1,
+                quantity: item.quantity,
                 Productimg: item.image,
                 price: item.price
             };
