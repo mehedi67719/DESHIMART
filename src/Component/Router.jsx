@@ -23,6 +23,7 @@ import PaymentFail from "../Pages/Payment/PaymentFail";
 import Myorder from "../Pages/Dashboard/Myorder";
 import Myprofile from "../Pages/Dashboard/Myprofile";
 import Products from "../Pages/Dashboard/Products";
+import Setting from "../Pages/Dashboard/Setting";
 
 
 
@@ -94,13 +95,14 @@ export const router = createBrowserRouter([
                 Component: Paymentsuccess
             },
             {
-                path:"/payment-cancel",
-                Component:PaymentCancle
+                path: "/payment-cancel",
+                Component: PaymentCancle
             },
             {
-                path:"/payment-fail",
-                Component:PaymentFail
-            }
+                path: "/payment-fail",
+                Component: PaymentFail
+            },
+
 
 
         ]
@@ -119,16 +121,20 @@ export const router = createBrowserRouter([
                 Component: DasboardHome
             },
             {
-                path:'/dashboard/myorder',
-                Component:Myorder
+                path: '/dashboard/myorder',
+                Component: Myorder
             },
             {
-                path:'/dashboard/my-profile',
-                Component:Myprofile
+                path: '/dashboard/my-profile',
+                Component: Myprofile
             },
             {
-                path:"/dashboard/products",
-                Component:Products
+                path: "/dashboard/products",
+                Component: Products
+            },
+            {
+                path: "/dashboard/settings",
+                Component: Setting
             }
         ]
     }
