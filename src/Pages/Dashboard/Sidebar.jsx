@@ -15,7 +15,7 @@ import {
 } from 'react-icons/fa';
 import Logo from '../../Component/Logo';
 import { Link, useLocation } from 'react-router';
-import { MdSell } from 'react-icons/md';
+import { MdSell, MdUpload } from 'react-icons/md';
 
 const Sidebar = ({ onItemClick }) => {
     const location = useLocation();
@@ -29,6 +29,7 @@ const Sidebar = ({ onItemClick }) => {
         { path: "/dashboard", label: "Dashboard", icon: <FaHome /> },
         { path: "/dashboard/my-profile", label: "My Profile", icon: <FaUser /> },
         { path: "/dashboard/products", label: "My Uploaded Products", icon: <FaBox /> },
+        { path: "/dashboard/upload-products", label: "Uploade New Product", icon: <MdUpload /> },
         { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag /> },
         { path: "/dashboard/customers", label: "Customers", icon: <FaUsers /> },
         { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar /> },

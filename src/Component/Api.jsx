@@ -252,3 +252,15 @@ export const paymentHistory=async(email)=>{
     throw err
   }
 }
+
+
+
+export const becomeseller = async (data) => {
+  try {
+    const result = await useaxios.post("Stores", data);
+    return result.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};

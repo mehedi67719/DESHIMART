@@ -26,6 +26,7 @@ import Products from "../Pages/Dashboard/Products";
 import Setting from "../Pages/Dashboard/Setting";
 import PaymentHistory from "../Pages/Dashboard/PaymentHistory";
 import BecomeSeller from "../Pages/Dashboard/BecomeSeller";
+import UploadProduct from "../Pages/Dashboard/UploadProduct";
 
 
 
@@ -145,6 +146,10 @@ export const router = createBrowserRouter([
             {
                 path:"/dashboard/becomeaseller",
                 Component:BecomeSeller
+            },
+            {
+                path:'/dashboard/upload-products',
+                Component:UploadProduct
             }
         ]
     }
