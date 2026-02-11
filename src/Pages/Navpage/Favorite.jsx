@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaHeart, FaShoppingCart, FaTag, FaEye, FaTrash, FaStar, FaPercentage, FaTruck, FaFilter, FaSort, FaChevronDown, FaChevronUp, FaSpinner } from 'react-icons/fa';
 import { useNavigate } from 'react-router';
 import Useauth from '../../Component/Useauth';
-import { getUserFavorites, removeFavorite, toggleFavorite, addtocart } from '../../Component/Api';
+import { getUserFavorites, removeFavorite, addtocartFromfavorite } from '../../Component/Api';
 
 const Favorite = () => {
     const navigate = useNavigate();
@@ -63,24 +63,38 @@ const Favorite = () => {
             return;
         }
 
-        
-
         try {
             const cartdata = {
                 userEmail: user.email,
                 productId: item._id,
                 ProductName: item.name,
-                quantity: item.quantity,
+                quantity: 1,
                 Productimg: item.image,
                 price: item.price
             };
-            await addtocart(cartdata);
-            alert("Added to cart successfully");
+
+         
+            await addtocartFromfavorite(cartdata);
+
+          
+            await removeFavorite({
+                productId: item._id,
+                userEmail: user.email
+            });
+
+
+            setFavorites(prev => prev.filter(fav => fav._id !== item._id));
+
+            alert("Added to cart and removed from favorites");
+
         } catch (error) {
-            console.error("Failed to add to cart:", error);
+            console.error("Failed:", error);
             alert("Failed to add to cart");
         }
     };
+
+
+
 
     const handleAddSelectedToCart = async () => {
         if (!user) {
@@ -96,6 +110,7 @@ const Favorite = () => {
         try {
             for (const itemId of selectedItems) {
                 const item = favorites.find(f => f._id === itemId);
+
                 if (item) {
                     const cartdata = {
                         userEmail: user.email,
@@ -105,15 +120,35 @@ const Favorite = () => {
                         Productimg: item.image,
                         price: item.price
                     };
-                    await addtocart(cartdata);
+
+                    await addtocartFromfavorite(cartdata);
+
+                
+                    await removeFavorite({
+                        productId: item._id,
+                        userEmail: user.email
+                    });
                 }
             }
-            alert(`${selectedItems.length} items added to cart successfully`);
+
+
+            setFavorites(prev =>
+                prev.filter(item => !selectedItems.includes(item._id))
+            );
+
+            setSelectedItems([]);
+
+            alert("Items added to cart and removed from favorites");
+
         } catch (error) {
-            console.error("Failed to add to cart:", error);
-            alert("Failed to add items to cart");
+            console.error(error);
+            alert("Failed");
         }
     };
+
+
+
+
 
     const handleSort = (key) => {
         let direction = 'asc';
@@ -225,22 +260,22 @@ const Favorite = () => {
                     <button onClick={() => setShowFilters(!showFilters)} className="flex items-center gap-2 text-black hover:text-gray-700">
                         <FaFilter />{showFilters ? 'Hide Filters' : 'Show Filters'}
                     </button>
-                    
+
                     {showFilters && (
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-gray-100 rounded-lg mt-2">
                             <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">Category</label>
-                                <select value={filters.category} onChange={(e) => setFilters({...filters, category: e.target.value})} className="w-full p-2 border border-gray-300 rounded">
+                                <select value={filters.category} onChange={(e) => setFilters({ ...filters, category: e.target.value })} className="w-full p-2 border border-gray-300 rounded">
                                     {categories.map(cat => <option key={cat} value={cat}>{cat === 'all' ? 'All Categories' : cat}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">Min Price</label>
-                                <input type="number" value={filters.minPrice} onChange={(e) => setFilters({...filters, minPrice: e.target.value})} placeholder="0" className="w-full p-2 border border-gray-300 rounded" />
+                                <input type="number" value={filters.minPrice} onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })} placeholder="0" className="w-full p-2 border border-gray-300 rounded" />
                             </div>
                             <div>
                                 <label className="block text-gray-700 text-sm font-medium mb-2">Max Price</label>
-                                <input type="number" value={filters.maxPrice} onChange={(e) => setFilters({...filters, maxPrice: e.target.value})} placeholder="1000" className="w-full p-2 border border-gray-300 rounded" />
+                                <input type="number" value={filters.maxPrice} onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })} placeholder="1000" className="w-full p-2 border border-gray-300 rounded" />
                             </div>
                             <div className="flex items-end">
                                 <button onClick={() => setFilters({ category: 'all', minPrice: '', maxPrice: '' })} className="w-full p-2 bg-black text-white rounded hover:bg-gray-800">
@@ -362,7 +397,7 @@ const Favorite = () => {
                                 </tbody>
                             </table>
                         </div>
-                        
+
                         <div className="border-t border-gray-200 p-3">
                             <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                                 <div className="text-gray-600 text-sm">

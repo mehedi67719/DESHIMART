@@ -83,6 +83,21 @@ export const addtocart = async (cartdata) => {
   }
 }
 
+
+export const addtocartFromfavorite = async (cartdata) => {
+  try {
+    const res = await useaxios.post("cart/from-favorite", cartdata);
+    return res.data;
+  }
+  catch (error) {
+    console.log(error);
+    throw error;
+  }
+}
+
+
+
+
 export const cartdata = async (useremail) => {
   try {
     const res = await useaxios.get(`cart/${useremail}`)

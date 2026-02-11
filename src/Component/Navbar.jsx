@@ -40,7 +40,7 @@ const Navbar = () => {
   const [open, setopen] = useState(false);
   const [profileopen, setprofileopen] = useState(false);
 
-  const { user } = Useauth();
+  const { user,logout } = Useauth();
   const [User, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
