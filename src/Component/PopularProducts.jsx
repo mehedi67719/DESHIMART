@@ -1,209 +1,156 @@
-import React from 'react';
-import { FaShoppingCart } from 'react-icons/fa';
+import { useQuery } from '@tanstack/react-query';
+import React, { useState } from 'react';
+import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router';
+import { topratingproducts } from './Api';
+import ShopCard from './ShopCard';
 
 const PopularProducts = () => {
-    return (
-        <div className='border rounded shadow border-gray-200 p-4 mt-25'>
-            <h2 className='text-6xl font-bold text-black text-center '>Popular Products</h2>
-            <div className='flex items-center gap-2 mt-10 overflow-x-scroll'>
-                <Link className='px-5 py-0.5 hover:bg-green-500 active:bg-green-500 font-bold border border-green-500 rounded-4xl'>Vegetables</Link>
-                <Link className='px-5 py-0.5 hover:bg-green-500 active:bg-green-500 font-bold border border-green-500 rounded-4xl'>Fruits</Link>
-                <Link className='px-5 py-0.5 hover:bg-green-500 active:bg-green-500 font-bold border border-green-500 rounded-4xl'>Fish</Link>
-                <Link className='px-5 py-0.5 hover:bg-green-500 active:bg-green-500 font-bold border border-green-500 rounded-4xl'>Spices</Link>
+    const [selectedCategory, setSelectedCategory] = useState('all');
+    
+    const { data, isLoading, isError } = useQuery({
+        queryKey: ["topratingproducts"],
+        queryFn: topratingproducts
+    });
+
+    if (isLoading) {
+        return (
+            <div className='w-full py-16'>
+                <div className='w-full px-4'>
+                    <div className='text-center max-w-3xl mx-auto mb-16'>
+                        <h2 className='text-5xl md:text-6xl font-bold bg-gradient-to-r from-amber-600 to-orange-600 bg-clip-text text-transparent mb-4'>
+                            Popular Products
+                        </h2>
+                        <p className='text-xl text-gray-600'>Loading amazing products for you...</p>
+                    </div>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6'>
+                        {[1,2,3,4,5,6,7,8,9,10].map(n => (
+                            <div key={n} className='border border-gray-200 rounded-2xl p-4 animate-pulse bg-white'>
+                                <div className='bg-gray-200 h-60 w-full rounded-xl mb-4'></div>
+                                <div className='h-6 bg-gray-200 w-3/4 mb-3 rounded'></div>
+                                <div className='h-4 bg-gray-200 w-1/2 mb-4 rounded'></div>
+                                <div className='h-8 bg-gray-200 w-24 rounded'></div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
+        );
+    }
 
-            <div >
-
-                {/* <hr className='text-green-500 mt-2' /> */}
-
-                {/* electronics */}
-                <div className='mt-20 border border-gray-200 p-4 shadow-xl rounded-2xl'>
-                    <div className='flex items-center justify-between'>
-                        <div className='flex md:flex-row  flex-col lg:flex-row items-center gap-4'>
-                            <h2 className='text-3xl font-bold md:items-start items-center lg:items-start'>Vegetables</h2>
-                            <div className='bg-red-100  p-1 rounded-2xl'>
-                                <p className='text-green-500 font-bold'>10 products</p>
-                            </div>
+    if (isError) {
+        return (
+            <div className='w-full py-16'>
+                <div className='w-full px-4'>
+                    <div className='max-w-2xl mx-auto text-center bg-gradient-to-br from-red-50 to-orange-50 rounded-3xl p-12'>
+                        <div className='inline-flex items-center justify-center w-20 h-20 bg-red-200 rounded-full mb-6'>
+                            <svg className='w-10 h-10 text-red-600' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
                         </div>
-                        <Link className='text-green-500 font-bold'> View More ➡️</Link>
+                        <h2 className='text-3xl font-bold text-gray-900 mb-3'>Failed to Load Products</h2>
+                        <p className='text-gray-600 mb-8'>Please try again.</p>
+                        <button 
+                            onClick={() => window.location.reload()} 
+                            className='px-8 py-3 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-semibold rounded-full hover:shadow-lg transform hover:scale-105 transition-all duration-300'
+                        >
+                            Try Again
+                        </button>
                     </div>
+                </div>
+            </div>
+        );
+    }
 
+    const uniqueCategories = ['all', ...new Set(data?.map(product => product.category).filter(Boolean))];
+    
+    const categories = uniqueCategories.map(cat => ({
+        id: cat,
+        name: cat === 'all' ? 'All Products' : cat
+    }));
 
+    const filteredProducts = selectedCategory === 'all' 
+        ? data 
+        : data?.filter(product => product.category === selectedCategory);
 
-
-
-
-                    <div className='  mt-10 grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-5'>
-                        <div className="group relative border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-500 hover:shadow-xl">
-                            <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-                                <span className="px-3 py-1 text-xs font-semibold bg-green-500 text-white rounded-full">New</span>
-                                <span className="px-3 py-1 text-xs font-semibold bg-red-500 text-white rounded-full">-10%</span>
-                            </div>
-
-                            <div className="absolute top-3 right-3 z-10 text-gray-400 hover:text-red-500 transition-all duration-300 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                            </div>
-
-                            <div className="overflow-hidden">
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaY-gJAef0oME8WFQsUn3-PtD809kNa6Y4Sw&s"
-                                    alt="Almond"
-                                    className="w-full h-44 object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            </div>
-
-
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-1">Onion</h3>
-                                <div className="flex items-center mb-2 text-yellow-400 text-sm">
-                                    ★★★★★ <span className="text-gray-400 ml-2">(0)</span>
-                                </div>
-
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-green-600 font-bold text-lg">$31.50</span>
-                                        <span className="text-gray-400 line-through text-sm">$35.00</span>
-                                    </div>
-                                </div>
-
-                                <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95">
-                                    <FaShoppingCart /> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                        <div className="group relative border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-500 hover:shadow-xl">
-                            <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-                                <span className="px-3 py-1 text-xs font-semibold bg-green-500 text-white rounded-full">New</span>
-                                <span className="px-3 py-1 text-xs font-semibold bg-red-500 text-white rounded-full">-10%</span>
-                            </div>
-
-                            <div className="absolute top-3 right-3 z-10 text-gray-400 hover:text-red-500 transition-all duration-300 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                            </div>
-
-                            <div className="overflow-hidden">
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaY-gJAef0oME8WFQsUn3-PtD809kNa6Y4Sw&s"
-                                    alt="Almond"
-                                    className="w-full h-44 object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            </div>
-
-
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-1">Onion</h3>
-                                <div className="flex items-center mb-2 text-yellow-400 text-sm">
-                                    ★★★★★ <span className="text-gray-400 ml-2">(0)</span>
-                                </div>
-
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-green-600 font-bold text-lg">$31.50</span>
-                                        <span className="text-gray-400 line-through text-sm">$35.00</span>
-                                    </div>
-                                </div>
-
-                                <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95">
-                                    <FaShoppingCart /> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                        <div className="group relative border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-500 hover:shadow-xl">
-                            <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-                                <span className="px-3 py-1 text-xs font-semibold bg-green-500 text-white rounded-full">New</span>
-                                <span className="px-3 py-1 text-xs font-semibold bg-red-500 text-white rounded-full">-10%</span>
-                            </div>
-
-                            <div className="absolute top-3 right-3 z-10 text-gray-400 hover:text-red-500 transition-all duration-300 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                            </div>
-
-                            <div className="overflow-hidden">
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaY-gJAef0oME8WFQsUn3-PtD809kNa6Y4Sw&s"
-                                    alt="Almond"
-                                    className="w-full h-44 object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            </div>
-
-
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-1">Onion</h3>
-                                <div className="flex items-center mb-2 text-yellow-400 text-sm">
-                                    ★★★★★ <span className="text-gray-400 ml-2">(0)</span>
-                                </div>
-
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-green-600 font-bold text-lg">$31.50</span>
-                                        <span className="text-gray-400 line-through text-sm">$35.00</span>
-                                    </div>
-                                </div>
-
-                                <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95">
-                                    <FaShoppingCart /> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-                        <div className="group relative border border-gray-200 rounded-2xl bg-white overflow-hidden transition-all duration-500 hover:shadow-xl">
-                            <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
-                                <span className="px-3 py-1 text-xs font-semibold bg-green-500 text-white rounded-full">New</span>
-                                <span className="px-3 py-1 text-xs font-semibold bg-red-500 text-white rounded-full">-10%</span>
-                            </div>
-
-                            <div className="absolute top-3 right-3 z-10 text-gray-400 hover:text-red-500 transition-all duration-300 opacity-0 scale-50 group-hover:opacity-100 group-hover:scale-100 cursor-pointer">
-                                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 fill-current" viewBox="0 0 24 24">
-                                    <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-                                </svg>
-                            </div>
-
-                            <div className="overflow-hidden">
-                                <img
-                                    src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQaY-gJAef0oME8WFQsUn3-PtD809kNa6Y4Sw&s"
-                                    alt="Almond"
-                                    className="w-full h-44 object-cover transition-transform duration-700 group-hover:scale-110"
-                                />
-                            </div>
-
-
-                            <div className="p-4">
-                                <h3 className="text-lg font-semibold text-gray-800 mb-1">Onion</h3>
-                                <div className="flex items-center mb-2 text-yellow-400 text-sm">
-                                    ★★★★★ <span className="text-gray-400 ml-2">(0)</span>
-                                </div>
-
-                                <div className="flex items-center justify-between mb-4">
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-green-600 font-bold text-lg">$31.50</span>
-                                        <span className="text-gray-400 line-through text-sm">$35.00</span>
-                                    </div>
-                                </div>
-
-                                <button className="w-full flex items-center justify-center gap-2 py-2.5 border border-green-500 text-green-500 rounded-xl font-medium transition-all duration-300 hover:bg-green-600 hover:text-white hover:shadow-lg active:scale-95">
-                                    <FaShoppingCart /> Add to Cart
-                                </button>
-                            </div>
-                        </div>
-
-
-
+    return (
+        <div className='w-full py-16 my-10 rounded-2xl bg-white'>
+            <div className='w-full px-4'>
+                <div className='relative text-center max-w-4xl mx-auto mb-16'>
+                    <div className='absolute inset-0 flex items-center justify-center'>
+                        <div className='w-64 h-64 bg-gradient-to-r from-amber-200/30 to-orange-200/30 rounded-full blur-3xl'></div>
                     </div>
+                    
+                    <div className='relative'>
+                        <div className='inline-flex items-center gap-2 bg-gradient-to-r from-amber-100 to-orange-100 px-5 py-2.5 rounded-full mb-6 shadow-sm'>
+                            <FaStar className='w-4 h-4 text-amber-600' />
+                            <span className='text-amber-700 font-semibold text-sm uppercase tracking-wider'>Top Rated</span>
+                        </div>
+                        
+                        <h2 className='text-5xl md:text-6xl lg:text-7xl font-bold text-gray-900 mb-6'>
+                            <span className='bg-gradient-to-r from-amber-700 via-orange-600 to-red-600 bg-clip-text text-transparent'>
+                                Popular Products
+                            </span>
+                        </h2>
+                        
+                        <p className='text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed'>
+                            Most loved and highly rated products by our customers
+                        </p>
 
+                        <div className='flex items-center justify-center gap-8 mt-10'>
+                            <div className='flex items-center gap-2'>
+                                <div className='w-2 h-2 bg-amber-500 rounded-full'></div>
+                                <span className='text-sm text-gray-600'>
+                                    {data?.length}+ Products
+                                </span>
+                            </div>
+                            <div className='flex items-center gap-2'>
+                                <FaStar className='w-4 h-4 text-yellow-500 fill-yellow-500' />
+                                <span className='text-sm text-gray-600'>4.8+ Rating</span>
+                            </div>
+                            <div className='flex items-center gap-2'>
+                                <div className='w-2 h-2 bg-orange-500 rounded-full'></div>
+                                <span className='text-sm text-gray-600'>Top Quality</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+ 
+                <div className='flex flex-wrap items-center justify-center gap-3 mb-12'>
+                    {categories.map((category) => (
+                        <button
+                            key={category.id}
+                            onClick={() => setSelectedCategory(category.id)}
+                            className={`
+                                px-6 py-2.5 rounded-full font-medium transition-all duration-300
+                                ${selectedCategory === category.id 
+                                    ? 'bg-gradient-to-r from-amber-600 to-orange-600 text-white shadow-lg scale-105' 
+                                    : 'bg-white text-gray-700 border border-gray-200 hover:border-amber-400 hover:text-amber-600 hover:shadow-md'
+                                }
+                            `}
+                        >
+                            {category.name}
+                        </button>
+                    ))}
                 </div>
 
+                <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 '>
+                    {filteredProducts?.slice(0, 10).map((product) => (
+                        <ShopCard key={product._id} item={product} />
+                    ))}
+                </div>
 
-
-
-
-
-
+                <div className='text-center mt-16'>
+                    <Link 
+                        to='/shop'
+                        className='inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-amber-600 to-orange-600 text-white font-bold rounded-full hover:shadow-2xl transform hover:scale-105 transition-all duration-300 group'
+                    >
+                        View All Products
+                        <svg className='w-5 h-5 group-hover:translate-x-1 transition-transform' fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 8l4 4m0 0l-4 4m4-4H3"></path>
+                        </svg>
+                    </Link>
+                </div>
             </div>
         </div>
     );

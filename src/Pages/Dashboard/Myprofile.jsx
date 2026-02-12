@@ -15,7 +15,7 @@ import {
 } from '@heroicons/react/24/outline';
 
 const Myprofile = () => {
-    const { user } = Useauth();
+    const { user,logout } = Useauth();
     const [User, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showPhotoUpload, setShowPhotoUpload] = useState(false);
@@ -244,7 +244,7 @@ const Myprofile = () => {
                                 <span>Settings</span>
                             </button>
                             
-                            <button className="flex items-center gap-3 border-2 border-red-200 text-red-600 font-semibold py-3 px-8 rounded-xl hover:bg-red-50 transition-all duration-300">
+                            <button onClick={()=>logout()} className="flex items-center gap-3 border-2 border-red-200 text-red-600 font-semibold py-3 px-8 rounded-xl hover:bg-red-50 transition-all duration-300">
                                 <ArrowRightOnRectangleIcon className="w-6 h-6" />
                                 <span>Logout</span>
                             </button>

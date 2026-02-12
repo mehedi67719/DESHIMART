@@ -239,7 +239,7 @@ const Favorite = () => {
             </div>
             <h3 className="text-2xl font-bold text-gray-800 mb-3">Your Wishlist is Empty</h3>
             <p className="text-gray-600 mb-8 max-w-md mx-auto">Start adding items you love to your favorites list</p>
-            <button onClick={() => navigate('/products')} className="px-8 py-3 bg-black text-white font-bold rounded-xl transition duration-300 shadow-lg hover:bg-gray-800">
+            <button onClick={() => navigate('/shop')} className="px-8 py-3 bg-black text-white font-bold rounded-xl transition duration-300 shadow-lg hover:bg-gray-800">
                 Explore Products
             </button>
         </div>

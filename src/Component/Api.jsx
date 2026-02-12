@@ -16,6 +16,31 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 
 
 
+export const topsellproducts = async () => {
+  try {
+    const res = await useaxios.get("products/top-categories");
+    return res.data;
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+
+
+
+export const topratingproducts = async () => {
+  try {
+    const res = await useaxios.get("products/top-rating");
+    return res.data;
+  }
+  catch(err){
+    console.log(err);
+    throw err;
+  }
+}
+
+
 export const singleproducts = async (id) => {
 
   const res = await useaxios.get(`products/${id}`);
@@ -26,6 +51,12 @@ export const singleproducts = async (id) => {
 
 export const categorys = async () => {
   const res = await useaxios.get("categorys");
+  return res.data
+}
+
+
+export const popularcategorys = async () => {
+  const res = await useaxios.get("categorys/popular");
   return res.data
 }
 
@@ -227,8 +258,8 @@ export const userpost = async (user) => {
 
 export const getuser = async (email) => {
   try {
-    const res = await useaxios.get("/user",{
-       params: { email } 
+    const res = await useaxios.get("/user", {
+      params: { email }
     });
     return res.data;
   } catch (err) {
@@ -240,29 +271,29 @@ export const getuser = async (email) => {
 
 
 
-export const order=async(email)=>{
-  try{
-    const res=await useaxios.get("payment/order",{
-      params:{email}
+export const order = async (email) => {
+  try {
+    const res = await useaxios.get("payment/order", {
+      params: { email }
     })
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
 }
 
 
-export const paymentHistory=async(email)=>{
-  try{
-    const res=await useaxios.get("payment/history",{
-      params:{email}
+export const paymentHistory = async (email) => {
+  try {
+    const res = await useaxios.get("payment/history", {
+      params: { email }
     })
 
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err
   }
