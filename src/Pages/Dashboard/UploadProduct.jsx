@@ -1,44 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { 
-//   UploadIcon, 
-  TagIcon, 
-  CurrencyDollarIcon, 
-  StarIcon, 
-  CubeIcon, 
-  TruckIcon, 
-  PhotoIcon,
-  PlusCircleIcon,
-  CheckCircleIcon,
-  XCircleIcon
+import {
+    TagIcon,
+    CurrencyDollarIcon,
+    CubeIcon,
+    PhotoIcon,
+    PlusCircleIcon,
+    CheckCircleIcon,
+    XCircleIcon
 } from '@heroicons/react/24/outline';
+import { FaUpload } from 'react-icons/fa';
 
 const UploadProduct = () => {
-    const { 
-        register, 
-        handleSubmit, 
-        watch, 
+    const {
+        register,
+        handleSubmit,
+        watch,
         setValue,
-        formState: { errors, isValid, isSubmitting } 
+        formState: { errors, isValid, isSubmitting }
     } = useForm({
         mode: 'onChange',
         defaultValues: {
             name: '',
             category: 'Dairy',
             brand: '',
-            price: '',
             oldPrice: '',
             discount: '',
-            rating: '',
-            reviews: '',
+            newPrice: '',
             stock: '',
-            sold: '',
             unit: '6 pieces',
-            sellerEmail: '',
-            shopName: '',
             description: '',
             image: '',
-            isNew: false
+            status: "pending",
+            isNew: true
         }
     });
 
@@ -53,16 +47,25 @@ const UploadProduct = () => {
 
     const units = ['6 pieces', 'Dozen', '500g', '1kg', 'Liter', 'Pack', 'Bundle'];
 
-    const watchPrice = watch('price');
     const watchOldPrice = watch('oldPrice');
     const watchDiscount = watch('discount');
 
-    const handleDiscountCalculation = (price, oldPrice) => {
-        if (price && oldPrice) {
-            const calculatedDiscount = Math.round(((oldPrice - price) / oldPrice) * 100);
-            setValue('discount', calculatedDiscount.toString());
+  
+    useEffect(() => {
+        if (watchOldPrice && watchDiscount) {
+            const oldPrice = Number(watchOldPrice);
+            const discount = Number(watchDiscount);
+
+            if (oldPrice > 0 && discount >= 0 && discount <= 100) {
+                const calculatedNewPrice = oldPrice - (oldPrice * (discount / 100));
+                setValue('newPrice', calculatedNewPrice.toFixed(2));
+            } else {
+                setValue('newPrice', '');
+            }
+        } else {
+            setValue('newPrice', '');
         }
-    };
+    }, [watchOldPrice, watchDiscount, setValue]);
 
     const handleImageChange = (e) => {
         const file = e.target.files[0];
@@ -83,42 +86,59 @@ const UploadProduct = () => {
     };
 
     const onSubmit = (data) => {
+        const oldPrice = Number(data.oldPrice);
+        const discount = Number(data.discount);
+        const newPrice = Number(data.newPrice);
+
         const processedData = {
             ...data,
-            price: Number(data.price),
-            oldPrice: data.oldPrice ? Number(data.oldPrice) : null,
-            discount: data.discount ? Number(data.discount) : 0,
-            rating: data.rating ? parseFloat(data.rating) : 0,
-            reviews: data.reviews ? Number(data.reviews) : 0,
+            oldPrice: data.oldPrice ? oldPrice : null,
+            discount: discount,
+            newPrice: newPrice,
             stock: Number(data.stock),
-            sold: data.sold ? Number(data.sold) : 0,
             isNew: Boolean(data.isNew)
         };
 
-        console.log('Submitted Product Data:', processedData);
-        
         setFormData(processedData);
         setSubmitSuccess(true);
-        
+        console.log('Form Submitted:', processedData);
+
         setTimeout(() => {
             setSubmitSuccess(false);
         }, 3000);
     };
 
+    const handlePreviewData = () => {
+        const formValues = watch();
+
+        const previewData = {
+            ...formValues,
+            oldPrice: formValues.oldPrice ? Number(formValues.oldPrice) : '',
+            discount: formValues.discount ? Number(formValues.discount) : '',
+            newPrice: formValues.newPrice ? Number(formValues.newPrice) : '',
+            stock: formValues.stock ? Number(formValues.stock) : '',
+            isNew: Boolean(formValues.isNew)
+        };
+        console.log('Preview Data:', previewData);
+        alert('Check console for preview data (F12)');
+    };
+
+    const showNewPrice = watch('newPrice') && watch('newPrice') !== '';
+
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
-            <div className="max-w-6xl mx-auto">
-                <div className="bg-white rounded-2xl shadow-xl p-6 md:p-8">
+        <div className="min-h-screen w-full bg-gray-50">
+            <div className="w-full">
+                <div className="bg-white w-full rounded-2xl shadow-xl p-6 md:p-8">
                     <div className="text-center mb-10">
                         <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-green-500 to-emerald-600 rounded-full mb-4 shadow-lg">
-                            <UploadIcon className="w-8 h-8 text-white" />
+                            <FaUpload className="w-8 h-8 text-white" />
                         </div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">Upload New Product</h1>
                         <p className="text-gray-600">Fill in the details to add a new product to your store</p>
                     </div>
 
                     {submitSuccess && (
-                        <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-4 rounded-r-lg animate-slideIn">
+                        <div className="mb-6 bg-gradient-to-r from-green-50 to-emerald-50 border-l-4 border-green-500 p-4 rounded-r-lg">
                             <div className="flex items-center">
                                 <CheckCircleIcon className="h-6 w-6 text-green-500 mr-3" />
                                 <div>
@@ -145,9 +165,7 @@ const UploadProduct = () => {
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Product Name *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
                                             <input
                                                 type="text"
                                                 {...register("name", {
@@ -164,13 +182,9 @@ const UploadProduct = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Category *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
                                             <select
-                                                {...register("category", {
-                                                    required: "Category is required"
-                                                })}
+                                                {...register("category", { required: "Category is required" })}
                                                 className={`w-full border ${errors.category ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                             >
                                                 {categories.map(cat => (
@@ -181,9 +195,7 @@ const UploadProduct = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Brand Name
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Brand Name</label>
                                             <input
                                                 type="text"
                                                 {...register("brand")}
@@ -193,13 +205,9 @@ const UploadProduct = () => {
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Unit *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Unit *</label>
                                             <select
-                                                {...register("unit", {
-                                                    required: "Unit is required"
-                                                })}
+                                                {...register("unit", { required: "Unit is required" })}
                                                 className={`w-full border ${errors.unit ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                             >
                                                 {units.map(unit => (
@@ -209,10 +217,8 @@ const UploadProduct = () => {
                                             {errors.unit && <p className="mt-1 text-sm text-red-600">{errors.unit.message}</p>}
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Description *
-                                            </label>
+                                        <div className="md:col-span-2">
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
                                             <textarea
                                                 {...register("description", {
                                                     required: "Description is required",
@@ -248,68 +254,70 @@ const UploadProduct = () => {
                                         </div>
                                     </div>
 
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Current Price *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Old Price *</label>
                                             <div className="relative">
                                                 <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                                 <input
                                                     type="number"
-                                                    {...register("price", {
-                                                        required: "Price is required",
+                                                    {...register("oldPrice", {
+                                                        required: "Old price is required",
                                                         min: {
                                                             value: 1,
                                                             message: "Price must be at least 1"
                                                         }
                                                     })}
-                                                    onChange={(e) => {
-                                                        handleDiscountCalculation(e.target.value, watchOldPrice);
-                                                    }}
-                                                    className={`w-full border ${errors.price ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-                                                    placeholder="250"
-                                                />
-                                            </div>
-                                            {errors.price && <p className="mt-1 text-sm text-red-600">{errors.price.message}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Old Price
-                                            </label>
-                                            <div className="relative">
-                                                <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                                <input
-                                                    type="number"
-                                                    {...register("oldPrice")}
-                                                    onChange={(e) => {
-                                                        handleDiscountCalculation(watchPrice, e.target.value);
-                                                    }}
-                                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                                    className={`w-full border ${errors.oldPrice ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
                                                     placeholder="280"
                                                 />
                                             </div>
+                                            {errors.oldPrice && <p className="mt-1 text-sm text-red-600">{errors.oldPrice.message}</p>}
                                         </div>
 
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Discount %
-                                            </label>
-                                            <input
-                                                type="number"
-                                                {...register("discount")}
-                                                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                                placeholder="11"
-                                                readOnly
-                                            />
-                                            <p className="text-xs text-gray-500 mt-1">Auto-calculated</p>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Discount % *</label>
+                                            <div className="relative">
+                                                <input
+                                                    type="number"
+                                                    {...register("discount", {
+                                                        required: "Discount is required",
+                                                        min: {
+                                                            value: 0,
+                                                            message: "Discount cannot be negative"
+                                                        },
+                                                        max: {
+                                                            value: 100,
+                                                            message: "Discount cannot exceed 100%"
+                                                        }
+                                                    })}
+                                                    className={`w-full border ${errors.discount ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
+                                                    placeholder="15"
+                                                />
+                                            </div>
+                                            {errors.discount && <p className="mt-1 text-sm text-red-600">{errors.discount.message}</p>}
+                                            <p className="text-xs text-gray-500 mt-1">Enter discount percentage (0-100)</p>
                                         </div>
 
+                                        {showNewPrice && (
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-2">New Price (After Discount)</label>
+                                                <div className="relative">
+                                                    <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+                                                    <input
+                                                        type="number"
+                                                        {...register("newPrice")}
+                                                        className="w-full border border-gray-300 rounded-xl px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all bg-gray-100"
+                                                        placeholder="Auto-calculated"
+                                                        readOnly
+                                                    />
+                                                </div>
+                                                <p className="text-xs text-gray-500 mt-1">Auto-calculated from old price and discount</p>
+                                            </div>
+                                        )}
+
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Stock Quantity *
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity *</label>
                                             <div className="relative">
                                                 <CubeIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
                                                 <input
@@ -327,32 +335,21 @@ const UploadProduct = () => {
                                             </div>
                                             {errors.stock && <p className="mt-1 text-sm text-red-600">{errors.stock.message}</p>}
                                         </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Units Sold
-                                            </label>
-                                            <input
-                                                type="number"
-                                                {...register("sold")}
-                                                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                                placeholder="3200"
-                                            />
-                                        </div>
-
-                                        <div className="flex items-end">
-                                            <div className="flex items-center gap-2 p-4 bg-blue-50 rounded-xl">
-                                                <div className="text-sm">
-                                                    <p className="font-medium text-gray-700">Price Summary</p>
-                                                    <p className="text-gray-600">
-                                                        Current: ৳{watchPrice || 0} 
-                                                        {watchOldPrice && ` | Old: ৳${watchOldPrice}`}
-                                                        {watchDiscount && watchDiscount > 0 && ` | Save: ${watchDiscount}%`}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        </div>
                                     </div>
+
+                                    {watchOldPrice && watchDiscount && (
+                                        <div className="mt-4 p-4 bg-blue-50 rounded-xl">
+                                            <p className="text-sm font-medium text-gray-700">Price Summary</p>
+                                            <p className="text-gray-600">
+                                                Old Price: ৳{watchOldPrice || 0}
+                                                {watchDiscount && ` | Discount: ${watchDiscount}%`}
+                                                {showNewPrice && ` | New Price: ৳${watch('newPrice')}`}
+                                            </p>
+                                            <p className="text-sm text-green-600 font-medium mt-1">
+                                                You save: ৳{(watchOldPrice - watch('newPrice')).toFixed(2)} ({watchDiscount}%)
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
 
@@ -370,9 +367,7 @@ const UploadProduct = () => {
 
                                     <div className="space-y-4">
                                         <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Image URL
-                                            </label>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Image URL</label>
                                             <input
                                                 type="url"
                                                 {...register("image")}
@@ -419,7 +414,7 @@ const UploadProduct = () => {
                                                                 className="hidden"
                                                             />
                                                             <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-medium py-2 px-6 rounded-xl hover:shadow-lg transition-all">
-                                                                <UploadIcon className="w-5 h-5" />
+                                                                <FaUpload className="w-5 h-5" />
                                                                 Choose File
                                                             </span>
                                                         </label>
@@ -430,118 +425,7 @@ const UploadProduct = () => {
                                     </div>
                                 </div>
 
-                                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 bg-yellow-100 rounded-lg">
-                                            <StarIcon className="w-6 h-6 text-yellow-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-900">Ratings & Reviews</h3>
-                                            <p className="text-gray-600">Product ratings</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Rating (0-5)
-                                            </label>
-                                            <div className="relative">
-                                                <StarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-yellow-400" />
-                                                <input
-                                                    type="number"
-                                                    {...register("rating", {
-                                                        min: {
-                                                            value: 0,
-                                                            message: "Rating cannot be negative"
-                                                        },
-                                                        max: {
-                                                            value: 5,
-                                                            message: "Rating cannot exceed 5"
-                                                        }
-                                                    })}
-                                                    step="0.1"
-                                                    className="w-full border border-gray-300 rounded-xl px-4 py-3 pl-10 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                                    placeholder="4.6"
-                                                />
-                                            </div>
-                                            {errors.rating && <p className="mt-1 text-sm text-red-600">{errors.rating.message}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Number of Reviews
-                                            </label>
-                                            <input
-                                                type="number"
-                                                {...register("reviews")}
-                                                className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
-                                                placeholder="156"
-                                            />
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
-                                    <div className="flex items-center gap-3 mb-6">
-                                        <div className="p-2 bg-red-100 rounded-lg">
-                                            <TruckIcon className="w-6 h-6 text-red-600" />
-                                        </div>
-                                        <div>
-                                            <h3 className="text-xl font-bold text-gray-900">Seller Info</h3>
-                                            <p className="text-gray-600">Seller details</p>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Seller Email *
-                                            </label>
-                                            <input
-                                                type="email"
-                                                {...register("sellerEmail", {
-                                                    required: "Seller email is required",
-                                                    pattern: {
-                                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                                                        message: "Invalid email address"
-                                                    }
-                                                })}
-                                                className={`w-full border ${errors.sellerEmail ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-                                                placeholder="poultry.direct@deshimart.com"
-                                            />
-                                            {errors.sellerEmail && <p className="mt-1 text-sm text-red-600">{errors.sellerEmail.message}</p>}
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                Shop Name *
-                                            </label>
-                                            <input
-                                                type="text"
-                                                {...register("shopName", {
-                                                    required: "Shop name is required"
-                                                })}
-                                                className={`w-full border ${errors.shopName ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all`}
-                                                placeholder="Farm Fresh Eggs"
-                                            />
-                                            {errors.shopName && <p className="mt-1 text-sm text-red-600">{errors.shopName.message}</p>}
-                                        </div>
-
-                                        <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl">
-                                            <div className="flex items-center h-6">
-                                                <input
-                                                    type="checkbox"
-                                                    {...register("isNew")}
-                                                    className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
-                                                />
-                                            </div>
-                                            <label className="text-sm font-medium text-gray-700">
-                                                Mark as New Product
-                                            </label>
-                                        </div>
-                                    </div>
-                                </div>
+                            
                             </div>
                         </div>
 
@@ -554,17 +438,7 @@ const UploadProduct = () => {
                             </div>
 
                             <div className="flex gap-4">
-                                <button
-                                    type="button"
-                                    onClick={() => {
-                                        const formValues = watch();
-                                        console.log('Current Form Values:', formValues);
-                                    }}
-                                    className="px-6 py-3 bg-gradient-to-r from-gray-600 to-gray-700 text-white rounded-xl hover:shadow-lg transition-all font-medium"
-                                >
-                                    Preview Data
-                                </button>
-                                
+
                                 <button
                                     type="submit"
                                     disabled={isSubmitting || !isValid}

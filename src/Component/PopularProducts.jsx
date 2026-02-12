@@ -74,7 +74,7 @@ const PopularProducts = () => {
         : data?.filter(product => product.category === selectedCategory);
 
     return (
-        <div className='w-full py-16 my-10 rounded-2xl bg-white'>
+        <div className='w-full py-16 mt-25 rounded-2xl bg-white'>
             <div className='w-full px-4'>
                 <div className='relative text-center max-w-4xl mx-auto mb-16'>
                     <div className='absolute inset-0 flex items-center justify-center'>
