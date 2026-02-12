@@ -16,12 +16,24 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 
 
 
+export const postproducts = async (data) => {
+  try {
+    const res = await useaxios.post("/products", data);
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
+
+
+
 export const topsellproducts = async () => {
   try {
     const res = await useaxios.get("products/top-categories");
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err);
     throw err;
   }
@@ -34,7 +46,7 @@ export const topratingproducts = async () => {
     const res = await useaxios.get("products/top-rating");
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err);
     throw err;
   }
