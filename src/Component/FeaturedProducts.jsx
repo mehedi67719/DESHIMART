@@ -146,7 +146,7 @@ const FeaturedProducts = () => {
                                         </div>
 
                                         <Link 
-                                            to={`/shop?category=${encodeURIComponent(category.category)}`} 
+                                            to="/collection" 
                                             className='group/btn inline-flex items-center gap-3 px-8 py-4 bg-gradient-to-r from-green-50 to-emerald-50 hover:from-green-600 hover:to-emerald-600 rounded-full border border-green-200 hover:border-transparent transition-all duration-300 shadow-md hover:shadow-xl'
                                         >
                                             <span className='font-semibold text-green-700 group-hover/btn:text-white transition-colors'>
