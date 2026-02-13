@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const useaxios=axios.create({
-    baseURL:"http://localhost:3000/"
+    baseURL:"https://deshimart-server.vercel.app/"
 })
 
 export default useaxios

@@ -15,18 +15,17 @@ import Favorite from "../Pages/Navpage/Favorite";
 import Messenger from "../Pages/Navpage/Messenger";
 import Notification from "../Pages/Navpage/Notification";
 import DashboardRoot from "../Pages/Dashboard/DashboardRoot";
-import { Component } from "react";
 import DasboardHome from "../Pages/Dashboard/DasboardHome";
 import Paymentsuccess from "../Pages/Payment/Paymentsuccess";
 import PaymentCancle from "../Pages/Payment/PaymentCancle";
 import PaymentFail from "../Pages/Payment/PaymentFail";
 import Myorder from "../Pages/Dashboard/Myorder";
 import Myprofile from "../Pages/Dashboard/Myprofile";
-import Products from "../Pages/Dashboard/Products";
 import Setting from "../Pages/Dashboard/Setting";
 import PaymentHistory from "../Pages/Dashboard/PaymentHistory";
 import BecomeSeller from "../Pages/Dashboard/BecomeSeller";
 import UploadProduct from "../Pages/Dashboard/UploadProduct";
+import Products from "../Pages/Dashboard/Products";
 
 
 

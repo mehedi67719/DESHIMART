@@ -322,3 +322,44 @@ export const becomeseller = async (data) => {
     throw err;
   }
 };
+
+
+
+
+
+export const myproducts = async (email) => {
+  try {
+    const result = await useaxios.get('products/my-products', {
+      params: { email }
+    })
+    return result.data;
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+
+export const deleteProduct = async (id) => {
+  try {
+    const res = await useaxios.delete(`/products/${id}`);
+    return res.data;
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+};
+
+export const updateProduct = async (id, data) => {
+  try {
+    const res = await useaxios.put(`/products/${id}`, data);
+    return res.data;
+  } catch (err) {
+    console.log(err)
+    throw err;
+  };
+}

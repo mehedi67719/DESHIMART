@@ -42,7 +42,7 @@ const Authprovider = ({ children }) => {
             name,
             email,
             displayName: user.displayName,
-            role: "localuser",
+            role: "buyer",
             provider: "email",
             createdAt: new Date(),
         };

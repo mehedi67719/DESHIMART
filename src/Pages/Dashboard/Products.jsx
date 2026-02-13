@@ -1,518 +1,527 @@
 import React, { useState } from 'react';
-import { PlusIcon, MagnifyingGlassIcon, FunnelIcon, PencilSquareIcon, TrashIcon, EyeIcon, ShoppingBagIcon, TagIcon, CurrencyDollarIcon, StarIcon, ArrowTrendingUpIcon, CheckCircleIcon, XCircleIcon, ChevronRightIcon, PhotoIcon } from '@heroicons/react/24/outline';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import {
+    PencilIcon, TrashIcon, EyeIcon, PlusIcon,
+    MagnifyingGlassIcon
+} from '@heroicons/react/24/outline';
+import Swal from 'sweetalert2';
+import Useauth from '../../Component/Useauth';
+import { myproducts, deleteProduct, updateProduct } from '../../Component/Api';
 
 const Products = () => {
-    const [products, setProducts] = useState([
-        {
-            id: 1,
-            name: 'Premium Cotton T-Shirt',
-            category: 'Clothing',
-            price: 29.99,
-            stock: 150,
-            sold: 45,
-            rating: 4.5,
-            image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
-            status: 'active'
-        },
-        {
-            id: 2,
-            name: 'Wireless Bluetooth Headphones',
-            category: 'Electronics',
-            price: 89.99,
-            stock: 75,
-            sold: 120,
-            rating: 4.2,
-            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w-400',
-            status: 'active'
-        },
-        {
-            id: 3,
-            name: 'Organic Coffee Beans',
-            category: 'Food',
-            price: 24.99,
-            stock: 200,
-            sold: 89,
-            rating: 4.8,
-            image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400',
-            status: 'active'
-        },
-        {
-            id: 4,
-            name: 'Leather Wallet',
-            category: 'Accessories',
-            price: 49.99,
-            stock: 0,
-            sold: 65,
-            rating: 4.3,
-            image: 'https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=400',
-            status: 'out-of-stock'
-        },
-        {
-            id: 5,
-            name: 'Fitness Tracker',
-            category: 'Electronics',
-            price: 129.99,
-            stock: 30,
-            sold: 210,
-            rating: 4.6,
-            image: 'https://images.unsplash.com/photo-1576243345690-4e4b79b63288?w=400',
-            status: 'active'
-        },
-        {
-            id: 6,
-            name: 'Ceramic Coffee Mug',
-            category: 'Home',
-            price: 19.99,
-            stock: 120,
-            sold: 45,
-            rating: 4.1,
-            image: 'https://images.unsplash.com/photo-1514228742587-6b1558fcf93a?w=400',
-            status: 'active'
-        },
-        {
-            id: 7,
-            name: 'Yoga Mat',
-            category: 'Fitness',
-            price: 34.99,
-            stock: 50,
-            sold: 78,
-            rating: 4.4,
-            image: 'https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=400',
-            status: 'low-stock'
-        },
-        {
-            id: 8,
-            name: 'LED Desk Lamp',
-            category: 'Home',
-            price: 59.99,
-            stock: 25,
-            sold: 145,
-            rating: 4.7,
-            image: 'https://images.unsplash.com/photo-1507473885765-e6ed057f782c?w=400',
-            status: 'low-stock'
-        }
-    ]);
-
-    const [searchTerm, setSearchTerm] = useState('');
-    const [selectedCategory, setSelectedCategory] = useState('all');
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const { user } = Useauth();
+    const queryClient = useQueryClient();
     const [selectedProduct, setSelectedProduct] = useState(null);
-    const [newProduct, setNewProduct] = useState({
-        name: '',
-        category: '',
-        price: '',
-        stock: '',
-        description: ''
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isViewModalOpen, setIsViewModalOpen] = useState(false);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [filterCategory, setFilterCategory] = useState('all');
+    const [filterStatus, setFilterStatus] = useState('all');
+
+    const { data: products, isLoading } = useQuery({
+        queryKey: ["my-products", user?.email],
+        queryFn: () => myproducts(user?.email),
+        enabled: !!user?.email,
     });
 
-    const categories = ['all', 'Clothing', 'Electronics', 'Food', 'Accessories', 'Home', 'Fitness'];
-
-    const filteredProducts = products.filter(product => {
-        const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                             product.category.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesCategory = selectedCategory === 'all' || product.category === selectedCategory;
-        return matchesSearch && matchesCategory;
+    const deleteMutation = useMutation({
+        mutationFn: deleteProduct,
+        onSuccess: () => {
+            queryClient.invalidateQueries(["my-products", user?.email]);
+            Swal.fire({
+                icon: 'success',
+                title: 'Deleted!',
+                text: 'Product has been deleted successfully.',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        },
+        onError: (error) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error.message || 'Failed to delete product',
+            });
+        }
     });
 
-    const getStatusColor = (status) => {
-        switch (status) {
-            case 'active': return 'bg-emerald-100 text-emerald-800';
-            case 'out-of-stock': return 'bg-red-100 text-red-800';
-            case 'low-stock': return 'bg-amber-100 text-amber-800';
-            default: return 'bg-gray-100 text-gray-800';
+    const updateMutation = useMutation({
+        mutationFn: ({ id, data }) => updateProduct(id, data),
+        onSuccess: () => {
+            queryClient.invalidateQueries(["my-products", user?.email]);
+            setIsEditModalOpen(false);
+            setSelectedProduct(null);
+            Swal.fire({
+                icon: 'success',
+                title: 'Updated!',
+                text: 'Product has been updated successfully.',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        },
+        onError: (error) => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: error.message || 'Failed to update product',
+            });
         }
+    });
+
+    const getStockStatus = (stock) => {
+        if (stock <= 0) return { label: 'Out', color: 'bg-red-50 text-red-700 border-red-100' };
+        if (stock <= 10) return { label: 'Low', color: 'bg-amber-50 text-amber-700 border-amber-100' };
+        return { label: 'In Stock', color: 'bg-emerald-50 text-emerald-700 border-emerald-100' };
     };
 
-    const getStatusText = (status) => {
-        switch (status) {
-            case 'active': return 'In Stock';
-            case 'out-of-stock': return 'Out of Stock';
-            case 'low-stock': return 'Low Stock';
-            default: return status;
-        }
-    };
-
-    const handleAddProduct = () => {
-        const newProductObj = {
-            id: products.length + 1,
-            ...newProduct,
-            price: parseFloat(newProduct.price),
-            stock: parseInt(newProduct.stock),
-            sold: 0,
-            rating: 0,
-            image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400',
-            status: parseInt(newProduct.stock) > 10 ? 'active' : 'low-stock'
+    const getStatusBadge = (status) => {
+        const styles = {
+            approved: 'bg-green-50 text-green-700 border-green-200',
+            rejected: 'bg-red-50 text-red-700 border-red-200',
+            pending: 'bg-blue-50 text-blue-700 border-blue-200'
         };
-        setProducts([...products, newProductObj]);
-        setShowAddModal(false);
-        setNewProduct({ name: '', category: '', price: '', stock: '', description: '' });
+        return {
+            label: status?.toUpperCase() || 'PENDING',
+            style: styles[status] || styles.pending
+        };
     };
 
-    const handleDeleteProduct = (id) => {
-        setProducts(products.filter(product => product.id !== id));
-        setShowDeleteModal(false);
-        setSelectedProduct(null);
+    const handleDelete = async (id) => {
+        const result = await Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d33',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            deleteMutation.mutate(id);
+        }
     };
 
-    const stats = {
-        totalProducts: products.length,
-        totalValue: products.reduce((sum, product) => sum + (product.price * product.stock), 0),
-        totalSold: products.reduce((sum, product) => sum + product.sold, 0),
-        outOfStock: products.filter(product => product.status === 'out-of-stock').length
+    const handleUpdate = (id, data) => {
+        updateMutation.mutate({ id, data });
     };
+
+    const filteredProducts = products?.filter(product => {
+        const matchesSearch = product.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.brand?.toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesCategory = filterCategory === 'all' || product.category === filterCategory;
+        const matchesStatus = filterStatus === 'all' || product.status === filterStatus;
+        return matchesSearch && matchesCategory && matchesStatus;
+    });
+
+    const categories = products ? ['all', ...new Set(products.map(p => p.category).filter(Boolean))] : ['all'];
+
+    if (isLoading) return <LoadingSkeleton />;
 
     return (
-        <div className="min-h-screen ">
-            <div className="max-w-7xl mx-auto">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8">
+        <div className="min-h-screen bg-white w-full pb-10">
+            <div className="bg-white border-b sticky top-0 z-30 px-4 py-4 sm:px-6">
+                <div className="w-full flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-2">Products</h1>
-                        <p className="text-gray-600">Manage your inventory and product listings</p>
+                        <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Inventory</h1>
+                        <p className="text-slate-500 text-xs sm:text-sm">Total {products?.length || 0} Products</p>
                     </div>
-                    <button 
-                        onClick={() => setShowAddModal(true)}
-                        className="mt-4 md:mt-0 flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl hover:shadow-xl transition-all duration-300 transform hover:-translate-y-0.5"
-                    >
-                        <PlusIcon className="w-5 h-5" />
-                        Add New Product
+                    <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 shadow-sm active:scale-95 transition-all text-sm">
+                        <PlusIcon className="w-5 h-5 mr-2" />
+                        Add Product
                     </button>
                 </div>
+            </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-emerald-100 rounded-xl">
-                                <ShoppingBagIcon className="w-6 h-6 text-emerald-600" />
-                            </div>
-                            <span className="text-2xl font-bold text-gray-900">{stats.totalProducts}</span>
-                        </div>
-                        <h3 className="text-gray-500 text-sm font-medium">Total Products</h3>
-                        <p className="text-xs text-gray-400 mt-1">Active in inventory</p>
-                    </div>
+            <div className="w-full px-4 sm:px-6 mt-6">
+                <div className="flex overflow-x-auto pb-4 sm:grid sm:grid-cols-4 gap-4 no-scrollbar">
+                    <StatCard title="Total" value={products?.length} color="indigo" />
+                    <StatCard title="Pending" value={products?.filter(p => p.status === 'pending').length} color="amber" />
+                    <StatCard title="Approved" value={products?.filter(p => p.status === 'approved').length} color="emerald" />
+                    <StatCard title="Low Stock" value={products?.filter(p => p.stock <= 10).length} color="rose" />
+                </div>
 
-                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-blue-100 rounded-xl">
-                                <CurrencyDollarIcon className="w-6 h-6 text-blue-600" />
-                            </div>
-                            <span className="text-2xl font-bold text-gray-900">${stats.totalValue.toFixed(2)}</span>
+                <div className="bg-white p-4 rounded-xl shadow-sm border border-slate-200 my-6">
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div className="relative">
+                            <MagnifyingGlassIcon className="w-5 h-5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                            <input
+                                type="text"
+                                placeholder="Search..."
+                                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none text-sm"
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
                         </div>
-                        <h3 className="text-gray-500 text-sm font-medium">Inventory Value</h3>
-                        <p className="text-xs text-gray-400 mt-1">Total stock worth</p>
-                    </div>
-
-                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-amber-100 rounded-xl">
-                                <ArrowTrendingUpIcon className="w-6 h-6 text-amber-600" />
-                            </div>
-                            <span className="text-2xl font-bold text-gray-900">{stats.totalSold}</span>
+                        <div className="flex gap-2">
+                            <select
+                                value={filterCategory}
+                                onChange={(e) => setFilterCategory(e.target.value)}
+                                className="w-1/2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none"
+                            >
+                                {categories.map(cat => (
+                                    <option key={cat} value={cat}>
+                                        {cat === 'all' ? 'All Category' : cat}
+                                    </option>
+                                ))}
+                            </select>
+                            <select
+                                value={filterStatus}
+                                onChange={(e) => setFilterStatus(e.target.value)}
+                                className="w-1/2 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm outline-none"
+                            >
+                                <option value="all">All Status</option>
+                                <option value="pending">Pending</option>
+                                <option value="approved">Approved</option>
+                                <option value="rejected">Rejected</option>
+                            </select>
                         </div>
-                        <h3 className="text-gray-500 text-sm font-medium">Total Sold</h3>
-                        <p className="text-xs text-gray-400 mt-1">Units sold this month</p>
-                    </div>
-
-                    <div className="bg-white rounded-2xl p-6 shadow-lg border border-gray-200">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="p-3 bg-red-100 rounded-xl">
-                                <XCircleIcon className="w-6 h-6 text-red-600" />
-                            </div>
-                            <span className="text-2xl font-bold text-gray-900">{stats.outOfStock}</span>
-                        </div>
-                        <h3 className="text-gray-500 text-sm font-medium">Out of Stock</h3>
-                        <p className="text-xs text-gray-400 mt-1">Need restocking</p>
                     </div>
                 </div>
 
-                <div className="bg-white rounded-2xl shadow-xl border border-gray-200 mb-8">
-                    <div className="p-6 border-b border-gray-200">
-                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                            <div className="relative flex-1">
-                                <MagnifyingGlassIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
-                                <input
-                                    type="text"
-                                    placeholder="Search products by name or category..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent"
-                                />
-                            </div>
-                            
-                            <div className="flex items-center gap-4">
-                                <div className="flex items-center gap-2">
-                                    <FunnelIcon className="w-5 h-5 text-gray-500" />
-                                    <select
-                                        value={selectedCategory}
-                                        onChange={(e) => setSelectedCategory(e.target.value)}
-                                        className="border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                    >
-                                        {categories.map(category => (
-                                            <option key={category} value={category}>
-                                                {category === 'all' ? 'All Categories' : category}
-                                            </option>
-                                        ))}
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div className="overflow-x-auto">
-                        <table className="w-full">
-                            <thead>
-                                <tr className="bg-gray-50">
-                                    <th className="py-4 px-6 text-left">
-                                        <div className="flex items-center gap-2">
-                                            <span>Product</span>
-                                        </div>
-                                    </th>
-                                    <th className="py-4 px-6 text-left">Category</th>
-                                    <th className="py-4 px-6 text-left">Price</th>
-                                    <th className="py-4 px-6 text-left">Stock</th>
-                                    <th className="py-4 px-6 text-left">Status</th>
-                                    <th className="py-4 px-6 text-left">Actions</th>
+                <div className="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden w-full">
+                    <div className="overflow-x-auto overflow-y-hidden">
+                        <table className="w-full text-left min-w-[700px]">
+                            <thead className="bg-slate-50 border-b border-slate-200">
+                                <tr>
+                                    <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Product</th>
+                                    <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Price</th>
+                                    <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider">Inventory</th>
+                                    <th className="px-4 py-4 text-[11px] font-bold text-slate-500 uppercase tracking-wider text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {filteredProducts.map(product => (
-                                    <tr key={product.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
-                                        <td className="py-4 px-6">
-                                            <div className="flex items-center gap-4">
-                                                <div className="w-12 h-12 rounded-lg overflow-hidden">
-                                                    <img 
-                                                        src={product.image} 
-                                                        alt={product.name}
-                                                        className="w-full h-full object-cover"
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <h4 className="font-semibold text-gray-900">{product.name}</h4>
-                                                    <div className="flex items-center gap-2 mt-1">
-                                                        <StarIcon className="w-4 h-4 text-amber-500" />
-                                                        <span className="text-sm text-gray-500">{product.rating}</span>
-                                                        <span className="text-sm text-gray-400">•</span>
-                                                        <span className="text-sm text-gray-500">{product.sold} sold</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <div className="flex items-center gap-2">
-                                                <TagIcon className="w-4 h-4 text-gray-400" />
-                                                <span className="text-gray-700">{product.category}</span>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <span className="font-semibold text-gray-900">${product.price.toFixed(2)}</span>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <div>
-                                                <span className="font-medium text-gray-900">{product.stock}</span>
-                                                <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden mt-1">
-                                                    <div 
-                                                        className={`h-full ${
-                                                            product.stock === 0 ? 'bg-red-500' : 
-                                                            product.stock < 50 ? 'bg-amber-500' : 'bg-emerald-500'
-                                                        }`}
-                                                        style={{ width: `${Math.min((product.stock / 200) * 100, 100)}%` }}
-                                                    ></div>
-                                                </div>
-                                            </div>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <span className={`px-3 py-1.5 rounded-full text-xs font-semibold ${getStatusColor(product.status)}`}>
-                                                {getStatusText(product.status)}
-                                            </span>
-                                        </td>
-                                        <td className="py-4 px-6">
-                                            <div className="flex items-center gap-2">
-                                                <button className="p-2 text-gray-600 hover:bg-gray-100 rounded-lg transition-colors">
-                                                    <EyeIcon className="w-5 h-5" />
-                                                </button>
-                                                <button className="p-2 text-emerald-600 hover:bg-emerald-50 rounded-lg transition-colors">
-                                                    <PencilSquareIcon className="w-5 h-5" />
-                                                </button>
-                                                <button 
-                                                    onClick={() => {
-                                                        setSelectedProduct(product);
-                                                        setShowDeleteModal(true);
-                                                    }}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition-colors"
-                                                >
-                                                    <TrashIcon className="w-5 h-5" />
-                                                </button>
-                                            </div>
+                            <tbody className="divide-y divide-slate-100">
+                                {filteredProducts?.map((product) => (
+                                    <ProductRow
+                                        key={product._id}
+                                        product={product}
+                                        onView={() => { setSelectedProduct(product); setIsViewModalOpen(true); }}
+                                        onEdit={() => { setSelectedProduct(product); setIsEditModalOpen(true); }}
+                                        onDelete={() => handleDelete(product._id)}
+                                        badges={{ 
+                                            stock: getStockStatus(product.stock), 
+                                            status: getStatusBadge(product.status) 
+                                        }}
+                                    />
+                                ))}
+                                {filteredProducts?.length === 0 && (
+                                    <tr>
+                                        <td colSpan="4" className="text-center py-8 text-slate-500">
+                                            No products found
                                         </td>
                                     </tr>
-                                ))}
+                                )}
                             </tbody>
                         </table>
-                    </div>
-
-                    <div className="p-6 border-t border-gray-200">
-                        <div className="flex items-center justify-between">
-                            <div className="text-gray-500">
-                                Showing <span className="font-semibold text-gray-900">{filteredProducts.length}</span> of <span className="font-semibold text-gray-900">{products.length}</span> products
-                            </div>
-                            <div className="flex items-center gap-2">
-                                <button className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
-                                    Previous
-                                </button>
-                                <button className="p-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700">
-                                    1
-                                </button>
-                                <button className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
-                                    2
-                                </button>
-                                <button className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
-                                    3
-                                </button>
-                                <button className="p-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50">
-                                    Next
-                                </button>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            {showAddModal && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-                        <div className="p-6 border-b border-gray-200">
-                            <h3 className="text-2xl font-bold text-gray-900">Add New Product</h3>
-                            <p className="text-gray-600 mt-1">Fill in the details to add a new product</p>
-                        </div>
-
-                        <div className="p-6">
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
-                                    <input
-                                        type="text"
-                                        value={newProduct.name}
-                                        onChange={(e) => setNewProduct({...newProduct, name: e.target.value})}
-                                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                        placeholder="Enter product name"
-                                    />
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
-                                    <select
-                                        value={newProduct.category}
-                                        onChange={(e) => setNewProduct({...newProduct, category: e.target.value})}
-                                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                    >
-                                        <option value="">Select category</option>
-                                        {categories.slice(1).map(category => (
-                                            <option key={category} value={category}>{category}</option>
-                                        ))}
-                                    </select>
-                                </div>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Price ($)</label>
-                                        <input
-                                            type="number"
-                                            value={newProduct.price}
-                                            onChange={(e) => setNewProduct({...newProduct, price: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                            placeholder="0.00"
-                                            step="0.01"
-                                        />
-                                    </div>
-                                    <div>
-                                        <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
-                                        <input
-                                            type="number"
-                                            value={newProduct.stock}
-                                            onChange={(e) => setNewProduct({...newProduct, stock: e.target.value})}
-                                            className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                            placeholder="0"
-                                        />
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                                    <textarea
-                                        value={newProduct.description}
-                                        onChange={(e) => setNewProduct({...newProduct, description: e.target.value})}
-                                        className="w-full border border-gray-300 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-emerald-500"
-                                        placeholder="Enter product description"
-                                        rows="3"
-                                    ></textarea>
-                                </div>
-
-                                <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-2">Product Image</label>
-                                    <div className="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
-                                        <PhotoIcon className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                                        <p className="text-gray-600 mb-2">Drag & drop or click to upload</p>
-                                        <button className="text-emerald-600 font-medium hover:text-emerald-700">
-                                            Browse files
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="p-6 border-t border-gray-200 flex gap-3">
-                            <button 
-                                onClick={() => setShowAddModal(false)}
-                                className="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={handleAddProduct}
-                                className="flex-1 bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all"
-                            >
-                                Add Product
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {isViewModalOpen && selectedProduct && (
+                <ViewModal 
+                    product={selectedProduct} 
+                    onClose={() => {
+                        setIsViewModalOpen(false);
+                        setSelectedProduct(null);
+                    }} 
+                />
             )}
 
-            {showDeleteModal && selectedProduct && (
-                <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
-                    <div className="bg-white rounded-2xl max-w-md w-full">
-                        <div className="p-6 border-b border-gray-200 text-center">
-                            <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                                <TrashIcon className="w-8 h-8 text-red-600" />
-                            </div>
-                            <h3 className="text-2xl font-bold text-gray-900 mb-2">Delete Product</h3>
-                            <p className="text-gray-600">
-                                Are you sure you want to delete <span className="font-semibold">{selectedProduct.name}</span>? This action cannot be undone.
-                            </p>
-                        </div>
-
-                        <div className="p-6 flex gap-3">
-                            <button 
-                                onClick={() => {
-                                    setShowDeleteModal(false);
-                                    setSelectedProduct(null);
-                                }}
-                                className="flex-1 border-2 border-gray-300 text-gray-700 font-semibold py-3 rounded-xl hover:bg-gray-50 transition-colors"
-                            >
-                                Cancel
-                            </button>
-                            <button 
-                                onClick={() => handleDeleteProduct(selectedProduct.id)}
-                                className="flex-1 bg-gradient-to-r from-red-600 to-red-500 text-white font-semibold py-3 rounded-xl hover:shadow-lg transition-all"
-                            >
-                                Delete Product
-                            </button>
-                        </div>
-                    </div>
-                </div>
+            {isEditModalOpen && selectedProduct && (
+                <EditModal 
+                    product={selectedProduct}
+                    onUpdate={handleUpdate}
+                    onClose={() => {
+                        setIsEditModalOpen(false);
+                        setSelectedProduct(null);
+                    }}
+                    isLoading={updateMutation.isPending}
+                />
             )}
         </div>
     );
 };
+
+const ViewModal = ({ product, onClose }) => (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+                <div className="flex justify-between items-start mb-4">
+                    <h2 className="text-xl font-bold">Product Details</h2>
+                    <button onClick={onClose} className="text-slate-500 hover:text-slate-700 text-xl">×</button>
+                </div>
+                <div className="space-y-4">
+                    {product.image && (
+                        <div className="flex justify-center">
+                            <img 
+                                src={product.image} 
+                                alt={product.name} 
+                                className="max-h-48 rounded-lg object-cover"
+                                onError={(e) => {
+                                    e.target.src = 'https://via.placeholder.com/150';
+                                }}
+                            />
+                        </div>
+                    )}
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <p className="text-sm text-slate-500">Name</p>
+                            <p className="font-medium">{product.name}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Brand</p>
+                            <p className="font-medium">{product.brand}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Category</p>
+                            <p className="font-medium">{product.category}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Price</p>
+                            <p className="font-medium">৳{product.price}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Stock</p>
+                            <p className="font-medium">{product.stock} units</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Status</p>
+                            <p className="font-medium capitalize">{product.status}</p>
+                        </div>
+                    </div>
+                    {product.description && (
+                        <div>
+                            <p className="text-sm text-slate-500">Description</p>
+                            <p className="font-medium">{product.description}</p>
+                        </div>
+                    )}
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
+    const [formData, setFormData] = useState({
+        name: product.name || '',
+        brand: product.brand || '',
+        category: product.category || '',
+        price: product.price || '',
+        stock: product.stock || '',
+        description: product.description || '',
+        image: product.image || ''
+    });
+
+    const [imagePreview, setImagePreview] = useState(product.image || '');
+
+    const handleImageChange = (e) => {
+        const url = e.target.value;
+        setFormData({...formData, image: url});
+        setImagePreview(url);
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        onUpdate(product._id, formData);
+    };
+
+    return (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+            <div className="bg-white rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                <form onSubmit={handleSubmit} className="p-6">
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-xl font-bold">Edit Product</h2>
+                        <button type="button" onClick={onClose} className="text-slate-500 hover:text-slate-700 text-xl">×</button>
+                    </div>
+                    
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
+                            <input
+                                type="text"
+                                value={formData.name}
+                                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Brand</label>
+                            <input
+                                type="text"
+                                value={formData.brand}
+                                onChange={(e) => setFormData({...formData, brand: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Category</label>
+                            <input
+                                type="text"
+                                value={formData.category}
+                                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Price</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    step="0.01"
+                                    value={formData.price}
+                                    onChange={(e) => setFormData({...formData, price: e.target.value})}
+                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    required
+                                />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Stock</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    value={formData.stock}
+                                    onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Image URL</label>
+                            <input
+                                type="url"
+                                value={formData.image}
+                                onChange={handleImageChange}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                placeholder="https://example.com/image.jpg"
+                            />
+                        </div>
+
+                        {imagePreview && (
+                            <div className="mt-2">
+                                <p className="text-sm text-slate-500 mb-2">Image Preview:</p>
+                                <img 
+                                    src={imagePreview} 
+                                    alt="Preview" 
+                                    className="h-32 w-32 object-cover rounded-lg border border-slate-200"
+                                    onError={(e) => {
+                                        e.target.src = 'https://via.placeholder.com/150';
+                                    }}
+                                />
+                            </div>
+                        )}
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
+                            <textarea
+                                value={formData.description}
+                                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                rows="3"
+                                required
+                            />
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-4">
+                            <button
+                                type="button"
+                                onClick={onClose}
+                                className="px-4 py-2 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="submit"
+                                disabled={isLoading}
+                                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                            >
+                                {isLoading ? 'Updating...' : 'Update Product'}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    );
+};
+
+const StatCard = ({ title, value, color }) => {
+    const colors = {
+        indigo: 'border-indigo-500 text-indigo-600',
+        amber: 'border-amber-500 text-amber-600',
+        emerald: 'border-emerald-500 text-emerald-600',
+        rose: 'border-rose-500 text-rose-600'
+    };
+    return (
+        <div className={`min-w-[140px] flex-shrink-0 bg-white p-4 rounded-xl border-l-4 shadow-sm sm:w-full ${colors[color]}`}>
+            <p className="text-slate-500 text-[10px] font-bold uppercase tracking-tight">{title}</p>
+            <p className="text-xl font-black">{value || 0}</p>
+        </div>
+    );
+};
+
+const ProductRow = ({ product, onView, onEdit, onDelete, badges }) => (
+    <tr className="hover:bg-slate-50 transition-colors">
+        <td className="px-4 py-4">
+            <div className="flex items-center gap-3">
+                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                    <img 
+                        className="h-full w-full object-cover" 
+                        src={product.image || 'https://via.placeholder.com/48'} 
+                        alt={product.name}
+                        onError={(e) => {
+                            e.target.src = 'https://via.placeholder.com/48';
+                        }}
+                    />
+                </div>
+                <div className="max-w-[150px] sm:max-w-[200px]">
+                    <p className="text-sm font-bold text-slate-900 truncate">{product.name}</p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium uppercase">{product.category}</span>
+                </div>
+            </div>
+        </td>
+        <td className="px-4 py-4">
+            <div className="text-sm font-bold text-slate-900 font-mono">৳{product.price}</div>
+            <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${badges.status.style}`}>
+                {badges.status.label}
+            </span>
+        </td>
+        <td className="px-4 py-4">
+            <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full border w-fit mb-1 ${badges.stock.color}`}>
+                {badges.stock.label}
+            </div>
+            <p className="text-xs text-slate-500">{product.stock} Units</p>
+        </td>
+        <td className="px-4 py-4">
+            <div className="flex justify-center items-center gap-1.5 sm:gap-2">
+                <button onClick={onView} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-blue-100" title="View">
+                    <EyeIcon className="w-4 h-4" />
+                </button>
+                <button onClick={onEdit} className="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all shadow-sm border border-amber-100" title="Edit">
+                    <PencilIcon className="w-4 h-4" />
+                </button>
+                <button onClick={onDelete} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm border border-red-100" title="Delete">
+                    <TrashIcon className="w-4 h-4" />
+                </button>
+            </div>
+        </td>
+    </tr>
+);
+
+const LoadingSkeleton = () => (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="w-10 h-10 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"></div>
+        <p className="mt-4 text-slate-500 font-medium text-sm">Loading Inventory...</p>
+    </div>
+);
 
 export default Products;

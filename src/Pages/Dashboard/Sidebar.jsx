@@ -6,53 +6,109 @@ import {
     FaUsers,
     FaChartBar,
     FaCreditCard,
-    FaBell,
     FaCog,
     FaSignOutAlt,
     FaUserCircle,
     FaChevronRight,
     FaUser
 } from 'react-icons/fa';
-import Logo from '../../Component/Logo';
 import { Link, useLocation } from 'react-router';
 import { MdSell, MdUpload } from 'react-icons/md';
+import { getuser } from '../../Component/Api';
+import Useauth from '../../Component/Useauth';
 
 const Sidebar = ({ onItemClick }) => {
+    const { user, logout } = Useauth();
     const location = useLocation();
     const [activeItem, setActiveItem] = useState(location.pathname);
+    const [userRole, setUserRole] = useState('buyer'); 
+    const [userName, setUserName] = useState('User');
+
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (user?.email) {
+                try {
+                    const userData = await getuser(user.email);
+                    setUserRole(userData.role || 'buyer');
+                    setUserName(userData.name || user?.displayName || 'User');
+                } catch (error) {
+                    console.error("Failed to fetch user role:", error);
+                }
+            }
+        };
+        fetchUserRole();
+    }, [user?.email]);
 
     useEffect(() => {
         setActiveItem(location.pathname);
     }, [location.pathname]);
 
-    const menuItems = [
-        { path: "/dashboard", label: "Dashboard", icon: <FaHome /> },
-        { path: "/dashboard/my-profile", label: "My Profile", icon: <FaUser /> },
-        { path: "/dashboard/products", label: "My Uploaded Products", icon: <FaBox /> },
-        { path: "/dashboard/upload-products", label: "Uploade New Product", icon: <MdUpload /> },
-        { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag /> },
-        { path: "/dashboard/customers", label: "Customers", icon: <FaUsers /> },
-        { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar /> },
-        { path: "/dashboard/payments", label: "Payment History", icon: <FaCreditCard /> },
-        { path: "/dashboard/becomeaseller", label: "Become a Seller", icon: <MdSell/> },
-        { path: "/dashboard/settings", label: "Settings", icon: <FaCog /> },
-    ];
+    const getMenuItems = () => {
+        const commonMenu = [
+            { path: "/dashboard", label: "Dashboard", icon: <FaHome />, key: "dashboard" },
+            { path: "/dashboard/my-profile", label: "My Profile", icon: <FaUser />, key: "profile" },
+            { path: "/dashboard/payments", label: "Payment History", icon: <FaCreditCard />, key: "payments" },
+        ];
+
+        if (userRole === 'buyer') {
+            return [
+                ...commonMenu,
+                { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag />, key: "buyer-orders" },
+                { path: "/dashboard/becomeaseller", label: "Become a Seller", icon: <MdSell />, key: "become-seller" },
+                { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-buyer" },
+            ];
+        }
+        
+        if (userRole === 'seller') {
+            return [
+                ...commonMenu,
+                { path: "/dashboard/products", label: "My Products", icon: <FaBox />, key: "my-products" },
+                { path: "/dashboard/buyer-order", label: "Buyer Orders", icon: <FaShoppingBag />, key: "buyer-orders-seller" },
+                { path: "/dashboard/upload-products", label: "Upload New Product", icon: <MdUpload />, key: "upload-product" },
+                { path: "/dashboard/customers", label: "My Customers", icon: <FaUsers />, key: "customers" },
+                { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar />, key: "analytics-seller" },
+                { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-seller" },
+            ];
+        }
+   
+        if (userRole === 'admin') {
+            return [
+                ...commonMenu,
+                { path: "/dashboard/users", label: "All Users", icon: <FaUsers />, key: "all-users" },
+                { path: "/dashboard/products", label: "All Products", icon: <FaBox />, key: "all-products" },
+                { path: "/dashboard/pending-products", label: "Pending Approvals", icon: <MdUpload />, key: "pending" },
+                { path: "/dashboard/myorder", label: "All Orders", icon: <FaShoppingBag />, key: "all-orders" },
+                { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar />, key: "analytics-admin" },
+                { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-admin" },
+            ];
+        }
+
+        return commonMenu;
+    };
+
+    const menuItems = getMenuItems();
 
     const handleItemClick = (path) => {
         setActiveItem(path);
         if (onItemClick) onItemClick();
     };
 
+    const getRoleText = () => {
+        if (userRole === 'admin') return 'Admin';
+        if (userRole === 'seller') return 'Seller';
+        return 'Buyer';
+    };
+
     return (
         <div className="h-full flex flex-col bg-gradient-to-b from-white to-gray-50">
             <div className="p-5">
-                <h2 className='text-3xl font-black text-black '>Dashboard</h2>
+                <h2 className='text-3xl font-black text-black'>Dashboard</h2>
             </div>
 
             <nav className="flex-1 px-3">
                 <ul className="space-y-2">
                     {menuItems.map((item) => (
-                        <li key={item.path}>
+                        <li key={item.key}>
                             <Link
                                 to={item.path}
                                 onClick={() => handleItemClick(item.path)}
@@ -86,11 +142,14 @@ const Sidebar = ({ onItemClick }) => {
                             <FaUserCircle className="text-white text-2xl" />
                         </div>
                         <div className="ml-3">
-                            <p className="font-bold text-gray-800">Admin</p>
-                            <p className="text-xs text-gray-600">Online</p>
+                            <p className="font-bold text-gray-800">{userName}</p>
+                            <p className="text-xs text-gray-600">{getRoleText()}</p>
                         </div>
                     </div>
-                    <button className="w-full mt-4 flex items-center justify-center py-2 bg-white text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium">
+                    <button 
+                        onClick={() => logout()}
+                        className="w-full mt-4 flex items-center justify-center py-2 bg-white text-red-600 hover:bg-red-50 rounded-lg transition-colors font-medium"
+                    >
                         <FaSignOutAlt className="mr-2" />
                         Sign Out
                     </button>

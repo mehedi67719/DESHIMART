@@ -16,18 +16,17 @@ import { categorys, postproducts } from '../../Component/Api';
 import Useauth from '../../Component/Useauth';
 
 const UploadProduct = () => {
-    const { user } = Useauth(); 
-    console.log("Current User:", user);
-    
+    const { user } = Useauth();
     const [categories, setCategories] = useState([]);
     const [units, setUnits] = useState(['6 pieces', 'Dozen', '500g', '1kg', 'Liter', 'Pack', 'Bundle', '500ml']);
     const [loading, setLoading] = useState(true);
-    
     const [showAddCategory, setShowAddCategory] = useState(false);
     const [newCategory, setNewCategory] = useState('');
-    
     const [showAddUnit, setShowAddUnit] = useState(false);
     const [newUnit, setNewUnit] = useState('');
+    const [imagePreview, setImagePreview] = useState('');
+    const [submitSuccess, setSubmitSuccess] = useState(false);
+    const [formData, setFormData] = useState(null);
 
     const {
         register,
@@ -43,20 +42,18 @@ const UploadProduct = () => {
             brand: '',
             oldPrice: '',
             discount: '',
-            price: '', // Changed from newPrice to price
+            price: '', 
             stock: '',
             unit: units[0],
             description: '',
             image: '',
             isNew: true,
-            // Seller Information
             sellerEmail: user?.email || '',
             shopName: user?.shopName || user?.displayName || 'My Shop',
-            // Default values
             rating: 0,
             reviews: 0,
             sold: 0,
-            status: "pending"
+            status: "pending" // ✅ ডিফল্ট ভ্যালু সেট আছে
         }
     });
 
@@ -67,24 +64,20 @@ const UploadProduct = () => {
         }
     }, [user, setValue]);
 
-    const [imagePreview, setImagePreview] = useState('');
-    const [submitSuccess, setSubmitSuccess] = useState(false);
-    const [formData, setFormData] = useState(null);
-
     const selectedCategory = watch('category');
     const selectedUnit = watch('unit');
 
     useEffect(() => {
         if (selectedCategory === 'other') {
             setShowAddCategory(true);
-            setValue('category', ''); 
+            setValue('category', '');
         }
     }, [selectedCategory, setValue]);
 
     useEffect(() => {
         if (selectedUnit === 'other') {
             setShowAddUnit(true);
-            setValue('unit', units[0]); 
+            setValue('unit', units[0]);
         }
     }, [selectedUnit, setValue, units]);
 
@@ -93,8 +86,6 @@ const UploadProduct = () => {
             try {
                 setLoading(true);
                 const data = await categorys();
-                console.log("Categories data:", data);
-                
                 let categoryNames = [];
                 if (data && data.length > 0) {
                     categoryNames = data.map(cat => {
@@ -103,7 +94,6 @@ const UploadProduct = () => {
                     });
                 }
                 setCategories(categoryNames);
-                
                 if (categoryNames.length > 0) {
                     setValue('category', categoryNames[0]);
                 }
@@ -116,7 +106,6 @@ const UploadProduct = () => {
                 setLoading(false);
             }
         };
-
         fetchData();
     }, [setValue]);
 
@@ -130,7 +119,6 @@ const UploadProduct = () => {
             });
             return;
         }
-
         if (categories.includes(newCategory)) {
             Swal.fire({
                 icon: "warning",
@@ -140,12 +128,10 @@ const UploadProduct = () => {
             });
             return;
         }
-        
         setCategories([...categories, newCategory]);
         setValue('category', newCategory);
         setShowAddCategory(false);
         setNewCategory('');
-        
         Swal.fire({
             icon: "success",
             title: "Category Added!",
@@ -165,7 +151,6 @@ const UploadProduct = () => {
             });
             return;
         }
-
         if (units.includes(newUnit)) {
             Swal.fire({
                 icon: "warning",
@@ -175,12 +160,10 @@ const UploadProduct = () => {
             });
             return;
         }
-
         setUnits([...units, newUnit]);
         setValue('unit', newUnit);
         setShowAddUnit(false);
         setNewUnit('');
-        
         Swal.fire({
             icon: "success",
             title: "Unit Added!",
@@ -193,12 +176,10 @@ const UploadProduct = () => {
     const watchOldPrice = watch('oldPrice');
     const watchDiscount = watch('discount');
 
-    // Calculate price based on old price and discount
     useEffect(() => {
         if (watchOldPrice && watchDiscount) {
             const oldPrice = Number(watchOldPrice);
             const discount = Number(watchDiscount);
-
             if (oldPrice > 0 && discount >= 0 && discount <= 100) {
                 const calculatedPrice = oldPrice - (oldPrice * (discount / 100));
                 setValue('price', calculatedPrice.toFixed(2));
@@ -233,7 +214,6 @@ const UploadProduct = () => {
             const oldPrice = Number(data.oldPrice);
             const discount = Number(data.discount);
             const price = Number(data.price);
-
            
             const processedData = {
                 name: data.name,
@@ -242,35 +222,29 @@ const UploadProduct = () => {
                 price: price || 0,
                 oldPrice: oldPrice || 0,
                 discount: discount || 0,
-                rating: 0, 
-                reviews: 0, 
+                rating: 0,
+                reviews: 0,
                 stock: Number(data.stock),
-                sold: 0, 
+                sold: 0,
                 unit: data.unit,
                 sellerEmail: user?.email || data.sellerEmail,
                 shopName: user?.shopName || user?.displayName || data.shopName || 'My Shop',
                 description: data.description,
                 image: data.image || '',
-                createdAt: new Date().toISOString()  ,
-                isNew: true
+                createdAt: new Date().toISOString(),
+                isNew: true,
+                status: "pending" // ✅ এখানে status যোগ করুন
             };
-
-            console.log("Submitting Product Data:", processedData);
             
             const response = await postproducts(processedData);
-            console.log("Product Upload Response:", response);
-
             Swal.fire({
                 icon: "success",
                 title: "Product Uploaded!",
                 text: "Product has been added successfully.",
                 confirmButtonColor: "#16a34a"
             });
-
             setFormData(processedData);
             setSubmitSuccess(true);
-
-       
             setTimeout(() => {
                 setValue('name', '');
                 setValue('oldPrice', '');
@@ -288,10 +262,8 @@ const UploadProduct = () => {
                 setValue('unit', units[0]);
                 setSubmitSuccess(false);
             }, 3000);
-
         } catch (error) {
             console.error("Product Upload Error:", error);
-
             Swal.fire({
                 icon: "error",
                 title: "Upload Failed",
@@ -303,7 +275,6 @@ const UploadProduct = () => {
 
     const handlePreviewData = () => {
         const formValues = watch();
-
         const previewData = {
             name: formValues.name,
             category: formValues.category,
@@ -320,13 +291,25 @@ const UploadProduct = () => {
             shopName: user?.shopName || user?.displayName || formValues.shopName,
             description: formValues.description,
             image: formValues.image || '',
-            isNew: Boolean(formValues.isNew)
+            isNew: Boolean(formValues.isNew),
+            status: "pending" // ✅ প্রিভিউতেও যোগ করুন
         };
         console.log('Preview Data:', previewData);
         alert('Check console for preview data (F12)');
     };
 
     const showPrice = watch('price') && watch('price') !== '';
+
+    if (loading) {
+        return (
+            <div className="min-h-screen w-full bg-gray-50 flex items-center justify-center">
+                <div className="text-center">
+                    <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+                    <p className="text-gray-600 text-lg">Loading categories...</p>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="min-h-screen w-full bg-gray-50">
@@ -340,7 +323,6 @@ const UploadProduct = () => {
                         <p className="text-gray-600">Fill in the details to add a new product to your store</p>
                     </div>
 
-       
                     {user && (
                         <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
                             <div className="flex items-center gap-3">
@@ -369,12 +351,12 @@ const UploadProduct = () => {
                     )}
 
                     <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-               
                         <input type="hidden" {...register("sellerEmail")} />
                         <input type="hidden" {...register("shopName")} />
                         <input type="hidden" {...register("rating")} value="0" />
                         <input type="hidden" {...register("reviews")} value="0" />
                         <input type="hidden" {...register("sold")} value="0" />
+                        <input type="hidden" {...register("status")} value="pending" /> {/* ✅ হিডেন ফিল্ড যোগ করুন */}
                         
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-2 space-y-8">
@@ -466,17 +448,17 @@ const UploadProduct = () => {
                                                         message: "Description must be at least 20 characters"
                                                     },
                                                     maxLength: {
-                                                        value: 1000,
-                                                        message: "Description must be less than 1000 characters"
+                                                        value: 5000,
+                                                        message: "Description must be less than 5000 characters"
                                                     }
                                                 })}
-                                                rows="4"
+                                                rows="6"
                                                 className={`w-full border ${errors.description ? 'border-red-500' : 'border-gray-300'} rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none`}
-                                                placeholder="Describe your product..."
+                                                placeholder="Describe your product in detail..."
                                             />
                                             {errors.description && <p className="mt-1 text-sm text-red-600">{errors.description.message}</p>}
                                             <p className="text-xs text-gray-500 mt-2">
-                                                {watch('description')?.length || 0}/1000 characters
+                                                {watch('description')?.length || 0}/5000 characters
                                             </p>
                                         </div>
                                     </div>
@@ -664,7 +646,6 @@ const UploadProduct = () => {
                                     </div>
                                 </div>
 
-                          
                                 <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
                                     <div className="flex items-center gap-3 mb-6">
                                         <div className="p-2 bg-green-100 rounded-lg">
@@ -730,7 +711,6 @@ const UploadProduct = () => {
                         </div>
                     </form>
 
-                  
                     {showAddCategory && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                             <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
@@ -786,7 +766,6 @@ const UploadProduct = () => {
                         </div>
                     )}
 
-                    {/* Add Unit Modal */}
                     {showAddUnit && (
                         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                             <div className="bg-white rounded-2xl p-6 max-w-md w-full mx-4">
