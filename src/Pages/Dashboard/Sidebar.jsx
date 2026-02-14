@@ -65,7 +65,7 @@ const Sidebar = ({ onItemClick }) => {
                 { path: "/dashboard/products", label: "My Products", icon: <FaBox />, key: "my-products" },
                 { path: "/dashboard/buyer-order", label: "Buyer Orders", icon: <FaShoppingBag />, key: "buyer-orders-seller" },
                 { path: "/dashboard/upload-products", label: "Upload New Product", icon: <MdUpload />, key: "upload-product" },
-                { path: "/dashboard/customers", label: "My Customers", icon: <FaUsers />, key: "customers" },
+                { path: "/dashboard/my-customer", label: "My Customers", icon: <FaUsers />, key: "customers" },
                 { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar />, key: "analytics-seller" },
                 { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-seller" },
             ];

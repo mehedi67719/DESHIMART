@@ -363,3 +363,20 @@ export const updateProduct = async (id, data) => {
     throw err;
   };
 }
+
+
+
+export const buyerorder = async (email) => {
+  if (!email) throw new Error("Email is required");
+
+  try {
+    const res = await useaxios.get("payment/buyer-order", {
+      params: { sellerEmail: email }
+    });
+
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};

@@ -57,7 +57,7 @@ const Favorite = () => {
         }
     };
 
-    const handleAddToCart = async (item) => {
+    const handleAddToCart = async (item, sellerEmail) => {
         if (!user) {
             alert("Please login first");
             return;
@@ -70,13 +70,14 @@ const Favorite = () => {
                 ProductName: item.name,
                 quantity: 1,
                 Productimg: item.image,
-                price: item.price
+                price: item.price,
+                sellerEmail: sellerEmail
             };
 
-         
+
             await addtocartFromfavorite(cartdata);
 
-          
+
             await removeFavorite({
                 productId: item._id,
                 userEmail: user.email
@@ -118,12 +119,15 @@ const Favorite = () => {
                         ProductName: item.name,
                         quantity: 1,
                         Productimg: item.image,
-                        price: item.price
+                        price: item.price,
+                        sellerEmail: item.sellerEmail
                     };
+
+                    // console.log(cartdata)
 
                     await addtocartFromfavorite(cartdata);
 
-                
+
                     await removeFavorite({
                         productId: item._id,
                         userEmail: user.email
@@ -388,7 +392,7 @@ const Favorite = () => {
                                             <td className="p-3">
                                                 <div className="flex items-center gap-1">
                                                     <button onClick={() => navigate(`/productsdetels/${item._id}`)} className="w-7 h-7 flex items-center justify-center text-blue-600 hover:bg-blue-50 rounded" title="View Details"><FaEye className="text-sm" /></button>
-                                                    <button onClick={() => handleAddToCart(item)} className="w-7 h-7 flex items-center justify-center text-green-600 hover:bg-green-50 rounded" title="Add to Cart"><FaShoppingCart className="text-sm" /></button>
+                                                    <button onClick={() => handleAddToCart(item, item.sellerEmail)} className="w-7 h-7 flex items-center justify-center text-green-600 hover:bg-green-50 rounded" title="Add to Cart"><FaShoppingCart className="text-sm" /></button>
                                                     <button onClick={() => handleRemoveItem(item._id)} className="w-7 h-7 flex items-center justify-center text-red-600 hover:bg-red-50 rounded" title="Remove"><FaTrash className="text-sm" /></button>
                                                 </div>
                                             </td>

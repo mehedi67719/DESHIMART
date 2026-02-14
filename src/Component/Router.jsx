@@ -26,6 +26,8 @@ import PaymentHistory from "../Pages/Dashboard/PaymentHistory";
 import BecomeSeller from "../Pages/Dashboard/BecomeSeller";
 import UploadProduct from "../Pages/Dashboard/UploadProduct";
 import Products from "../Pages/Dashboard/Products";
+import Buyer_Order from "../Pages/Dashboard/Buyer_Order";
+import My_Customer from "../Pages/Dashboard/My_Customer";
 
 
 
@@ -149,6 +151,14 @@ export const router = createBrowserRouter([
             {
                 path:'/dashboard/upload-products',
                 Component:UploadProduct
+            },
+            {
+                path:'/dashboard/buyer-order',
+                Component:Buyer_Order
+            },
+            {
+                path:"/dashboard/my-customer",
+                Component:My_Customer
             }
         ]
     }

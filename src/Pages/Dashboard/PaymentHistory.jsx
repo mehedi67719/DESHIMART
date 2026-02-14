@@ -15,6 +15,7 @@ import {
   CreditCardIcon,
   ExclamationTriangleIcon
 } from '@heroicons/react/24/outline';
+import { Link } from 'react-router';
 
 const PaymentHistory = () => {
     const { user } = Useauth();
@@ -131,9 +132,9 @@ const PaymentHistory = () => {
                     </div>
                     <h2 className="text-2xl font-bold text-gray-800 mb-3">No Payment History</h2>
                     <p className="text-gray-600 mb-6">You haven't made any payments yet. Your payment history will appear here.</p>
-                    <button className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
+                    <Link to='/shop' className="bg-gradient-to-r from-emerald-600 to-emerald-500 text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all duration-300 transform hover:-translate-y-0.5">
                         Start Shopping
-                    </button>
+                    </Link>
                 </div>
             </div>
         );

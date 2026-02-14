@@ -68,7 +68,10 @@ const Cart = () => {
                 Productimg:i.Productimg,
                 price: i.price,
                 quantity: i.quantity,
+                sellerEmail:i.sellerEmail
             })),
+
+            
             totalAmount: calculateTotal(),
             Name:user.displayName
         };
@@ -81,6 +84,8 @@ const Cart = () => {
             console.log(err)
         }
 
+
+        
 
     };
 

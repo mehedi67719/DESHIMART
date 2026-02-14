@@ -91,7 +91,8 @@ const ShopCard = ({ item }) => {
             ProductName: product.name,
             quantity: 1,
             Productimg: product.image,
-            price: product.price
+            price: product.price,
+            sellerEmail:product.sellerEmail
         };
 
         try {

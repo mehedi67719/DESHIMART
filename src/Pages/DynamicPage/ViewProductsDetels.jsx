@@ -103,10 +103,11 @@ const ViewProductsDetels = () => {
     const cartdata = {
       userEmail: user.email,
       productId: product._id,
-      ProductName:product.name,
+      ProductName: product.name,
       quantity: quantity,
       Productimg: product.image,
-      price: product.price * quantity
+      price: product.price * quantity,
+      sellerEmail: product.sellerEmail
     }
 
     try {

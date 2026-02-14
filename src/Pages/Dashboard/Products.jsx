@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import {
     PencilIcon, TrashIcon, EyeIcon, PlusIcon,
-    MagnifyingGlassIcon
+    MagnifyingGlassIcon, CurrencyDollarIcon, TagIcon
 } from '@heroicons/react/24/outline';
 import Swal from 'sweetalert2';
 import Useauth from '../../Component/Useauth';
@@ -282,8 +282,20 @@ const ViewModal = ({ product, onClose }) => (
                             <p className="font-medium">৳{product.price}</p>
                         </div>
                         <div>
+                            <p className="text-sm text-slate-500">Old Price</p>
+                            <p className="font-medium">৳{product.oldPrice || product.price}</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Discount</p>
+                            <p className="font-medium">{product.discount || 0}%</p>
+                        </div>
+                        <div>
                             <p className="text-sm text-slate-500">Stock</p>
                             <p className="font-medium">{product.stock} units</p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-slate-500">Unit</p>
+                            <p className="font-medium">{product.unit || 'piece'}</p>
                         </div>
                         <div>
                             <p className="text-sm text-slate-500">Status</p>
@@ -307,13 +319,30 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
         name: product.name || '',
         brand: product.brand || '',
         category: product.category || '',
+        oldPrice: product.oldPrice || '',
+        discount: product.discount || '',
         price: product.price || '',
         stock: product.stock || '',
+        unit: product.unit || 'piece',
         description: product.description || '',
         image: product.image || ''
     });
 
     const [imagePreview, setImagePreview] = useState(product.image || '');
+
+    useEffect(() => {
+        if (formData.oldPrice && formData.discount) {
+            const oldPrice = Number(formData.oldPrice);
+            const discount = Number(formData.discount);
+            if (oldPrice > 0 && discount >= 0 && discount <= 100) {
+                const calculatedPrice = oldPrice - (oldPrice * (discount / 100));
+                setFormData(prev => ({
+                    ...prev,
+                    price: calculatedPrice.toFixed(2)
+                }));
+            }
+        }
+    }, [formData.oldPrice, formData.discount]);
 
     const handleImageChange = (e) => {
         const url = e.target.value;
@@ -323,7 +352,26 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onUpdate(product._id, formData);
+        const updateData = {
+            ...formData,
+            oldPrice: Number(formData.oldPrice),
+            discount: Number(formData.discount),
+            price: Number(formData.price),
+            stock: Number(formData.stock)
+        };
+        onUpdate(product._id, updateData);
+    };
+
+    const handleFileUpload = (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setFormData({...formData, image: reader.result});
+                setImagePreview(reader.result);
+            };
+            reader.readAsDataURL(file);
+        }
     };
 
     return (
@@ -371,28 +419,86 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
 
                         <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Price</label>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Old Price</label>
+                                <div className="relative">
+                                    <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                    <input
+                                        type="number"
+                                        min="0"
+                                        step="0.01"
+                                        value={formData.oldPrice}
+                                        onChange={(e) => setFormData({...formData, oldPrice: e.target.value})}
+                                        className="w-full pl-10 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                        placeholder="0.00"
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium text-slate-700 mb-1">Discount %</label>
+                                <input
+                                    type="number"
+                                    min="0"
+                                    max="100"
+                                    step="1"
+                                    value={formData.discount}
+                                    onChange={(e) => setFormData({...formData, discount: e.target.value})}
+                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                    placeholder="0"
+                                    required
+                                />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Final Price (Auto-calculated)</label>
+                            <div className="relative">
+                                <CurrencyDollarIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-slate-400" />
                                 <input
                                     type="number"
                                     min="0"
                                     step="0.01"
                                     value={formData.price}
-                                    onChange={(e) => setFormData({...formData, price: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                                    required
+                                    readOnly
+                                    className="w-full pl-10 px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-slate-600"
+                                    placeholder="Auto-calculated"
                                 />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium text-slate-700 mb-1">Stock</label>
-                                <input
-                                    type="number"
-                                    min="0"
-                                    value={formData.stock}
-                                    onChange={(e) => setFormData({...formData, stock: e.target.value})}
-                                    className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
-                                    required
-                                />
-                            </div>
+                            <p className="text-xs text-slate-500 mt-1">Price automatically calculated from old price and discount</p>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Stock</label>
+                            <input
+                                type="number"
+                                min="0"
+                                value={formData.stock}
+                                onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                                required
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
+                            <select
+                                value={formData.unit}
+                                onChange={(e) => setFormData({...formData, unit: e.target.value})}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
+                            >
+                                <option value="piece">Piece</option>
+                                <option value="kg">Kilogram (kg)</option>
+                                <option value="g">Gram (g)</option>
+                                <option value="liter">Liter</option>
+                                <option value="ml">Milliliter (ml)</option>
+                                <option value="dozen">Dozen</option>
+                                <option value="pack">Pack</option>
+                                <option value="bundle">Bundle</option>
+                                <option value="6 pieces">6 pieces</option>
+                                <option value="500g">500g</option>
+                                <option value="1kg">1kg</option>
+                                <option value="500ml">500ml</option>
+                            </select>
                         </div>
 
                         <div>
@@ -403,6 +509,16 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                                 onChange={handleImageChange}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                 placeholder="https://example.com/image.jpg"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-medium text-slate-700 mb-1">Or Upload Image</label>
+                            <input
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileUpload}
+                                className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                             />
                         </div>
 
@@ -430,6 +546,18 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                                 required
                             />
                         </div>
+
+                        {formData.oldPrice && formData.discount && formData.price && (
+                            <div className="p-4 bg-blue-50 rounded-lg">
+                                <p className="text-sm font-medium text-gray-700">Price Summary</p>
+                                <p className="text-gray-600 text-sm">
+                                    Old Price: ৳{formData.oldPrice} | Discount: {formData.discount}% | New Price: ৳{formData.price}
+                                </p>
+                                <p className="text-sm text-green-600 font-medium mt-1">
+                                    You save: ৳{(Number(formData.oldPrice) - Number(formData.price)).toFixed(2)}
+                                </p>
+                            </div>
+                        )}
 
                         <div className="flex justify-end gap-2 pt-4">
                             <button
@@ -469,53 +597,63 @@ const StatCard = ({ title, value, color }) => {
     );
 };
 
-const ProductRow = ({ product, onView, onEdit, onDelete, badges }) => (
-    <tr className="hover:bg-slate-50 transition-colors">
-        <td className="px-4 py-4">
-            <div className="flex items-center gap-3">
-                <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                    <img 
-                        className="h-full w-full object-cover" 
-                        src={product.image || 'https://via.placeholder.com/48'} 
-                        alt={product.name}
-                        onError={(e) => {
-                            e.target.src = 'https://via.placeholder.com/48';
-                        }}
-                    />
+const ProductRow = ({ product, onView, onEdit, onDelete, badges }) => {
+    const hasDiscount = product.oldPrice && product.discount && Number(product.oldPrice) > Number(product.price);
+    
+    return (
+        <tr className="hover:bg-slate-50 transition-colors">
+            <td className="px-4 py-4">
+                <div className="flex items-center gap-3">
+                    <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
+                        <img 
+                            className="h-full w-full object-cover" 
+                            src={product.image || 'https://via.placeholder.com/48'} 
+                            alt={product.name}
+                            onError={(e) => {
+                                e.target.src = 'https://via.placeholder.com/48';
+                            }}
+                        />
+                    </div>
+                    <div className="max-w-[150px] sm:max-w-[200px]">
+                        <p className="text-sm font-bold text-slate-900 truncate">{product.name}</p>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium uppercase">{product.category}</span>
+                    </div>
                 </div>
-                <div className="max-w-[150px] sm:max-w-[200px]">
-                    <p className="text-sm font-bold text-slate-900 truncate">{product.name}</p>
-                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-50 text-indigo-600 font-medium uppercase">{product.category}</span>
+            </td>
+            <td className="px-4 py-4">
+                <div className="text-sm font-bold text-slate-900 font-mono">৳{product.price}</div>
+                {hasDiscount && (
+                    <div className="flex items-center gap-1">
+                        <span className="text-[9px] text-slate-400 line-through">৳{product.oldPrice}</span>
+                        <span className="text-[9px] text-green-600 font-bold">-{product.discount}%</span>
+                    </div>
+                )}
+                <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${badges.status.style}`}>
+                    {badges.status.label}
+                </span>
+            </td>
+            <td className="px-4 py-4">
+                <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full border w-fit mb-1 ${badges.stock.color}`}>
+                    {badges.stock.label}
                 </div>
-            </div>
-        </td>
-        <td className="px-4 py-4">
-            <div className="text-sm font-bold text-slate-900 font-mono">৳{product.price}</div>
-            <span className={`text-[10px] px-1.5 py-0.5 rounded-full border ${badges.status.style}`}>
-                {badges.status.label}
-            </span>
-        </td>
-        <td className="px-4 py-4">
-            <div className={`text-[10px] font-bold px-2 py-0.5 rounded-full border w-fit mb-1 ${badges.stock.color}`}>
-                {badges.stock.label}
-            </div>
-            <p className="text-xs text-slate-500">{product.stock} Units</p>
-        </td>
-        <td className="px-4 py-4">
-            <div className="flex justify-center items-center gap-1.5 sm:gap-2">
-                <button onClick={onView} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-blue-100" title="View">
-                    <EyeIcon className="w-4 h-4" />
-                </button>
-                <button onClick={onEdit} className="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all shadow-sm border border-amber-100" title="Edit">
-                    <PencilIcon className="w-4 h-4" />
-                </button>
-                <button onClick={onDelete} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm border border-red-100" title="Delete">
-                    <TrashIcon className="w-4 h-4" />
-                </button>
-            </div>
-        </td>
-    </tr>
-);
+                <p className="text-xs text-slate-500">{product.stock} {product.unit || 'Units'}</p>
+            </td>
+            <td className="px-4 py-4">
+                <div className="flex justify-center items-center gap-1.5 sm:gap-2">
+                    <button onClick={onView} className="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-600 hover:text-white transition-all shadow-sm border border-blue-100" title="View">
+                        <EyeIcon className="w-4 h-4" />
+                    </button>
+                    <button onClick={onEdit} className="p-2 bg-amber-50 text-amber-600 rounded-lg hover:bg-amber-600 hover:text-white transition-all shadow-sm border border-amber-100" title="Edit">
+                        <PencilIcon className="w-4 h-4" />
+                    </button>
+                    <button onClick={onDelete} className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-600 hover:text-white transition-all shadow-sm border border-red-100" title="Delete">
+                        <TrashIcon className="w-4 h-4" />
+                    </button>
+                </div>
+            </td>
+        </tr>
+    );
+};
 
 const LoadingSkeleton = () => (
     <div className="flex flex-col items-center justify-center min-h-screen">
