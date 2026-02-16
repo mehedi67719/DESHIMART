@@ -17,6 +17,22 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 
 
 
+export const statussummary = async (email) => {
+  try {
+    const res = await useaxios.get("products/status-summary", {
+      params: { sellerEmail: email }
+    });
+    return res.data;
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+
 export const postproducts = async (data) => {
   try {
     const res = await useaxios.post("/products", data);
@@ -82,7 +98,7 @@ export const sellerpopularcategorys = async (email) => {
     });
     return res.data
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -96,7 +112,7 @@ export const sellerTopratingcategorys = async (email) => {
     });
     return res.data
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
