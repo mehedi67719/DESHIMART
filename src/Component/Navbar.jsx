@@ -34,16 +34,12 @@ import Logo from './Logo';
 import { getuser } from './Api';
 
 const Navbar = () => {
-
   const dropdownRef = useRef(null);
-
   const [open, setopen] = useState(false);
   const [profileopen, setprofileopen] = useState(false);
-
-  const { user,logout } = Useauth();
+  const { user, logout } = Useauth();
   const [User, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     if (!user?.email) return;
@@ -63,9 +59,6 @@ const Navbar = () => {
     fetchUser();
   }, [user]);
 
-
-
-
   useEffect(() => {
     const handleClickOutside = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -80,8 +73,8 @@ const Navbar = () => {
     logout().then(() => {
       Swal.fire({
         icon: 'success',
-        title: 'Account Login',
-        text: 'Account Login successfully.',
+        title: 'Logged Out',
+        text: 'Logged out successfully.',
         showConfirmButton: false,
         timer: 2000,
         timerProgressBar: true
@@ -91,156 +84,147 @@ const Navbar = () => {
 
   return (
     <div className="sticky relative top-0 z-50 bg-white py-5">
-      <div className="lg:max-w-[70%] md:max-w-[95%] max-w-[98%] mx-auto px-4">
+      <div className="container">
         <div className="flex items-center justify-between">
           <Link to="/">
-            <Logo></Logo>
+            <Logo />
           </Link>
 
           <div className="flex flex-1 items-center gap-2 border border-green-500 rounded px-2 mx-2 md:mx-4">
-            <CiSearch className="text-xl font-bold" />
+            <CiSearch className="text-xl text-gray-500" />
             <input
               type="text"
               placeholder="Search products..."
-              className="outline-none py-2 w-full"
+              className="outline-none py-2 w-full text-sm"
             />
           </div>
 
-          <div className="flex items-center  gap-4">
+          <div className="flex items-center gap-3 sm:gap-4 relative">
             <div className="relative">
-              <Link to='/cart'><LuShoppingCart className="text-4xl font-bold hover:text-green-500" /></Link>
-              <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
+              <Link to='/cart'>
+                <LuShoppingCart className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
+              </Link>
+              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                 0
               </span>
             </div>
 
-            <div className="relative hidden md:flex">
-              <Link to='/favorite'><FaRegHeart className="text-4xl font-bold hover:text-green-500" /></Link>
-              <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
+            <div className="relative hidden md:block">
+              <Link to='/favorite'>
+                <FaRegHeart className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
+              </Link>
+              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                 1
               </span>
             </div>
 
-
-            <div className='relative md:flex lg:flex hidden'>
-              <Link to='/massenger'> <LuMessageCircleMore className='text-4xl font-bold hover:text-green-500' /></Link>
-              <p className='text-white bg-green-500  -right-4 -top-4 px-2 py-0.5 absolute rounded-full text-center'>5</p>
+            <div className='relative hidden md:block'>
+              <Link to='/messenger'>
+                <LuMessageCircleMore className='text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors' />
+              </Link>
+              <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>
+                5
+              </span>
             </div>
 
-            <div className="relative md:flex lg:flex hidden">
-              <Link to="/notification"><IoNotifications className="text-4xl font-bold hover:text-green-500" /></Link>
-              <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
+            <div className="relative hidden md:block">
+              <Link to="/notification">
+                <IoNotifications className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
+              </Link>
+              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                 0
               </span>
             </div>
 
-            <div className="hidden md:flex">
+            <div className="hidden md:block">
               {user ? (
                 <button
                   onClick={() => setprofileopen(!profileopen)}
-                  className="p-2 border ml-1 relative border-green-500 rounded-xl"
+                  className="flex items-center gap-2 border border-green-500 rounded-xl px-3 py-1.5 hover:bg-green-50 transition-colors"
                 >
-                  <div className="flex gap-2 items-center">
-                    <div>
-                      <h3 className="text-xl font-bold">
-                        {user.displayName
-                          ? user.displayName.split(' ')[0]
-                          : 'User'}
+                  <div className="flex items-center gap-2">
+                    <div className="text-right">
+                      <h3 className="text-sm font-semibold text-gray-800">
+                        {user.displayName ? user.displayName.split(' ')[0] : 'User'}
                       </h3>
                       {loading ? (
-                        <div className="flex items-center justify-center py-4">
-                          <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-                        </div>
+                        <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin mx-auto"></div>
                       ) : (
-                        <p>{User?.role}</p>
-                      )
-                      }
+                        <p className="text-xs text-gray-500 capitalize">{User?.role || 'User'}</p>
+                      )}
                     </div>
-
                     {user.photoURL ? (
                       <img
                         src={user.photoURL}
-                        className="w-12 h-12 rounded-full"
+                        alt="profile"
+                        className="w-8 h-8 rounded-full object-cover"
                       />
                     ) : (
-                      <FaRegUserCircle className="text-4xl text-green-500" />
+                      <FaRegUserCircle className="text-3xl text-green-500" />
                     )}
                   </div>
-
-                  {profileopen && (
-                    <div
-                      ref={dropdownRef}
-                      className="w-[300px] absolute z-60 md:right-0 top-full mt-2 bg-white rounded-xl shadow-lg overflow-hidden border border-gray-100"
-                    >
-                      <div className="bg-[#38A144] p-6 flex items-center gap-4">
-                        {user.photoURL ? (
-                          <img
-                            src={user.photoURL}
-                            className="w-14 h-14 rounded-full"
-                          />
-                        ) : (
-                          <FaRegUserCircle className="text-4xl text-white" />
-                        )}
-                        {
-                          loading ? (<div className="flex items-center justify-center py-4">
-                            <div className="w-6 h-6 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
-                          </div>) : (
-                            <div>
-                              <h2 className="text-white font-bold text-lg">
-                                {User?.displayName}
-                              </h2>
-                              <p className="text-white/80 text-sm">
-                                {User.email}
-                              </p>
-                            </div>
-                          )
-                        }
-
-                      </div>
-
-                      <nav className="p-4 space-y-1">
-                        <ProfileLink to="/dashboard/my-profile" icon={<FaUser />} text="My Profile" close={() => setprofileopen(false)} />
-                        <ProfileLink to="/dashboard/myorder" icon={<FaBox />} text="My Orders" close={() => setprofileopen(false)} />
-                        <ProfileLink to="/favorite" icon={<FaHeart />} text="Wishlist" close={() => setprofileopen(false)} />
-                        <ProfileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" close={() => setprofileopen(false)} />
-                        <ProfileLink to="/dashboard/becomeaseller" icon={<MdSell />} text="Become a Seller" close={() => setprofileopen(false)} />
-                        <ProfileLink to="/dashboard/settings" icon={<FaCog />} text="Settings" close={() => setprofileopen(false)} />
-
-
-                        <hr className="my-2" />
-
-                        <ProfileLink to="/help" icon={<FaQuestionCircle />} text="Help & Support" close={() => setprofileopen(false)} />
-
-                        <hr className="my-2" />
-
-                        <button
-                          onClick={handlelogout}
-                          className="flex items-center gap-4 p-3 w-full hover:bg-red-50 rounded-lg"
-                        >
-                          <FaSignOutAlt className="text-red-500" />
-                          <span className="font-bold text-red-600">
-                            Sign Out
-                          </span>
-                        </button>
-                      </nav>
-                    </div>
-                  )}
                 </button>
               ) : (
                 <div className="flex gap-2">
                   <Link to="/sign-in">
-                    <button className="border border-green-500 px-3 py-1.5 rounded text-green-500 font-bold hidden md:flex">
+                    <button className="border border-green-500 px-4 py-1.5 rounded text-green-500 font-semibold text-sm hover:bg-green-50 transition-colors">
                       Sign In
                     </button>
                   </Link>
                   <Link to="/sign-up">
-                    <button className="bg-green-500 px-3 py-1.5 rounded text-white font-bold hidden md:flex">
+                    <button className="bg-green-500 px-4 py-1.5 rounded text-white font-semibold text-sm hover:bg-green-600 transition-colors">
                       Sign Up
                     </button>
                   </Link>
                 </div>
               )}
             </div>
+
+            {profileopen && user && (
+              <div
+                ref={dropdownRef}
+                className="absolute right-0 top-[60px] w-80 bg-white rounded-xl shadow-lg border border-gray-200 z-50"
+              >
+                <div className="bg-green-600 p-5 rounded-t-xl">
+                  <div className="flex items-center gap-3">
+                    {user.photoURL ? (
+                      <img
+                        src={user.photoURL}
+                        alt="profile"
+                        className="w-12 h-12 rounded-full border-2 border-white"
+                      />
+                    ) : (
+                      <FaRegUserCircle className="text-5xl text-white" />
+                    )}
+                    <div>
+                      <h2 className="text-white font-semibold">
+                        {User?.displayName || user.displayName || 'User'}
+                      </h2>
+                      <p className="text-white/80 text-sm truncate max-w-[180px]">{user.email}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <nav className="p-3">
+                  <ProfileLink to="/dashboard/my-profile" icon={<FaUser />} text="My Profile" close={() => setprofileopen(false)} />
+                  <ProfileLink to="/dashboard/myorder" icon={<FaBox />} text="My Orders" close={() => setprofileopen(false)} />
+                  <ProfileLink to="/favorite" icon={<FaHeart />} text="Wishlist" close={() => setprofileopen(false)} />
+                  <ProfileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" close={() => setprofileopen(false)} />
+                  <ProfileLink to="/dashboard/becomeaseller" icon={<MdSell />} text="Become a Seller" close={() => setprofileopen(false)} />
+                  <ProfileLink to="/dashboard/settings" icon={<FaCog />} text="Settings" close={() => setprofileopen(false)} />
+                  <div className="border-t my-2"></div>
+                  <ProfileLink to="/help" icon={<FaQuestionCircle />} text="Help & Support" close={() => setprofileopen(false)} />
+                  <div className="border-t my-2"></div>
+                  <button
+                    onClick={handlelogout}
+                    className="flex items-center gap-3 p-3 w-full hover:bg-red-50 rounded-lg transition-colors"
+                  >
+                    <FaSignOutAlt className="text-red-500 text-lg" />
+                    <span className="font-medium text-red-600">Sign Out</span>
+                  </button>
+                </nav>
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -248,141 +232,153 @@ const Navbar = () => {
       <hr className="mt-5 opacity-20" />
 
       <div className="container py-0">
-        <div className="mb-2 mt-5 md:hidden lg:hidden flex items-center justify-between">
-          <HiOutlineBars3
-            onClick={() => setopen(true)}
-            className="text-4xl font-bold"
-          />
+        <div className="mb-2 mt-5 md:hidden flex items-center justify-between">
+          <button onClick={() => setopen(true)} className="p-2">
+            <HiOutlineBars3 className="text-3xl text-gray-700" />
+          </button>
 
-          <div className='relative'>
-            <Link className='text-4xl font-bold'> <LuMessageCircleMore /></Link>
-            <p className='text-white bg-green-500 right-0 -top-3 px-2 py-0.5 absolute rounded-full text-center'>5</p>
+          <div className='flex items-center gap-4'>
+            <div className='relative'>
+              <Link to='/messenger'>
+                <LuMessageCircleMore className='text-3xl text-gray-700' />
+              </Link>
+              <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>
+                5
+              </span>
+            </div>
+
+            <div className="relative">
+              <Link to="/notification">
+                <IoNotifications className="text-3xl text-gray-700" />
+              </Link>
+              <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                0
+              </span>
+            </div>
           </div>
-
-          <div className="relative ">
-            <IoNotifications className="text-4xl font-bold hover:text-green-500" />
-            <span className="font-bold text-white bg-green-500 rounded-full px-2 py-0.5 absolute -top-4 -right-4">
-              0
-            </span>
-          </div>
-
         </div>
 
-        {open ? (
-          <div className="fixed inset-y-0 left-0 w-[280px] bg-[#050505] z-50 shadow-2xl p-5 flex flex-col">
-            <RxCross2
-              onClick={() => setopen(false)}
-              className="text-red-500 text-2xl my-5"
-            />
+        {open && (
+          <div className="fixed inset-0 bg-black/50 z-50">
+            <div className="fixed inset-y-0 left-0 w-[280px] bg-white z-50 shadow-2xl flex flex-col">
+              <div className="p-4 border-b flex justify-between items-center">
+                <h2 className="text-xl font-bold text-green-600">DESHIMART</h2>
+                <button onClick={() => setopen(false)} className="p-2">
+                  <RxCross2 className="text-2xl text-gray-600" />
+                </button>
+              </div>
 
-
-            {
-              user ? (
-                <div className="flex sticky flex-col gap-2 items-center shrink-0 border-b">
-
-
-                  {user.photoURL ? (
-                    <img
-                      src={user.photoURL}
-                      className="w-15 h-15 rounded-full"
-                    />
-                  ) : (
-                    <FaRegUserCircle className="text-4xl text-green-500" />
-                  )}
-
-                  <div className='text-center'>
-                    <h3 className="text-xl text-white font-bold">
-                      {user.displayName
-                        ? user.displayName
-                        : 'User'}
-                    </h3>
-                    <p className='text-white'>Local User</p>
+              {user && (
+                <div className="p-4 border-b bg-gray-50">
+                  <div className="flex items-center gap-3">
+                    {user.photoURL ? (
+                      <img src={user.photoURL} alt="profile" className="w-12 h-12 rounded-full" />
+                    ) : (
+                      <FaRegUserCircle className="text-4xl text-green-500" />
+                    )}
+                    <div>
+                      <h3 className="font-semibold text-gray-800">
+                        {user.displayName || 'User'}
+                      </h3>
+                      <p className="text-sm text-gray-500 capitalize">{User?.role || 'User'}</p>
+                    </div>
                   </div>
-                </div>) : (<h2 className="text-2xl font-bold text-center text-green-500">DESHIMART</h2>)
-            }
+                </div>
+              )}
 
-            <div className="mt-10 mb-8">
-              <h3 className="text-[#84cc16] text-[10px] font-bold tracking-widest mb-4">
-                QUICK ACCESS
-              </h3>
-              <div className="grid grid-cols-3 gap-2">
-                <Link onClick={() => setopen(false)}><Quick icon={<LuShoppingCart />} text="Cart" /></Link>
-                <Link onClick={() => setopen(false)}><Quick icon={<FaRegHeart />} text="Wishlist" /></Link>
-                <Link onClick={() => setopen(false)}><Quick icon={<LuPackage />} text="Orders" /></Link>
+              <div className="flex-1 overflow-y-auto p-4">
+                <div className="mb-6">
+                  <h3 className="text-xs font-bold text-green-600 tracking-wider mb-3">QUICK ACCESS</h3>
+                  <div className="grid grid-cols-3 gap-2">
+                    <Link to="/cart" onClick={() => setopen(false)} className="bg-gray-50 p-3 rounded-lg flex flex-col items-center gap-1">
+                      <LuShoppingCart className="text-xl text-green-600" />
+                      <span className="text-xs text-gray-600">Cart</span>
+                    </Link>
+                    <Link to="/favorite" onClick={() => setopen(false)} className="bg-gray-50 p-3 rounded-lg flex flex-col items-center gap-1">
+                      <FaRegHeart className="text-xl text-green-600" />
+                      <span className="text-xs text-gray-600">Wishlist</span>
+                    </Link>
+                    <Link to="/dashboard/myorder" onClick={() => setopen(false)} className="bg-gray-50 p-3 rounded-lg flex flex-col items-center gap-1">
+                      <LuPackage className="text-xl text-green-600" />
+                      <span className="text-xs text-gray-600">Orders</span>
+                    </Link>
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="text-xs font-bold text-green-600 tracking-wider mb-3">MY ACCOUNT</h3>
+                  <div className="space-y-1">
+                    <MobileLink to="/dashboard/my-profile" icon={<FaRegUser />} text="My Profile" onClick={() => setopen(false)} />
+                    <MobileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" onClick={() => setopen(false)} />
+                    <MobileLink to="/dashboard/settings" icon={<FaCog />} text="Settings" onClick={() => setopen(false)} />
+                    <MobileLink to="/help" icon={<FaQuestionCircle />} text="Help & Support" onClick={() => setopen(false)} />
+                  </div>
+                </div>
+
+                <div className="mb-6">
+                  <h3 className="text-xs font-bold text-green-600 tracking-wider mb-3">NAVIGATION</h3>
+                  <div className="space-y-1">
+                    <MobileLink to="/" icon={<HiOutlineHome />} text="Home" onClick={() => setopen(false)} />
+                    <MobileLink to="/shop" icon={<LuShoppingCart />} text="Shop" onClick={() => setopen(false)} />
+                    <MobileLink to="/categories" icon={<LuLayoutGrid />} text="Categories" onClick={() => setopen(false)} />
+                    <MobileLink to="/hot-deal" icon={<LuFlame />} text="Hot Deal" onClick={() => setopen(false)} />
+                    <MobileLink to="/blog" icon={<LuBookOpen />} text="Blog" onClick={() => setopen(false)} />
+                    <MobileLink to="/collection" icon={<MdCollectionsBookmark />} text="Collection" onClick={() => setopen(false)} />
+                    <MobileLink to="/local-stores" icon={<LiaStoreSolid />} text="Local Stores" onClick={() => setopen(false)} />
+                    <MobileLink to="/contact" icon={<BiSolidContact />} text="Contact" onClick={() => setopen(false)} />
+                  </div>
+                </div>
+
+                {!user && (
+                  <div className="flex gap-2 mt-4">
+                    <Link to="/sign-in" onClick={() => setopen(false)} className="flex-1 border border-green-500 text-green-500 text-center py-2 rounded-lg font-semibold text-sm">
+                      Sign In
+                    </Link>
+                    <Link to="/sign-up" onClick={() => setopen(false)} className="flex-1 bg-green-500 text-white text-center py-2 rounded-lg font-semibold text-sm">
+                      Sign Up
+                    </Link>
+                  </div>
+                )}
+
+                {user && (
+                  <button
+                    onClick={() => {
+                      handlelogout();
+                      setopen(false);
+                    }}
+                    className="w-full flex items-center justify-center gap-2 p-3 bg-red-50 text-red-600 rounded-lg font-medium mt-4"
+                  >
+                    <FaSignOutAlt className="text-lg" />
+                    Sign Out
+                  </button>
+                )}
               </div>
             </div>
-
-            <div className='flex-1 overflow-y-auto p-6'>
-              <MobileSection title="My Account">
-                <Link onClick={() => setopen(false)}><MobileLink icon={<FaRegUser />} text="My Account" /></Link>
-                <Link onClick={() => setopen(false)}><MobileLink icon={<FaThLarge />} text="Dashboard" /></Link>
-                <Link onClick={() => setopen(false)}><MobileLink icon={<FaCog />} text="Settings" /></Link>
-                <Link onClick={() => setopen(false)} > <MobileLink icon={<FaArrowRight />} text="Help & Support" /></Link>
-              </MobileSection>
-
-              <MobileSection title="Navigation">
-                <Link onClick={() => setopen(false)}><MobileNav to="/" icon={<HiOutlineHome />} text="Home" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav to="/shop" icon={<LuShoppingCart />} text="Shop" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav icon={<LuLayoutGrid />} text="Categories" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav icon={<LuFlame />} text="Hot Deal" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav icon={<LuBookOpen />} text="Blog" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav icon={<MdCollectionsBookmark />} text="collection" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav icon={<LiaStoreSolid />} text="clocal stores" /></Link>
-                <Link onClick={() => setopen(false)}><MobileNav icon={<BiSolidContact />} text="contact" /></Link>
-              </MobileSection>
-
-              <hr className='text-2xl font-bold text-white' />
-
-              {
-                user ? (<button
-                  onClick={handlelogout}
-                  className="flex items-center gap-4 p-3 w-full hover:bg-red-50 rounded-lg"
-                >
-                  <FaSignOutAlt className="text-red-500" />
-                  <span className="font-bold text-red-600">
-                    Sign Out
-                  </span>
-                </button>) :
-                  (<div className="flex gap-2 mt-5">
-                    <Link onClick={() => setopen(false)} to="/sign-in">
-                      <button className="border border-green-500 px-3 py-1.5 rounded text-green-500 font-bold ">
-                        Sign In
-                      </button>
-                    </Link>
-                    <Link onClick={() => setopen(false)} to="/sign-up">
-                      <button className="bg-green-500 px-3 py-1.5 rounded text-white font-bold ">
-                        Sign Up
-                      </button>
-                    </Link>
-                  </div>)
-              }
-
-
-
-            </div>
-          </div>
-        ) : (
-          <div className='flex justify-between items-center'>
-            <div className="hidden md:flex justify-center gap-5 my-2.5">
-              {['/', '/shop', '/hot-deal', '/collection', '/local-stores', '/blog', '/contact'].map((path, i) => (
-                <NavLink
-                  key={i}
-                  to={path}
-                  className={({ isActive }) =>
-                    `font-bold border-b-2 pb-1 hover:text-green-500 ${isActive
-                      ? 'text-green-500 border-green-500'
-                      : 'border-transparent'
-                    }`
-                  }
-                >
-                  {path === '/' ? 'Home' : path.replace('/', '').replace('-', ' ')}
-                </NavLink>
-              ))}
-            </div>
-
-            <Link className='hidden hover:text-green-600 md:flex lg:flex items-center text-green-500 font-bold'>Go to Dashboard <FaArrowRight /></Link>
           </div>
         )}
+
+        <div className="hidden md:flex justify-between items-center">
+          <div className="flex justify-center gap-6 my-2.5">
+            {['/', '/shop', '/hot-deal', '/collection', '/local-stores', '/blog', '/contact'].map((path, i) => (
+              <NavLink
+                key={i}
+                to={path}
+                className={({ isActive }) =>
+                  `font-medium text-sm border-b-2 pb-1 transition-colors ${isActive
+                    ? 'text-green-600 border-green-600'
+                    : 'text-gray-600 border-transparent hover:text-green-600'
+                  }`
+                }
+              >
+                {path === '/' ? 'Home' : path.replace('/', '').replace('-', ' ')}
+              </NavLink>
+            ))}
+          </div>
+
+          <Link to="/dashboard" className="hidden md:flex items-center gap-2 text-green-600 font-medium text-sm hover:text-green-700">
+            Go to Dashboard <FaArrowRight className="text-xs" />
+          </Link>
+        </div>
       </div>
     </div>
   );
@@ -392,43 +388,23 @@ const ProfileLink = ({ to, icon, text, close }) => (
   <Link
     to={to}
     onClick={close}
-    className="flex items-center gap-4 p-3 hover:bg-gray-50 rounded-lg"
+    className="flex items-center gap-3 p-3 hover:bg-gray-50 rounded-lg transition-colors"
   >
-    <div className="w-10 h-10 flex items-center justify-center bg-gray-100 rounded-lg">
+    <div className="w-8 h-8 flex items-center justify-center bg-gray-100 rounded-lg text-gray-600">
       {icon}
     </div>
-    <span className="font-semibold">{text}</span>
+    <span className="text-sm font-medium text-gray-700">{text}</span>
   </Link>
 );
 
-const Quick = ({ icon, text }) => (
-  <div className="bg-[#0a2e1a] p-3 rounded flex flex-col items-center gap-1 border border-white/5">
-    <div className="text-green-500 text-lg">{icon}</div>
-    <span className="text-white text-[10px]">{text}</span>
-  </div>
-);
-
-const MobileSection = ({ title, children }) => (
-  <div className="mb-8">
-    <h3 className="text-[#84cc16] text-[10px] font-bold tracking-widest mb-4 uppercase">
-      {title}
-    </h3>
-    <div className="flex flex-col gap-4 pl-1">{children}</div>
-  </div>
-);
-
-const MobileLink = ({ icon, text }) => (
-  <Link className="text-gray-300 flex items-center gap-3 text-sm hover:text-white">
-    {icon} {text}
-  </Link>
-);
-
-const MobileNav = ({ to, icon, text }) => (
+const MobileLink = ({ to, icon, text, onClick }) => (
   <Link
     to={to}
-    className="text-gray-300 flex items-center gap-3 p-3 rounded-md text-sm hover:bg-white/5"
+    onClick={onClick}
+    className="flex items-center gap-3 px-3 py-2.5 text-sm text-gray-700 hover:text-green-600 hover:bg-gray-50 rounded-lg transition-colors"
   >
-    {icon} {text}
+    <span className="text-lg w-5">{icon}</span>
+    <span>{text}</span>
   </Link>
 );
 
