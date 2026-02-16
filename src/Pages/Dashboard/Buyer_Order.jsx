@@ -2,26 +2,26 @@ import React, { useState, useMemo } from 'react';
 import Useauth from '../../Component/Useauth';
 import { useQuery } from '@tanstack/react-query';
 import { buyerorder } from '../../Component/Api';
-import { 
-  Package, 
-  Search,
-  Filter,
-  Download,
-  Eye,
-  Calendar,
-  User,
-  ShoppingBag,
-  DollarSign,
-  Mail,
-  XCircle,
-  TrendingUp,
-  Clock,
-  CreditCard,
-  ChevronRight,
-  Printer,
-  Share2,
-  CheckCircle,
-  AlertCircle
+import {
+    Package,
+    Search,
+    Filter,
+    Download,
+    Eye,
+    Calendar,
+    User,
+    ShoppingBag,
+    DollarSign,
+    Mail,
+    XCircle,
+    TrendingUp,
+    Clock,
+    CreditCard,
+    ChevronRight,
+    Printer,
+    Share2,
+    CheckCircle,
+    AlertCircle
 } from 'lucide-react';
 
 const Buyer_Order = () => {
@@ -44,7 +44,7 @@ const Buyer_Order = () => {
 
     const filteredOrders = useMemo(() => {
         return orders.filter(order => {
-            const matchesSearch = searchTerm === '' || 
+            const matchesSearch = searchTerm === '' ||
                 order.customer_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 order.tran_id?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 order.item?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -56,20 +56,28 @@ const Buyer_Order = () => {
     const displayOrders = useMemo(() => {
         const now = new Date();
         const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        
-        switch(timeFilter) {
+
+        switch (timeFilter) {
             case 'today':
                 return filteredOrders.filter(order => new Date(order.paid_at) >= today);
-            case 'week':
-                const weekAgo = new Date(now.setDate(now.getDate() - 7));
+
+            case 'week': {
+                const weekAgo = new Date();
+                weekAgo.setDate(weekAgo.getDate() - 7);
                 return filteredOrders.filter(order => new Date(order.paid_at) >= weekAgo);
-            case 'month':
-                const monthAgo = new Date(now.setMonth(now.getMonth() - 1));
+            }
+
+            case 'month': {
+                const monthAgo = new Date();
+                monthAgo.setMonth(monthAgo.getMonth() - 1);
                 return filteredOrders.filter(order => new Date(order.paid_at) >= monthAgo);
+            }
+
             default:
                 return filteredOrders;
         }
     }, [filteredOrders, timeFilter]);
+
 
     const filterApplied = searchTerm !== '' || timeFilter !== 'all';
 
@@ -102,7 +110,7 @@ const Buyer_Order = () => {
                                 })}
                             </p>
                         </div>
-                        <button 
+                        <button
                             onClick={onClose}
                             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
                         >
@@ -144,8 +152,8 @@ const Buyer_Order = () => {
                             </div>
                             <div className="p-6">
                                 <div className="flex flex-col md:flex-row gap-6">
-                                    <img 
-                                        src={order.item?.Productimg} 
+                                    <img
+                                        src={order.item?.Productimg}
                                         alt={order.item?.name}
                                         className="w-32 h-32 md:w-40 md:h-40 object-cover rounded-lg border-2 border-gray-200"
                                     />
@@ -242,8 +250,8 @@ const Buyer_Order = () => {
                     </div>
                     <h2 className="text-xl font-bold text-black mb-2">Error Loading Orders</h2>
                     <p className="text-gray-600 mb-6">Please try again later</p>
-                    <button 
-                        onClick={() => window.location.reload()} 
+                    <button
+                        onClick={() => window.location.reload()}
                         className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
                     >
                         Try Again
@@ -326,7 +334,7 @@ const Buyer_Order = () => {
                                     </span>
                                 )}
                             </div>
-                            
+
                             <div className="flex flex-col sm:flex-row gap-3">
                                 <select
                                     value={timeFilter}
@@ -349,16 +357,16 @@ const Buyer_Order = () => {
                                         className="pl-10 pr-4 py-2 bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-600 focus:border-transparent w-full sm:w-64"
                                     />
                                 </div>
-                                
+
                                 {filterApplied && (
-                                    <button 
+                                    <button
                                         onClick={clearFilters}
                                         className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors text-gray-700 font-medium"
                                     >
                                         Clear Filters
                                     </button>
                                 )}
-                                
+
                                 <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors flex items-center gap-2 font-medium">
                                     <Download className="w-4 h-4" />
                                     Export
@@ -387,7 +395,7 @@ const Buyer_Order = () => {
                                             <p className="text-gray-600 font-medium mb-1">No orders found</p>
                                             <p className="text-gray-500 text-sm">Try adjusting your filters</p>
                                             {filterApplied && (
-                                                <button 
+                                                <button
                                                     onClick={clearFilters}
                                                     className="mt-4 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-medium"
                                                 >
@@ -398,8 +406,8 @@ const Buyer_Order = () => {
                                     </tr>
                                 ) : (
                                     displayOrders.map((order) => (
-                                        <tr 
-                                            key={order.tran_id} 
+                                        <tr
+                                            key={order.tran_id}
                                             className="hover:bg-gray-50 transition-colors cursor-pointer border-l-2 border-transparent hover:border-green-600"
                                             onClick={() => {
                                                 setSelectedOrder(order);
@@ -426,8 +434,8 @@ const Buyer_Order = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center">
-                                                    <img 
-                                                        src={order.item?.Productimg} 
+                                                    <img
+                                                        src={order.item?.Productimg}
                                                         alt={order.item?.name}
                                                         className="w-10 h-10 rounded-lg object-cover border border-gray-200"
                                                     />
@@ -456,7 +464,7 @@ const Buyer_Order = () => {
                                                 </span>
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
-                                                <button 
+                                                <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         setSelectedOrder(order);
@@ -492,12 +500,12 @@ const Buyer_Order = () => {
             </div>
 
             {showDetailsModal && (
-                <OrderDetailsModal 
-                    order={selectedOrder} 
+                <OrderDetailsModal
+                    order={selectedOrder}
                     onClose={() => {
                         setShowDetailsModal(false);
                         setSelectedOrder(null);
-                    }} 
+                    }}
                 />
             )}
         </div>

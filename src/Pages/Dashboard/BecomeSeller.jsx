@@ -2,21 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { becomeseller } from '../../Component/Api';
 import Useauth from '../../Component/Useauth';
-import { 
-  UserCircleIcon, 
-  BuildingStorefrontIcon, 
-  EnvelopeIcon, 
-  PhoneIcon, 
-  MapPinIcon, 
-  CameraIcon, 
-  DocumentTextIcon, 
-  ShieldCheckIcon,
-  CreditCardIcon,
-  CheckCircleIcon,
-  ChevronDownIcon,
-  ChevronUpIcon,
-  XMarkIcon,
-  PlusIcon
+import {
+    UserCircleIcon,
+    BuildingStorefrontIcon,
+    EnvelopeIcon,
+    PhoneIcon,
+    MapPinIcon,
+    CameraIcon,
+    DocumentTextIcon,
+    ShieldCheckIcon,
+    CreditCardIcon,
+    CheckCircleIcon,
+    ChevronDownIcon,
+    ChevronUpIcon,
+    XMarkIcon,
+    PlusIcon
 } from '@heroicons/react/24/outline';
 
 const BecomeSeller = () => {
@@ -32,12 +32,12 @@ const BecomeSeller = () => {
     const [formError, setFormError] = useState('');
     const [submitSuccess, setSubmitSuccess] = useState(false);
 
-    const { 
-        register, 
-        handleSubmit, 
+    const {
+        register,
+        handleSubmit,
         setValue,
         watch,
-        formState: { errors } 
+        formState: { errors }
     } = useForm({
         mode: 'onChange',
         defaultValues: {
@@ -110,17 +110,17 @@ const BecomeSeller = () => {
         if (file) {
             const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp'];
             const maxSize = 5 * 1024 * 1024;
-            
+
             if (!validTypes.includes(file.type)) {
                 setFormError('Only JPG, PNG, GIF, or WebP images are allowed');
                 return;
             }
-            
+
             if (file.size > maxSize) {
                 setFormError('Image size should be less than 5MB');
                 return;
             }
-            
+
             setShopImage(file);
             const previewUrl = URL.createObjectURL(file);
             setShopImagePreview(previewUrl);
@@ -200,7 +200,7 @@ const BecomeSeller = () => {
             } else {
                 setFormError(res.message || 'Submission failed');
             }
-        } catch (err) {
+        } catch {
             setFormError('Submission failed. Please try again.');
         } finally {
             setLoading(false);
@@ -313,7 +313,7 @@ const BecomeSeller = () => {
                                             {...register("sellerPhone", {
                                                 required: "Phone number is required",
                                                 pattern: {
-                                                    value: /^\+?[0-9\s\-\(\)]{10,}$/,
+                                                    value: /^\+?[0-9\s\-()]{10,15}$/,
                                                     message: "Please enter a valid phone number"
                                                 }
                                             })}
@@ -364,7 +364,7 @@ const BecomeSeller = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Shop Categories *
                                 </label>
-                                
+
                                 <div className="mb-4">
                                     <div className="flex flex-wrap gap-2 mb-3">
                                         {selectedCategories.length > 0 ? (
@@ -427,8 +427,8 @@ const BecomeSeller = () => {
                                         className="w-full border border-gray-300 rounded-xl px-4 py-3 text-left bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 flex justify-between items-center transition-all"
                                     >
                                         <span className="text-gray-700">
-                                            {selectedCategories.length > 0 
-                                                ? `${selectedCategories.length} categories selected` 
+                                            {selectedCategories.length > 0
+                                                ? `${selectedCategories.length} categories selected`
                                                 : 'Select categories'}
                                         </span>
                                         <span className="text-gray-500">
@@ -444,11 +444,10 @@ const BecomeSeller = () => {
                                                     key={category}
                                                     onClick={() => handleCategorySelect(category)}
                                                     disabled={selectedCategories.includes(category)}
-                                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors ${
-                                                        selectedCategories.includes(category)
+                                                    className={`w-full text-left px-4 py-3 hover:bg-gray-50 border-b border-gray-100 last:border-b-0 transition-colors ${selectedCategories.includes(category)
                                                             ? 'bg-blue-50 text-blue-600 cursor-not-allowed'
                                                             : 'text-gray-700 hover:text-blue-600'
-                                                    }`}
+                                                        }`}
                                                 >
                                                     <div className="flex items-center justify-between">
                                                         <span className="font-medium">{category}</span>
@@ -469,7 +468,7 @@ const BecomeSeller = () => {
                                 <label className="block text-sm font-medium text-gray-700 mb-2">
                                     Shop Logo/Image
                                 </label>
-                                
+
                                 <div className="mb-4">
                                     <div className="flex items-center gap-2 mb-2">
                                         <span className="text-gray-600">Or enter image URL:</span>

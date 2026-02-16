@@ -233,7 +233,7 @@ const UploadProduct = () => {
                 image: data.image || '',
                 createdAt: new Date().toISOString(),
                 isNew: true,
-                status: "pending" // ✅ এখানে status যোগ করুন
+                status: "pending" 
             };
             
             const response = await postproducts(processedData);
@@ -292,7 +292,7 @@ const UploadProduct = () => {
             description: formValues.description,
             image: formValues.image || '',
             isNew: Boolean(formValues.isNew),
-            status: "pending" // ✅ প্রিভিউতেও যোগ করুন
+            status: "pending"
         };
         console.log('Preview Data:', previewData);
         alert('Check console for preview data (F12)');
@@ -356,7 +356,7 @@ const UploadProduct = () => {
                         <input type="hidden" {...register("rating")} value="0" />
                         <input type="hidden" {...register("reviews")} value="0" />
                         <input type="hidden" {...register("sold")} value="0" />
-                        <input type="hidden" {...register("status")} value="pending" /> {/* ✅ হিডেন ফিল্ড যোগ করুন */}
+                        <input type="hidden" {...register("status")} value="pending" /> 
                         
                         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
                             <div className="lg:col-span-2 space-y-8">

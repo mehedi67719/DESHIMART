@@ -1,5 +1,4 @@
 import React from 'react';
-import banner from '../../assets/banner.png'
 import FeaturedProducts from '../../Component/FeaturedProducts';
 import PopularProducts from '../../Component/PopularProducts';
 import SellingSection from '../../Component/SellingSection';

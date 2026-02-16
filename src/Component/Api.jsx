@@ -1,4 +1,5 @@
 
+import { Ear } from "lucide-react";
 import useaxios from "./Useaxios";
 
 export const products = async ({ pageParam = null, category = "", brand = '', priceRange = '' }) => {
@@ -71,6 +72,37 @@ export const popularcategorys = async () => {
   const res = await useaxios.get("categorys/popular");
   return res.data
 }
+
+
+
+export const sellerpopularcategorys = async (email) => {
+  try {
+    const res = await useaxios.get("categorys/seller/popular", {
+      params: { sellerEmail: email }
+    });
+    return res.data
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+export const sellerTopratingcategorys = async (email) => {
+  try {
+    const res = await useaxios.get("categorys/seller/toprating", {
+      params: { sellerEmail: email }
+    });
+    return res.data
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
 
 
 
