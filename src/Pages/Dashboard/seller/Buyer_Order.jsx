@@ -1,7 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import Useauth from '../../Component/Useauth';
 import { useQuery } from '@tanstack/react-query';
-import { buyerorder } from '../../Component/Api';
 import {
     Package,
     Search,
@@ -23,6 +21,8 @@ import {
     CheckCircle,
     AlertCircle
 } from 'lucide-react';
+import Useauth from '../../../Component/Useauth';
+import { buyerorder } from '../../../Component/Api';
 
 const Buyer_Order = () => {
     const { user } = Useauth();

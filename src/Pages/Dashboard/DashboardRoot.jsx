@@ -39,7 +39,7 @@ const DashboardRoot = () => {
                     />
                 )}
 
-                <div className="flex-1 w-full md:w-[calc(100%-180px)] lg:w-[calc(100%-200px)] xl:w-[calc(100%-220px)] ml-3">
+                <div className="flex-1 w-full md:w-[calc(100%-180px)] lg:w-[calc(100%-200px)] my-5 xl:w-[calc(100%-220px)] ml-3">
                     <div className="min-h-[calc(100vh-12rem)]">
                         <Outlet />
                     </div>

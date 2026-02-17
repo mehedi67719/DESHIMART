@@ -24,10 +24,12 @@ import Myprofile from "../Pages/Dashboard/Myprofile";
 import Setting from "../Pages/Dashboard/Setting";
 import PaymentHistory from "../Pages/Dashboard/PaymentHistory";
 import BecomeSeller from "../Pages/Dashboard/BecomeSeller";
-import UploadProduct from "../Pages/Dashboard/UploadProduct";
-import Products from "../Pages/Dashboard/Products";
-import Buyer_Order from "../Pages/Dashboard/Buyer_Order";
-import My_Customer from "../Pages/Dashboard/My_Customer";
+import Products from "../Pages/Dashboard/seller/Products";
+import UploadProduct from "../Pages/Dashboard/seller/UploadProduct";
+import Buyer_Order from "../Pages/Dashboard/seller/Buyer_Order";
+import My_Customer from "../Pages/Dashboard/seller/My_Customer";
+import All_Users from "../Pages/Dashboard/Admin/All_Users";
+
 
 
 
@@ -159,6 +161,10 @@ export const router = createBrowserRouter([
             {
                 path:"/dashboard/my-customer",
                 Component:My_Customer
+            },
+            {
+                path:"/dashboard/all-users",
+                Component:All_Users
             }
         ]
     }

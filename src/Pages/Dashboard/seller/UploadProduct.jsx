@@ -12,8 +12,9 @@ import {
 } from '@heroicons/react/24/outline';
 import { FaUpload } from 'react-icons/fa';
 import Swal from 'sweetalert2';
-import { categorys, postproducts } from '../../Component/Api';
-import Useauth from '../../Component/Useauth';
+import Useauth from '../../../Component/Useauth';
+import { categorys, postproducts } from '../../../Component/Api';
+
 
 const UploadProduct = () => {
     const { user } = Useauth();
@@ -53,7 +54,7 @@ const UploadProduct = () => {
             rating: 0,
             reviews: 0,
             sold: 0,
-            status: "pending" // ✅ ডিফল্ট ভ্যালু সেট আছে
+            status: "pending" 
         }
     });
 

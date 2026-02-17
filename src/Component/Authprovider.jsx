@@ -68,7 +68,7 @@ const Authprovider = ({ children }) => {
                 displayName: result.user.displayName,
                 photoURL: result.user.photoURL,
                 email: result.user.email,
-                role: "localuser",
+                role: "buyer",
                 provider: "google",
                 createdAt: new Date(),
             };

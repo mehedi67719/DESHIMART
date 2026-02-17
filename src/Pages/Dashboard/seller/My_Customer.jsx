@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import Useauth from '../../Component/Useauth';
 import { useQuery } from '@tanstack/react-query';
-import { buyerorder } from '../../Component/Api';
+
 import {
     Users,
     Search,
@@ -24,6 +23,9 @@ import {
     Star,
     ShoppingCart
 } from 'lucide-react';
+import Useauth from '../../../Component/Useauth';
+import { buyerorder } from '../../../Component/Api';
+
 
 const My_Customer = () => {
     const { user } = Useauth();

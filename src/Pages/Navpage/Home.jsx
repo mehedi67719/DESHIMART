@@ -1,11 +1,11 @@
 import React from 'react';
-import FeaturedProducts from '../../Component/FeaturedProducts';
-import PopularProducts from '../../Component/PopularProducts';
-import SellingSection from '../../Component/SellingSection';
-import PopularCategori from '../../Component/PopularCategori';
-import WhyShopWithUs from '../../Component/WhyShopWithUs';
-import WhyChooseUs from '../../Component/WhyChooseUs';
-import Banner from '../../Component/Banner';
+import Banner from '../../Component/Homecomponent/Banner';
+import FeaturedProducts from '../../Component/Homecomponent/FeaturedProducts';
+import PopularProducts from '../../Component/Homecomponent/PopularProducts';
+import SellingSection from '../../Component/Homecomponent/SellingSection';
+import PopularCategori from '../../Component/Homecomponent/PopularCategori';
+import WhyShopWithUs from '../../Component/Homecomponent/WhyShopWithUs';
+import WhyChooseUs from '../../Component/Homecomponent/WhyChooseUs';
 
 
 const Home = () => {
@@ -20,11 +20,7 @@ const Home = () => {
 
 
 
-<Banner></Banner>
-
-
-
-
+            <Banner />
 
             <div className='container mb-10'>
                 <FeaturedProducts />

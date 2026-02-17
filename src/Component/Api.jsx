@@ -318,7 +318,7 @@ export const userpost = async (user) => {
 
 export const getuser = async (email) => {
   try {
-    const res = await useaxios.get("/user", {
+    const res = await useaxios.get("user", {
       params: { email }
     });
     return res.data;
@@ -327,6 +327,18 @@ export const getuser = async (email) => {
     throw err;
   }
 };
+
+
+export const alluser=async()=>{
+  try{
+    const res=await useaxios.get("user/all-users")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
 
 
 

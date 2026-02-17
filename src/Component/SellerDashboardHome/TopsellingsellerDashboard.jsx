@@ -72,7 +72,7 @@ const TopsellingsellerDashboard = () => {
     const COLORS = ['#16a34a', '#f59e0b', '#ef4444'];
 
     return (
-        <div className="min-h-screen">
+        <div className="">
             <div className="mb-6">
                 <h2 className="text-2xl font-bold text-gray-800">Seller Dashboard Overview</h2>
                 <p className="text-gray-600">Welcome back, {user?.displayName || 'Seller'}</p>

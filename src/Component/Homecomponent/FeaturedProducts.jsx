@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from 'react-router';
-import { topsellproducts } from './Api';
-import ShopCard from './ShopCard';
 import { FiPackage, FiArrowRight, FiStar, FiTrendingUp, FiShoppingBag } from 'react-icons/fi';
+import { topsellproducts } from "../Api";
+import ShopCard from "../ShopCard";
 
 const FeaturedProducts = () => {
     const { data, isLoading, isError } = useQuery({

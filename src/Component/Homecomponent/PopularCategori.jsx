@@ -1,8 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import React from 'react';
 import { FiArrowRight, FiGrid } from 'react-icons/fi';
-import { popularcategorys } from './Api';
 import { Link } from 'react-router';
+import { popularcategorys } from '../Api';
 
 const PopularCategori = () => {
     const { data, isLoading, isError } = useQuery({

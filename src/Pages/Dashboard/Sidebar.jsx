@@ -48,6 +48,7 @@ const Sidebar = ({ onItemClick }) => {
             { path: "/dashboard", label: "Dashboard", icon: <FaHome />, key: "dashboard" },
             { path: "/dashboard/my-profile", label: "My Profile", icon: <FaUser />, key: "profile" },
             { path: "/dashboard/payments", label: "Payment History", icon: <FaCreditCard />, key: "payments" },
+            
         ];
 
         if (userRole === 'buyer') {
@@ -63,6 +64,7 @@ const Sidebar = ({ onItemClick }) => {
             return [
                 ...commonMenu,
                 { path: "/dashboard/products", label: "My Products", icon: <FaBox />, key: "my-products" },
+                { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag />, key: "buyer-orders" },
                 { path: "/dashboard/buyer-order", label: "Buyer Orders", icon: <FaShoppingBag />, key: "buyer-orders-seller" },
                 { path: "/dashboard/upload-products", label: "Upload New Product", icon: <MdUpload />, key: "upload-product" },
                 { path: "/dashboard/my-customer", label: "My Customers", icon: <FaUsers />, key: "customers" },
@@ -74,10 +76,10 @@ const Sidebar = ({ onItemClick }) => {
         if (userRole === 'admin') {
             return [
                 ...commonMenu,
-                { path: "/dashboard/users", label: "All Users", icon: <FaUsers />, key: "all-users" },
-                { path: "/dashboard/products", label: "All Products", icon: <FaBox />, key: "all-products" },
+                { path: "/dashboard/all-users", label: "All Users", icon: <FaUsers />, key: "all-users" },
+                { path: "/dashboard/all-products", label: "All Products", icon: <FaBox />, key: "all-products" },
                 { path: "/dashboard/pending-products", label: "Pending Approvals", icon: <MdUpload />, key: "pending" },
-                { path: "/dashboard/myorder", label: "All Orders", icon: <FaShoppingBag />, key: "all-orders" },
+                { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag />, key: "buyer-orders" },
                 { path: "/dashboard/analytics", label: "Analytics", icon: <FaChartBar />, key: "analytics-admin" },
                 { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-admin" },
             ];

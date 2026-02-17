@@ -2,8 +2,8 @@ import { useQuery } from '@tanstack/react-query';
 import React, { useState } from 'react';
 import { FaStar } from 'react-icons/fa';
 import { Link } from 'react-router';
-import { topratingproducts } from './Api';
-import ShopCard from './ShopCard';
+import { topratingproducts } from '../Api';
+import ShopCard from '../ShopCard';
 
 const PopularProducts = () => {
     const [selectedCategory, setSelectedCategory] = useState('all');

@@ -5,8 +5,9 @@ import {
     MagnifyingGlassIcon, CurrencyDollarIcon, TagIcon
 } from '@heroicons/react/24/outline';
 import Swal from 'sweetalert2';
-import Useauth from '../../Component/Useauth';
-import { myproducts, deleteProduct, updateProduct } from '../../Component/Api';
+import { deleteProduct, myproducts, updateProduct } from '../../../Component/Api';
+import Useauth from '../../../Component/Useauth';
+
 
 const Products = () => {
     const { user } = Useauth();
