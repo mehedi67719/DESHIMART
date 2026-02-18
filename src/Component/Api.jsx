@@ -385,6 +385,18 @@ export const getuser = async (email) => {
 };
 
 
+export const pendingUser=async()=>{
+  try{
+    const res=await useaxios.get("user/pending-user")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
 export const alluser = async () => {
   try {
     const res = await useaxios.get("user/all-users")
