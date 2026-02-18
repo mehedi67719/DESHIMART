@@ -121,7 +121,7 @@ const Navbar = () => {
             </div>
 
             <div className='relative hidden md:block'>
-              <Link to='/messenger'>
+              <Link to='/massenger'>
                 <LuMessageCircleMore className='text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors' />
               </Link>
               <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>

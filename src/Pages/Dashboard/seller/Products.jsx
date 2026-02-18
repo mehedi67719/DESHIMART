@@ -7,6 +7,7 @@ import {
 import Swal from 'sweetalert2';
 import { deleteProduct, myproducts, updateProduct } from '../../../Component/Api';
 import Useauth from '../../../Component/Useauth';
+import { Link,  } from 'react-router';
 
 
 const Products = () => {
@@ -128,10 +129,12 @@ const Products = () => {
                         <h1 className="text-xl sm:text-2xl font-bold text-slate-900">Inventory</h1>
                         <p className="text-slate-500 text-xs sm:text-sm">Total {products?.length || 0} Products</p>
                     </div>
-                    <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-700 shadow-sm active:scale-95 transition-all text-sm">
-                        <PlusIcon className="w-5 h-5 mr-2" />
-                        Add Product
-                    </button>
+                    <Link to='/dashboard/upload-products'>
+                        <button className="w-full sm:w-auto inline-flex items-center justify-center px-4 py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-indigo-700 shadow-sm active:scale-95 transition-all text-sm">
+                            <PlusIcon className="w-5 h-5 mr-2" />
+                            Add Product
+                        </button>
+                    </Link>
                 </div>
             </div>
 
@@ -200,9 +203,9 @@ const Products = () => {
                                         onView={() => { setSelectedProduct(product); setIsViewModalOpen(true); }}
                                         onEdit={() => { setSelectedProduct(product); setIsEditModalOpen(true); }}
                                         onDelete={() => handleDelete(product._id)}
-                                        badges={{ 
-                                            stock: getStockStatus(product.stock), 
-                                            status: getStatusBadge(product.status) 
+                                        badges={{
+                                            stock: getStockStatus(product.stock),
+                                            status: getStatusBadge(product.status)
                                         }}
                                     />
                                 ))}
@@ -220,17 +223,17 @@ const Products = () => {
             </div>
 
             {isViewModalOpen && selectedProduct && (
-                <ViewModal 
-                    product={selectedProduct} 
+                <ViewModal
+                    product={selectedProduct}
                     onClose={() => {
                         setIsViewModalOpen(false);
                         setSelectedProduct(null);
-                    }} 
+                    }}
                 />
             )}
 
             {isEditModalOpen && selectedProduct && (
-                <EditModal 
+                <EditModal
                     product={selectedProduct}
                     onUpdate={handleUpdate}
                     onClose={() => {
@@ -255,9 +258,9 @@ const ViewModal = ({ product, onClose }) => (
                 <div className="space-y-4">
                     {product.image && (
                         <div className="flex justify-center">
-                            <img 
-                                src={product.image} 
-                                alt={product.name} 
+                            <img
+                                src={product.image}
+                                alt={product.name}
                                 className="max-h-48 rounded-lg object-cover"
                                 onError={(e) => {
                                     e.target.src = 'https://via.placeholder.com/150';
@@ -347,7 +350,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
 
     const handleImageChange = (e) => {
         const url = e.target.value;
-        setFormData({...formData, image: url});
+        setFormData({ ...formData, image: url });
         setImagePreview(url);
     };
 
@@ -368,7 +371,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
         if (file) {
             const reader = new FileReader();
             reader.onloadend = () => {
-                setFormData({...formData, image: reader.result});
+                setFormData({ ...formData, image: reader.result });
                 setImagePreview(reader.result);
             };
             reader.readAsDataURL(file);
@@ -383,14 +386,14 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                         <h2 className="text-xl font-bold">Edit Product</h2>
                         <button type="button" onClick={onClose} className="text-slate-500 hover:text-slate-700 text-xl">×</button>
                     </div>
-                    
+
                     <div className="space-y-4">
                         <div>
                             <label className="block text-sm font-medium text-slate-700 mb-1">Name</label>
                             <input
                                 type="text"
                                 value={formData.name}
-                                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                 required
                             />
@@ -401,7 +404,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                             <input
                                 type="text"
                                 value={formData.brand}
-                                onChange={(e) => setFormData({...formData, brand: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                 required
                             />
@@ -412,7 +415,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                             <input
                                 type="text"
                                 value={formData.category}
-                                onChange={(e) => setFormData({...formData, category: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                 required
                             />
@@ -428,7 +431,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                                         min="0"
                                         step="0.01"
                                         value={formData.oldPrice}
-                                        onChange={(e) => setFormData({...formData, oldPrice: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, oldPrice: e.target.value })}
                                         className="w-full pl-10 px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                         placeholder="0.00"
                                         required
@@ -443,7 +446,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                                     max="100"
                                     step="1"
                                     value={formData.discount}
-                                    onChange={(e) => setFormData({...formData, discount: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, discount: e.target.value })}
                                     className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                     placeholder="0"
                                     required
@@ -474,7 +477,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                                 type="number"
                                 min="0"
                                 value={formData.stock}
-                                onChange={(e) => setFormData({...formData, stock: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, stock: e.target.value })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                 required
                             />
@@ -484,7 +487,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                             <label className="block text-sm font-medium text-slate-700 mb-1">Unit</label>
                             <select
                                 value={formData.unit}
-                                onChange={(e) => setFormData({...formData, unit: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                             >
                                 <option value="piece">Piece</option>
@@ -526,9 +529,9 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                         {imagePreview && (
                             <div className="mt-2">
                                 <p className="text-sm text-slate-500 mb-2">Image Preview:</p>
-                                <img 
-                                    src={imagePreview} 
-                                    alt="Preview" 
+                                <img
+                                    src={imagePreview}
+                                    alt="Preview"
                                     className="h-32 w-32 object-cover rounded-lg border border-slate-200"
                                     onError={(e) => {
                                         e.target.src = 'https://via.placeholder.com/150';
@@ -541,7 +544,7 @@ const EditModal = ({ product, onUpdate, onClose, isLoading }) => {
                             <label className="block text-sm font-medium text-slate-700 mb-1">Description</label>
                             <textarea
                                 value={formData.description}
-                                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                 className="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-indigo-500 outline-none"
                                 rows="3"
                                 required
@@ -600,15 +603,15 @@ const StatCard = ({ title, value, color }) => {
 
 const ProductRow = ({ product, onView, onEdit, onDelete, badges }) => {
     const hasDiscount = product.oldPrice && product.discount && Number(product.oldPrice) > Number(product.price);
-    
+
     return (
         <tr className="hover:bg-slate-50 transition-colors">
             <td className="px-4 py-4">
                 <div className="flex items-center gap-3">
                     <div className="h-10 w-10 sm:h-12 sm:w-12 rounded-lg bg-slate-100 overflow-hidden flex-shrink-0 border border-slate-200">
-                        <img 
-                            className="h-full w-full object-cover" 
-                            src={product.image || 'https://via.placeholder.com/48'} 
+                        <img
+                            className="h-full w-full object-cover"
+                            src={product.image || 'https://via.placeholder.com/48'}
                             alt={product.name}
                             onError={(e) => {
                                 e.target.src = 'https://via.placeholder.com/48';

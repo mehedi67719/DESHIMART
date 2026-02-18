@@ -15,6 +15,33 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 };
 
 
+export const myproducts = async (email) => {
+  try {
+    const result = await useaxios.get('products/my-products', {
+      params: { email }
+    })
+    return result.data;
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+export const AllProducts = async () => {
+  try {
+    const result = await useaxios.get("products/all-products");
+    return result.data;
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+
 
 
 export const statussummary = async (email) => {
@@ -68,6 +95,21 @@ export const topratingproducts = async () => {
     throw err;
   }
 }
+
+
+
+export const updateproductsstatus = async (id, status) => {
+  try {
+    const res = await useaxios.patch(
+      `products/status/${id}`,
+      { status }   
+    );
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
 
 
 export const singleproducts = async (id) => {
@@ -329,16 +371,31 @@ export const getuser = async (email) => {
 };
 
 
-export const alluser=async()=>{
-  try{
-    const res=await useaxios.get("user/all-users")
+export const alluser = async () => {
+  try {
+    const res = await useaxios.get("user/all-users")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
 }
+
+
+export const updateRole = async (email, role) => {
+  try {
+    const res = await useaxios.patch('user/update-role', {
+      email,
+      role
+    });
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
 
 
 
@@ -387,18 +444,7 @@ export const becomeseller = async (data) => {
 
 
 
-export const myproducts = async (email) => {
-  try {
-    const result = await useaxios.get('products/my-products', {
-      params: { email }
-    })
-    return result.data;
-  }
-  catch (err) {
-    console.log(err)
-    throw err;
-  }
-}
+
 
 
 

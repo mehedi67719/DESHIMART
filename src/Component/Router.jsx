@@ -29,6 +29,10 @@ import UploadProduct from "../Pages/Dashboard/seller/UploadProduct";
 import Buyer_Order from "../Pages/Dashboard/seller/Buyer_Order";
 import My_Customer from "../Pages/Dashboard/seller/My_Customer";
 import All_Users from "../Pages/Dashboard/Admin/All_Users";
+import All_Products from "../Pages/Dashboard/Admin/All_Products";
+import Admin_analytics from "../Pages/Dashboard/Admin/Admin_analytics";
+import Pending_Approval from "../Pages/Dashboard/Admin/Pending_Approval";
+import Seller_analytics from "../Pages/Dashboard/seller/Seller_analytics";
 
 
 
@@ -165,6 +169,22 @@ export const router = createBrowserRouter([
             {
                 path:"/dashboard/all-users",
                 Component:All_Users
+            },
+            {
+                path:"/dashboard/all-products",
+                Component:All_Products
+            },
+            {
+                path:'/dashboard/pending-approval',
+                ComponentL:Pending_Approval
+            },
+            {
+                path:"/dashboard/admin-analytics",
+                Component:Admin_analytics
+            },
+            {
+                path:'/dashboard/seller-analytics',
+                Component:Seller_analytics
             }
         ]
     }

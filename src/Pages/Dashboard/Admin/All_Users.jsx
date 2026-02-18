@@ -1,7 +1,10 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import React from 'react';
-import { alluser } from '../../../Component/Api';
-import { FaUserShield, FaUserTie, FaUser, FaTrash, FaCheck, FaTimes } from 'react-icons/fa';
+import { alluser, updateRole } from '../../../Component/Api';
+import { FaUserShield, FaUserTie, FaUser, FaTrash, FaUsers } from 'react-icons/fa';
+import { MdAdminPanelSettings } from 'react-icons/md';
+import { FaStore, FaShoppingBag } from 'react-icons/fa';
+import Swal from 'sweetalert2';
 
 const All_Users = () => {
     const { data: users, isLoading, error, refetch } = useQuery({
@@ -9,24 +12,31 @@ const All_Users = () => {
         queryFn: alluser
     });
 
-    // Loading Skeleton
+   
+    const updateRoleMutation = useMutation({
+        mutationFn: ({ email, role }) => updateRole(email, role),
+        onSuccess: () => {
+            refetch();
+        }
+    });
+
+    const totalUsers = users?.length || 0;
+    const adminCount = users?.filter(user => user.role?.toLowerCase() === 'admin').length || 0;
+    const sellerCount = users?.filter(user => user.role?.toLowerCase() === 'seller').length || 0;
+    const buyerCount = users?.filter(user => !user.role || user.role?.toLowerCase() === 'buyer' || user.role?.toLowerCase() === 'user').length || 0;
+
     if (isLoading) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <h2 className="text-2xl font-bold mb-6">All Users</h2>
+                <h2 className="text-2xl font-bold mb-6 text-green-600">All Users</h2>
                 <div className="grid gap-4">
                     {[1, 2, 3, 4, 5].map((item) => (
-                        <div key={item} className="bg-white rounded-lg shadow-md p-4 animate-pulse">
+                        <div key={item} className="bg-white rounded-lg shadow-md p-4 animate-pulse border border-gray-200">
                             <div className="flex items-center space-x-4">
                                 <div className="w-12 h-12 bg-gray-300 rounded-full"></div>
                                 <div className="flex-1">
                                     <div className="h-4 bg-gray-300 rounded w-1/4 mb-2"></div>
                                     <div className="h-3 bg-gray-300 rounded w-1/3"></div>
-                                </div>
-                                <div className="flex space-x-2">
-                                    <div className="w-8 h-8 bg-gray-300 rounded"></div>
-                                    <div className="w-8 h-8 bg-gray-300 rounded"></div>
-                                    <div className="w-8 h-8 bg-gray-300 rounded"></div>
                                 </div>
                             </div>
                         </div>
@@ -36,19 +46,15 @@ const All_Users = () => {
         );
     }
 
-    // Error State
     if (error) {
         return (
             <div className="container mx-auto px-4 py-8">
-                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-                    <div className="flex items-center">
-                        <FaTimes className="mr-2" />
-                        <strong className="font-bold">Error! </strong>
-                        <span className="block sm:inline ml-1">{error.message || 'Failed to load users'}</span>
-                    </div>
+                <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    <strong className="font-bold">Error! </strong>
+                    <span>{error.message || 'Failed to load users'}</span>
                     <button 
                         onClick={() => refetch()}
-                        className="mt-3 bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
+                        className="ml-4 bg-red-500 hover:bg-red-600 text-white font-bold py-1 px-3 rounded text-sm"
                     >
                         Try Again
                     </button>
@@ -57,216 +63,376 @@ const All_Users = () => {
         );
     }
 
-    // Get role badge and icon
     const getRoleInfo = (role) => {
         switch(role?.toLowerCase()) {
             case 'admin':
                 return {
-                    icon: <FaUserShield className="text-red-500" />,
-                    badge: 'bg-red-100 text-red-800',
+                    icon: <MdAdminPanelSettings className="text-green-600 text-lg" />,
+                    badge: 'bg-green-600 text-white',
                     label: 'Admin'
                 };
             case 'seller':
                 return {
-                    icon: <FaUserTie className="text-blue-500" />,
-                    badge: 'bg-blue-100 text-blue-800',
+                    icon: <FaStore className="text-black text-lg" />,
+                    badge: 'bg-black text-white',
                     label: 'Seller'
                 };
             default:
                 return {
-                    icon: <FaUser className="text-green-500" />,
-                    badge: 'bg-green-100 text-green-800',
+                    icon: <FaShoppingBag className="text-gray-600 text-lg" />,
+                    badge: 'bg-gray-200 text-gray-800',
                     label: 'Buyer'
                 };
         }
     };
 
-    // Handle make admin
-    const handleMakeAdmin = async (userId) => {
-        if(window.confirm('Are you sure you want to make this user an admin?')) {
+    const handleMakeAdmin = async (user) => {
+        const result = await Swal.fire({
+            title: 'Make Admin?',
+            text: `Are you sure you want to make ${user.displayName || user.name} an admin?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#22c55e',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, make admin!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Processing...',
+                text: 'Please wait while we update the role',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             try {
-                // Add your API call here
-                // await fetch(`/api/users/${userId}/make-admin`, { method: 'PATCH' });
-                refetch(); // Refetch users after update
+                await updateRoleMutation.mutateAsync({ 
+                    email: user.email, 
+                    role: 'admin' 
+                });
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: `${user.displayName || user.name} is now an admin`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             } catch (error) {
-                console.error('Failed to make admin:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: error.message || 'Failed to make user admin',
+                    confirmButtonColor: '#ef4444'
+                });
             }
         }
     };
 
-    // Handle make seller
-    const handleMakeSeller = async (userId) => {
-        if(window.confirm('Are you sure you want to make this user a seller?')) {
+    const handleMakeSeller = async (user) => {
+        const result = await Swal.fire({
+            title: 'Make Seller?',
+            text: `Are you sure you want to make ${user.displayName || user.name} a seller?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#000000',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, make seller!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Processing...',
+                text: 'Please wait while we update the role',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             try {
-                // Add your API call here
-                // await fetch(`/api/users/${userId}/make-seller`, { method: 'PATCH' });
-                refetch(); // Refetch users after update
+                await updateRoleMutation.mutateAsync({ 
+                    email: user.email, 
+                    role: 'seller' 
+                });
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: `${user.displayName || user.name} is now a seller`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             } catch (error) {
-                console.error('Failed to make seller:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: error.message || 'Failed to make user seller',
+                    confirmButtonColor: '#ef4444'
+                });
             }
         }
     };
 
-    // Handle delete user
-    const handleDeleteUser = async (userId, displayName) => {
-        if(window.confirm(`Are you sure you want to delete ${displayName}?`)) {
+    const handleMakeBuyer = async (user) => {
+        const result = await Swal.fire({
+            title: 'Make Buyer?',
+            text: `Are you sure you want to make ${user.displayName || user.name} a buyer?`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonColor: '#6b7280',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, make buyer!',
+            cancelButtonText: 'Cancel'
+        });
+
+        if (result.isConfirmed) {
+            Swal.fire({
+                title: 'Processing...',
+                text: 'Please wait while we update the role',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
             try {
-                // Add your API call here
-                // await fetch(`/api/users/${userId}`, { method: 'DELETE' });
-                refetch(); // Refetch users after delete
+                await updateRoleMutation.mutateAsync({ 
+                    email: user.email, 
+                    role: 'buyer' 
+                });
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: `${user.displayName || user.name} is now a buyer`,
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             } catch (error) {
-                console.error('Failed to delete user:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: error.message || 'Failed to make user buyer',
+                    confirmButtonColor: '#ef4444'
+                });
             }
         }
     };
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            {/* Header */}
-            <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold">All Users</h2>
-                <div className="bg-gray-100 px-4 py-2 rounded-lg">
-                    <span className="font-semibold">Total Users: </span>
-                    <span className="text-blue-600 font-bold">{users?.length || 0}</span>
+        <div className="min-h-screen bg-white rounded-2xl">
+            <div className="mx-auto px-4 py-8">
+                {/* Header */}
+                <div className="flex justify-between items-center mb-8">
+                    <h2 className="text-3xl font-bold text-green-600 border-l-4 border-green-600 pl-4">
+                        User Management
+                    </h2>
                 </div>
-            </div>
 
-            {/* Users Table */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                <div className="overflow-x-auto">
-                    <table className="min-w-full divide-y divide-gray-200">
-                        <thead className="bg-gray-50">
-                            <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    User
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Email
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Role
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Provider
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Joined
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Actions
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody className="bg-white divide-y divide-gray-200">
-                            {users?.map((user) => {
-                                const roleInfo = getRoleInfo(user.role);
-                                const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A';
-                                
-                                return (
-                                    <tr key={user._id} className="hover:bg-gray-50 transition-colors">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-10 w-10">
-                                                    {user.photoURL ? (
-                                                        <img 
-                                                            className="h-10 w-10 rounded-full object-cover" 
-                                                            src={user.photoURL} 
-                                                            alt={user.displayName || user.name}
-                                                        />
-                                                    ) : (
-                                                        <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
-                                                            <span className="text-gray-600 font-semibold">
-                                                                {(user.displayName || user.name || 'U').charAt(0).toUpperCase()}
-                                                            </span>
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">
-                                                        {user.displayName || user.name || 'N/A'}
+           
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-600">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-600 uppercase">Total Users</p>
+                                <p className="text-3xl font-bold text-gray-800 mt-2">{totalUsers}</p>
+                            </div>
+                            <div className="bg-green-100 p-4 rounded-full">
+                                <FaUsers className="text-green-600 text-2xl" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-green-600">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-600 uppercase">Admins</p>
+                                <p className="text-3xl font-bold text-gray-800 mt-2">{adminCount}</p>
+                            </div>
+                            <div className="bg-green-100 p-4 rounded-full">
+                                <FaUserShield className="text-green-600 text-2xl" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-black">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-600 uppercase">Sellers</p>
+                                <p className="text-3xl font-bold text-gray-800 mt-2">{sellerCount}</p>
+                            </div>
+                            <div className="bg-gray-100 p-4 rounded-full">
+                                <FaUserTie className="text-black text-2xl" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-white rounded-xl shadow-lg p-6 border-l-4 border-gray-400">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-sm font-medium text-gray-600 uppercase">Buyers</p>
+                                <p className="text-3xl font-bold text-gray-800 mt-2">{buyerCount}</p>
+                            </div>
+                            <div className="bg-gray-100 p-4 rounded-full">
+                                <FaUser className="text-gray-600 text-2xl" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+        
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                    <div className="overflow-x-auto">
+                        <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-black">
+                                <tr>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        User
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Email
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Role
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Provider
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Joined
+                                    </th>
+                                    <th className="px-6 py-4 text-left text-xs font-medium text-white uppercase tracking-wider">
+                                        Actions
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                                {users?.map((user, index) => {
+                                    const roleInfo = getRoleInfo(user.role);
+                                    const currentRole = user.role?.toLowerCase() || 'buyer';
+                                    const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString('en-US', {
+                                        year: 'numeric',
+                                        month: 'short',
+                                        day: 'numeric'
+                                    }) : 'N/A';
+                                    
+                                    return (
+                                        <tr key={user._id || user.email} className={`hover:bg-gray-50 transition-colors ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center">
+                                                    <div className="flex-shrink-0 h-10 w-10">
+                                                        {user.photoURL ? (
+                                                            <img 
+                                                                className="h-10 w-10 rounded-full object-cover border-2 border-green-500" 
+                                                                src={user.photoURL} 
+                                                                alt={user.displayName || user.name}
+                                                            />
+                                                        ) : (
+                                                            <div className="h-10 w-10 rounded-full bg-green-600 flex items-center justify-center">
+                                                                <span className="text-white font-semibold text-lg">
+                                                                    {(user.displayName || user.name || 'U').charAt(0).toUpperCase()}
+                                                                </span>
+                                                            </div>
+                                                        )}
                                                     </div>
-                                                    {user.name && user.displayName !== user.name && (
-                                                        <div className="text-xs text-gray-500">
-                                                            aka {user.name}
+                                                    <div className="ml-4">
+                                                        <div className="text-sm font-medium text-gray-900">
+                                                            {user.displayName || user.name || 'N/A'}
                                                         </div>
-                                                    )}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">{user.email}</div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <span className="mr-2">{roleInfo.icon}</span>
-                                                <span className={`px-2 py-1 text-xs rounded-full ${roleInfo.badge}`}>
-                                                    {roleInfo.label}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="text-sm text-gray-600">{user.email}</div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <div className="flex items-center">
+                                                    <span className="mr-2">{roleInfo.icon}</span>
+                                                    <span className={`px-3 py-1 text-xs font-medium rounded-full ${roleInfo.badge}`}>
+                                                        {roleInfo.label}
+                                                    </span>
+                                                </div>
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                <span className={`px-3 py-1 text-xs font-medium rounded-full ${
+                                                    user.provider === 'google' 
+                                                        ? 'bg-green-100 text-green-800 border border-green-200' 
+                                                        : 'bg-gray-100 text-gray-800 border border-gray-200'
+                                                }`}>
+                                                    {user.provider || 'email'}
                                                 </span>
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className={`px-2 py-1 text-xs rounded-full ${
-                                                user.provider === 'google' 
-                                                    ? 'bg-orange-100 text-orange-800' 
-                                                    : 'bg-purple-100 text-purple-800'
-                                            }`}>
-                                                {user.provider || 'email'}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            {joinDate}
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                            <div className="flex space-x-2">
-                                                {/* Make Admin Button */}
-                                                {user.role !== 'admin' && (
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                                {joinDate}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                                                <div className="flex space-x-2">
                                                     <button
-                                                        onClick={() => handleMakeAdmin(user._id)}
-                                                        className="text-blue-600 hover:text-blue-900 bg-blue-100 p-2 rounded-full transition-colors"
-                                                        title="Make Admin"
+                                                        onClick={() => handleMakeAdmin(user)}
+                                                        disabled={currentRole === 'admin' || updateRoleMutation.isLoading}
+                                                        className={`
+                                                            p-2 rounded-lg transition-all duration-200 transform hover:scale-110
+                                                            ${currentRole === 'admin' || updateRoleMutation.isLoading
+                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed hover:scale-100' 
+                                                                : 'text-green-600 hover:text-white bg-green-100 hover:bg-green-600'
+                                                            }
+                                                        `}
+                                                        title={currentRole === 'admin' ? 'Already Admin' : 'Make Admin'}
                                                     >
                                                         <FaUserShield />
                                                     </button>
-                                                )}
-                                                
-                                                {/* Make Seller Button */}
-                                                {user.role !== 'seller' && user.role !== 'admin' && (
+                                                    
                                                     <button
-                                                        onClick={() => handleMakeSeller(user._id)}
-                                                        className="text-green-600 hover:text-green-900 bg-green-100 p-2 rounded-full transition-colors"
-                                                        title="Make Seller"
+                                                        onClick={() => handleMakeSeller(user)}
+                                                        disabled={currentRole === 'seller' || updateRoleMutation.isLoading}
+                                                        className={`
+                                                            p-2 rounded-lg transition-all duration-200 transform hover:scale-110
+                                                            ${currentRole === 'seller' || updateRoleMutation.isLoading
+                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed hover:scale-100' 
+                                                                : 'text-black hover:text-white bg-gray-200 hover:bg-black'
+                                                            }
+                                                        `}
+                                                        title={currentRole === 'seller' ? 'Already Seller' : 'Make Seller'}
                                                     >
                                                         <FaUserTie />
                                                     </button>
-                                                )}
-                                                
-                                                {/* Delete User Button */}
-                                                {user.role !== 'admin' && (
+                                                    
                                                     <button
-                                                        onClick={() => handleDeleteUser(user._id, user.displayName || user.name)}
-                                                        className="text-red-600 hover:text-red-900 bg-red-100 p-2 rounded-full transition-colors"
-                                                        title="Delete User"
+                                                        onClick={() => handleMakeBuyer(user)}
+                                                        disabled={currentRole === 'buyer' || updateRoleMutation.isLoading}
+                                                        className={`
+                                                            p-2 rounded-lg transition-all duration-200 transform hover:scale-110
+                                                            ${currentRole === 'buyer' || updateRoleMutation.isLoading
+                                                                ? 'bg-gray-100 text-gray-400 cursor-not-allowed hover:scale-100' 
+                                                                : 'text-gray-600 hover:text-white bg-gray-200 hover:bg-gray-600'
+                                                            }
+                                                        `}
+                                                        title={currentRole === 'buyer' ? 'Already Buyer' : 'Make Buyer'}
                                                     >
-                                                        <FaTrash />
+                                                        <FaUser />
                                                     </button>
-                                                )}
-                                            </div>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-                
-                {/* Empty State */}
-                {(!users || users.length === 0) && (
-                    <div className="text-center py-12">
-                        <div className="text-gray-400 text-6xl mb-4">👥</div>
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">No Users Found</h3>
-                        <p className="text-gray-500">There are no users to display at the moment.</p>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
                     </div>
-                )}
+                    
+                    {(!users || users.length === 0) && (
+                        <div className="text-center py-16">
+                            <div className="text-gray-300 text-7xl mb-4">👥</div>
+                            <h3 className="text-xl font-semibold text-gray-700 mb-2">No Users Found</h3>
+                            <p className="text-gray-500">There are no users to display at the moment.</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );
