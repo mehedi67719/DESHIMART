@@ -1,6 +1,6 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation } from '@tanstack/react-query';
 import React from 'react';
-import { AllProducts } from '../../../Component/Api';
+import { AllProducts, updateproductsstatus, deleteProduct } from '../../../Component/Api';
 import { FaCheck, FaTimes, FaTrash, FaEye, FaBox, FaStore, FaUser } from 'react-icons/fa';
 import { MdCategory, MdDiscount } from 'react-icons/md';
 import Swal from 'sweetalert2';
@@ -11,6 +11,21 @@ const All_Products = () => {
         queryFn: AllProducts
     });
 
+
+    const updateStatusMutation = useMutation({
+        mutationFn: ({ id, status }) => updateproductsstatus(id, status),
+        onSuccess: () => {
+            refetch();
+        }
+    });
+
+   
+    const deleteProductMutation = useMutation({
+        mutationFn: (id) => deleteProduct(id),
+        onSuccess: () => {
+            refetch();
+        }
+    });
 
     const totalProducts = products?.length || 0;
     const approvedProducts = products?.filter(product => product.status === 'approved').length || 0;
@@ -98,11 +113,12 @@ const All_Products = () => {
                 }
             });
 
-            // Add your approve API call here
-            // const response = await approveProduct(productId);
-            
-            // Simulate success
-            setTimeout(() => {
+            try {
+                await updateStatusMutation.mutateAsync({ 
+                    id: productId, 
+                    status: 'approved' 
+                });
+                
                 Swal.fire({
                     icon: 'success',
                     title: 'Approved!',
@@ -110,8 +126,14 @@ const All_Products = () => {
                     showConfirmButton: false,
                     timer: 1500
                 });
-                refetch();
-            }, 1000);
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: error.message || 'Failed to approve product',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
         }
     };
 
@@ -137,11 +159,12 @@ const All_Products = () => {
                 }
             });
 
-            // Add your reject API call here
-            // const response = await rejectProduct(productId);
-            
-            // Simulate success
-            setTimeout(() => {
+            try {
+                await updateStatusMutation.mutateAsync({ 
+                    id: productId, 
+                    status: 'rejected' 
+                });
+                
                 Swal.fire({
                     icon: 'success',
                     title: 'Rejected!',
@@ -149,8 +172,14 @@ const All_Products = () => {
                     showConfirmButton: false,
                     timer: 1500
                 });
-                refetch();
-            }, 1000);
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: error.message || 'Failed to reject product',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
         }
     };
 
@@ -168,7 +197,7 @@ const All_Products = () => {
 
         if (result.isConfirmed) {
             Swal.fire({
-                title: 'Deleting...',
+                title: 'Processing...',
                 text: 'Please wait while we delete the product',
                 allowOutsideClick: false,
                 didOpen: () => {
@@ -176,11 +205,9 @@ const All_Products = () => {
                 }
             });
 
-            // Add your delete API call here
-            // const response = await deleteProduct(productId);
-            
-            // Simulate success
-            setTimeout(() => {
+            try {
+                await deleteProductMutation.mutateAsync(productId);
+                
                 Swal.fire({
                     icon: 'success',
                     title: 'Deleted!',
@@ -188,8 +215,14 @@ const All_Products = () => {
                     showConfirmButton: false,
                     timer: 1500
                 });
-                refetch();
-            }, 1000);
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Failed!',
+                    text: error.message || 'Failed to delete product',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
         }
     };
 
@@ -220,6 +253,9 @@ const All_Products = () => {
             confirmButtonText: 'Close'
         });
     };
+
+  
+    const isAnyLoading = updateStatusMutation.isLoading || deleteProductMutation.isLoading;
 
     return (
         <div className="min-h-screen bg-white">
@@ -288,8 +324,8 @@ const All_Products = () => {
 
        
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
-                    <div className="w-full">
-                        <table className="w-full table-auto">
+                    <div className="w-full overflow-x-auto">
+                        <table className="w-full min-w-[1000px] table-auto">
                             <thead className="bg-black">
                                 <tr>
                                     <th className="px-3 lg:px-6 py-3 lg:py-4 text-left text-xs font-medium text-white uppercase">
@@ -390,7 +426,8 @@ const All_Products = () => {
                                               
                                                     <button
                                                         onClick={() => handleViewDetails(product)}
-                                                        className="text-blue-600 hover:text-white bg-blue-100 hover:bg-blue-600 p-1.5 lg:p-2 rounded-lg transition-all duration-200"
+                                                        disabled={isAnyLoading}
+                                                        className="text-blue-600 hover:text-white bg-blue-100 hover:bg-blue-600 p-1.5 lg:p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="View Details"
                                                     >
                                                         <FaEye size={12} className="lg:hidden" />
@@ -400,10 +437,10 @@ const All_Products = () => {
                                                  
                                                     <button
                                                         onClick={() => handleApproveProduct(product._id, product.name)}
-                                                        disabled={currentStatus === 'approved'}
+                                                        disabled={currentStatus === 'approved' || isAnyLoading}
                                                         className={`
                                                             p-1.5 lg:p-2 rounded-lg transition-all duration-200
-                                                            ${currentStatus === 'approved' 
+                                                            ${currentStatus === 'approved' || isAnyLoading
                                                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
                                                                 : 'text-green-600 hover:text-white bg-green-100 hover:bg-green-600'
                                                             }
@@ -417,10 +454,10 @@ const All_Products = () => {
                                         
                                                     <button
                                                         onClick={() => handleRejectProduct(product._id, product.name)}
-                                                        disabled={currentStatus === 'rejected'}
+                                                        disabled={currentStatus === 'rejected' || isAnyLoading}
                                                         className={`
                                                             p-1.5 lg:p-2 rounded-lg transition-all duration-200
-                                                            ${currentStatus === 'rejected' 
+                                                            ${currentStatus === 'rejected' || isAnyLoading
                                                                 ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
                                                                 : 'text-red-600 hover:text-white bg-red-100 hover:bg-red-600'
                                                             }
@@ -434,7 +471,8 @@ const All_Products = () => {
                                            
                                                     <button
                                                         onClick={() => handleDeleteProduct(product._id, product.name)}
-                                                        className="text-red-600 hover:text-white bg-red-100 hover:bg-red-600 p-1.5 lg:p-2 rounded-lg transition-all duration-200"
+                                                        disabled={isAnyLoading}
+                                                        className="text-red-600 hover:text-white bg-red-100 hover:bg-red-600 p-1.5 lg:p-2 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
                                                         title="Delete Product"
                                                     >
                                                         <FaTrash size={12} className="lg:hidden" />

@@ -15,6 +15,20 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 };
 
 
+
+
+export const PendingProducts=async ()=>{
+  try{
+    const res=await useaxios.get("products/pending-approval")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
 export const myproducts = async (email) => {
   try {
     const result = await useaxios.get('products/my-products', {

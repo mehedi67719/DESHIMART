@@ -172,7 +172,7 @@ const BecomeSeller = () => {
             shopCategories: selectedCategories,
             shopImage: shopImageUrl || (shopImage ? "uploaded-file" : ""),
             submittedAt: new Date().toISOString(),
-            status: 'pending'
+            status: 'pending-seller'
         };
 
         try {
