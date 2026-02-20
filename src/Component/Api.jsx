@@ -17,12 +17,12 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 
 
 
-export const PendingProducts=async ()=>{
-  try{
-    const res=await useaxios.get("products/pending-approval")
+export const PendingProducts = async () => {
+  try {
+    const res = await useaxios.get("products/pending-approval")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -116,7 +116,7 @@ export const updateproductsstatus = async (id, status) => {
   try {
     const res = await useaxios.patch(
       `products/status/${id}`,
-      { status }   
+      { status }
     );
     return res.data;
   } catch (err) {
@@ -385,12 +385,12 @@ export const getuser = async (email) => {
 };
 
 
-export const pendingUser=async()=>{
-  try{
-    const res=await useaxios.get("user/pending-user")
+export const pendingUser = async () => {
+  try {
+    const res = await useaxios.get("user/pending-user")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -512,3 +512,58 @@ export const buyerorder = async (email) => {
     throw err;
   }
 };
+
+
+
+
+
+export const chatlistpost = async (list) => {
+  try {
+    const res = await useaxios.post("chat/list", list)
+    return res.data
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+
+export const chatlistget = async (useremail) => {
+  try {
+    const res = await useaxios.get("chat/list", {
+      params: { email: useremail }
+    });
+
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}
+
+
+export const sendmassage = async (chat) => {
+  try {
+    const res = await useaxios.post("chat/send-message", chat)
+    return res.data;
+  }
+  catch (err) {
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+export const markAsSeensms = async (chatId, userEmail) => {
+  try {
+    const res = await useaxios.put(`chat/mark-seen/${chatId}`, {
+      userEmail: userEmail
+    });
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+}

@@ -1,7 +1,7 @@
-import React, { use, useState } from "react";
-import { useParams } from "react-router";
+import React, { useState } from "react";
+import { useParams, useNavigate } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { addtocart, singleproducts } from "../../Component/Api";
+import { addtocart, chatlistpost, singleproducts } from "../../Component/Api";
 import {
   FaStar,
   FaStarHalfAlt,
@@ -29,10 +29,12 @@ import { LuMessageCircleMore } from "react-icons/lu";
 import Useauth from "../../Component/Useauth";
 
 const ViewProductsDetels = () => {
-  const { user } = Useauth()
+  const { user } = Useauth();
   const { id } = useParams();
+  const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isCreatingChat, setIsCreatingChat] = useState(false);
 
   const { data, isLoading } = useQuery({
     queryKey: ["singleProduct", id],
@@ -78,8 +80,57 @@ const ViewProductsDetels = () => {
     return Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100);
   };
 
-  const handleContactSeller = () => {
-    window.location.href = `mailto:${product.sellerEmail}?subject=Inquiry about ${product.name}`;
+  const handleContactSeller = async () => {
+    if (!user) {
+      return alert("Please login first to contact the seller");
+    }
+
+    setIsCreatingChat(true);
+
+    try {
+     
+      const chatListData = {
+        productId: product._id,
+        productName: product.name,
+        productImage: product.image,
+        sellerEmail: product.sellerEmail || product.email,
+        buyerEmail: user.email,
+        sellerName: product.shopName || product.brand || "Seller",
+        buyerName: user.displayName || user.email?.split('@')[0] || "Buyer",
+        participants: [user.email, product.sellerEmail || product.email],
+        chat: [], 
+        lastMessage: "",
+        lastMessageTime: new Date().toISOString(),
+        status: "active",
+        unreadCount: 0
+      };
+
+      
+      const result = await chatlistpost(chatListData);
+      console.log("Chat list created:", result);
+
+     
+      navigate('/massenger', { 
+        state: { 
+          contactSeller: {
+            id: product.sellerId || product._id,
+            name: product.shopName || product.brand,
+            email: product.sellerEmail || product.email,
+            avatar: product.sellerAvatar || null,
+            productName: product.name,
+            productId: product._id,
+            productImage: product.image,
+            chat: [], 
+            chatData: result.data || chatListData
+          }
+        }
+      });
+
+    } catch (error) {
+      console.error("Error creating chat:", error);
+    } finally {
+      setIsCreatingChat(false);
+    }
   };
 
   const handleShare = () => {
@@ -97,7 +148,7 @@ const ViewProductsDetels = () => {
 
   const handleAddToCart = async (product) => {
     if (!user) {
-      return alert("please login first")
+      return alert("Please login first");
     }
 
     const cartdata = {
@@ -111,19 +162,15 @@ const ViewProductsDetels = () => {
     }
 
     try {
-      const result = await addtocart(cartdata)
-      console.log(result)
-      alert("cart added successfull")
+      const result = await addtocart(cartdata);
+      console.log(result);
+      alert("Cart added successfully");
     }
     catch (err) {
-      console.log(err)
-      alert(err)
+      console.log(err);
+      alert(err.message || "Failed to add to cart");
     }
-
   };
-
-
-  // console.log(user)
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
@@ -186,13 +233,22 @@ const ViewProductsDetels = () => {
                 </button>
                 <button
                   onClick={handleContactSeller}
-                  className="flex items-center gap-2 px-6 py-3 bg-green-100 text-green-700 hover:bg-green-200 rounded-full font-medium transition-all"
+                  disabled={isCreatingChat}
+                  className="flex items-center gap-2 px-6 py-3 bg-green-100 text-green-700 hover:bg-green-200 rounded-full font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                  <FaEnvelope /> Contact Seller
+                  {isCreatingChat ? (
+                    <>
+                      <div className="w-5 h-5 border-2 border-green-600 border-t-transparent rounded-full animate-spin"></div>
+                      Creating...
+                    </>
+                  ) : (
+                    <>
+                      <FaEnvelope /> Contact Seller
+                    </>
+                  )}
                 </button>
               </div>
             </div>
-
 
             <div className="p-6 md:p-10">
 
@@ -338,21 +394,31 @@ const ViewProductsDetels = () => {
                   <div>
                     <p className="text-gray-500 text-sm mb-1">Sold by</p>
                     <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold">
-                        {product.sellerEmail.charAt(0).toUpperCase()}
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white font-bold text-xl">
+                        {(product.shopName || product.brand || 'S').charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 text-lg">{product.brand}</p>
-                        <p className="text-gray-600">{product.sellerEmail}</p>
+                        <p className="font-bold text-gray-900 text-lg">{product.shopName || product.brand}</p>
+                        <p className="text-gray-600 text-sm">{product.sellerEmail}</p>
                       </div>
                     </div>
                   </div>
                   <button
                     onClick={handleContactSeller}
-                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold flex items-center gap-3 transition-all shadow-lg hover:shadow-xl"
+                    disabled={isCreatingChat}
+                    className="px-8 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-xl font-bold flex items-center gap-3 transition-all shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <LuMessageCircleMore className="text-2xl" />
-                    Contact Seller
+                    {isCreatingChat ? (
+                      <>
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Creating...
+                      </>
+                    ) : (
+                      <>
+                        <LuMessageCircleMore className="text-2xl" />
+                        Contact Seller
+                      </>
+                    )}
                   </button>
                 </div>
               </div>
@@ -555,10 +621,20 @@ const ViewProductsDetels = () => {
               <p className="text-gray-600 mb-6">Our customer support team is here to help you!</p>
               <button
                 onClick={handleContactSeller}
-                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-3 transition-all"
+                disabled={isCreatingChat}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white py-3 rounded-xl font-bold flex items-center justify-center gap-3 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <FaEnvelope />
-                Contact Support
+                {isCreatingChat ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Creating...
+                  </>
+                ) : (
+                  <>
+                    <FaEnvelope />
+                    Contact Support
+                  </>
+                )}
               </button>
             </div>
           </div>
