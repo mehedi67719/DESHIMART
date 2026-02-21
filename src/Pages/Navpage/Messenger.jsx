@@ -21,7 +21,7 @@ const Messenger = () => {
 
   useEffect(() => {
     if (!user?.email) return;
-    const newSocket = io('http://localhost:3000');
+    const newSocket = io('https://deshimart-server.vercel.app');
     setSocket(newSocket);
     return () => newSocket.close();
   }, [user]);

@@ -200,7 +200,7 @@ const BuyerDashboardHome = () => {
                             <option value="year">Last 12 Months</option>
                         </select>
                         <Link 
-                            to="/buyer/orders" 
+                            to="/dashboard/myorder" 
                             className="bg-white border border-gray-200 rounded-lg px-4 py-2 text-sm hover:bg-gray-50 transition-colors"
                         >
                             View Orders
@@ -394,7 +394,7 @@ const BuyerDashboardHome = () => {
                             <ClockIcon className="w-5 h-5 text-emerald-600" />
                             Recent Orders
                         </h3>
-                        <Link to="/buyer/orders" className="text-sm text-emerald-600 hover:text-emerald-700">
+                        <Link to="/dashboard/myorder" className="text-sm text-emerald-600 hover:text-emerald-700">
                             View All
                         </Link>
                     </div>
