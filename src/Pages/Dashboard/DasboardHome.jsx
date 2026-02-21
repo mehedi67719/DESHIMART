@@ -3,6 +3,8 @@ import SellerDashboardHome from '../../Component/SellerDashboardHome/SellerDashb
 import Useauth from '../../Component/Useauth';
 import { useQuery } from '@tanstack/react-query';
 import { getuser } from '../../Component/Api';
+import AdmindashboardHome from '../../Component/AdminDashboardHome/AdmindashboardHome';
+import BuyerDashboardHome from '../../Component/BuyerDashboardHome/BuyerDashboardHome';
 
 const DashboardHome = () => {
     const { user } = Useauth();
@@ -28,7 +30,7 @@ const DashboardHome = () => {
     }
 
 
-    console.log(data)
+    // console.log(data)
 
 
     if(data.role=="seller"){
@@ -36,13 +38,13 @@ const DashboardHome = () => {
     }
 
     if(data.role=="admin"){
-        return <p>admin dashboard</p>
+        return <AdmindashboardHome/>
     }
 
+   
+
     return (
-        <div>
-           buyer dashboard
-        </div>
+        <BuyerDashboardHome/>
     );
 };
 

@@ -53,14 +53,6 @@ const PaymentHistory = () => {
         });
     };
 
-//     const formatShortDate = (dateString) => {
-//         const date = new Date(dateString);
-//         return date.toLocaleDateString('en-US', {
-//             month: 'short',
-//             day: 'numeric'
-//         });
-//     };
-// formatShortDate()
 
     const getStatusColor = (status) => {
         switch (status) {
