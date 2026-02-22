@@ -567,3 +567,43 @@ export const markAsSeensms = async (chatId, userEmail) => {
     throw err;
   }
 }
+
+
+
+export const ordersummary=async()=>{
+  try{
+    const res=await useaxios.get("payment/all-order-summary")
+    return res.data
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+export const alluserssummary=async()=>{
+  try{
+    const res=await useaxios.get("user/all-users-summary")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+
+export const productuploadsummary=async()=>{
+  try{
+    const res=await useaxios.get("products/product-upload-summary")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
