@@ -1,212 +1,168 @@
 import React from 'react';
-import { Store, Users, Star, ShoppingBag, Package, DollarSign } from 'lucide-react';
+import { Store, Users, ShoppingBag, Package } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { topfivebuyer, topfiveseller } from '../Api';
 
 const Topsellerandbuyer = () => {
+    const { data: sellerData, isLoading: sellerLoading, error: sellerError } = useQuery({
+        queryKey: ["top-seller"],
+        queryFn: topfiveseller
+    });
 
-    // ========== STATIC TOP SELLERS DATA ==========
-    const topSellers = [
-        { 
-            name: 'TechZone', 
-            products: 156, 
-            revenue: 4567890, 
-            rating: 4.9,
-            avatar: 'T',
-            category: 'Electronics',
-            orders: 2345
-        },
-        { 
-            name: 'FashionHub', 
-            products: 234, 
-            revenue: 6789012, 
-            rating: 4.8,
-            avatar: 'F',
-            category: 'Fashion',
-            orders: 3456
-        },
-        { 
-            name: 'HomeDecor', 
-            products: 89, 
-            revenue: 2345678, 
-            rating: 4.9,
-            avatar: 'H',
-            category: 'Home & Living',
-            orders: 1234
-        },
-        { 
-            name: 'BookWorld', 
-            products: 345, 
-            revenue: 3456789, 
-            rating: 4.7,
-            avatar: 'B',
-            category: 'Books',
-            orders: 4567
-        },
-        { 
-            name: 'SportsZone', 
-            products: 98, 
-            revenue: 1987654, 
-            rating: 4.8,
-            avatar: 'S',
-            category: 'Sports',
-            orders: 1876
-        }
-    ];
+    const { data: buyerData, isLoading: buyerLoading, error: buyerError } = useQuery({
+        queryKey: ["top-buyer"],
+        queryFn: topfivebuyer
+    });
 
-    // ========== STATIC TOP BUYERS DATA ==========
-    const topBuyers = [
-        { 
-            name: 'John Doe', 
-            orders: 45, 
-            spent: 234567, 
-            items: 89,
-            avatar: 'J',
-            location: 'New York',
-            lastOrder: '2024-01-15'
-        },
-        { 
-            name: 'Jane Smith', 
-            orders: 38, 
-            spent: 198765, 
-            items: 76,
-            avatar: 'S',
-            location: 'Los Angeles',
-            lastOrder: '2024-01-14'
-        },
-        { 
-            name: 'Bob Wilson', 
-            orders: 32, 
-            spent: 167890, 
-            items: 54,
-            avatar: 'W',
-            location: 'Chicago',
-            lastOrder: '2024-01-13'
-        },
-        { 
-            name: 'Alice Brown', 
-            orders: 29, 
-            spent: 145678, 
-            items: 48,
-            avatar: 'B',
-            location: 'Houston',
-            lastOrder: '2024-01-12'
-        },
-        { 
-            name: 'Charlie Lee', 
-            orders: 27, 
-            spent: 134567, 
-            items: 42,
-            avatar: 'L',
-            location: 'Phoenix',
-            lastOrder: '2024-01-11'
-        }
-    ];
+    const formatCurrency = (amount) => {
+        return new Intl.NumberFormat('en-US', {
+            style: 'currency',
+            currency: 'USD',
+            minimumFractionDigits: 0,
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
 
+    const getInitials = (name) => {
+        return name ? name.charAt(0).toUpperCase() : 'U';
+    };
 
+    const SkeletonCard = () => (
+        <div className="bg-white rounded-xl p-6 border animate-pulse">
+            <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+            <div className="space-y-3">
+                {[1, 2, 3, 4, 5].map((j) => (
+                    <div key={j} className="flex justify-between items-center py-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gray-200 rounded-full"></div>
+                            <div>
+                                <div className="h-4 bg-gray-200 rounded w-24 mb-2"></div>
+                                <div className="h-3 bg-gray-200 rounded w-32"></div>
+                            </div>
+                        </div>
+                        <div className="text-right">
+                            <div className="h-4 bg-gray-200 rounded w-16 mb-2"></div>
+                            <div className="h-3 bg-gray-200 rounded w-20"></div>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
+    if (sellerLoading || buyerLoading) {
+        return (
+            <div className="grid grid-cols-2 gap-6">
+                <SkeletonCard />
+                <SkeletonCard />
+            </div>
+        );
+    }
+
+    if (sellerError || buyerError) {
+        return (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                Error loading data. Please try again.
+            </div>
+        );
+    }
 
     return (
         <div className="grid grid-cols-2 gap-6">
-            {/* Top Sellers Section */}
             <div className="bg-white rounded-xl p-6 border hover:shadow-lg transition-shadow">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-semibold flex items-center gap-2">
                         <Store className="w-5 h-5 text-blue-600" />
                         <span className="text-gray-800">Top Sellers</span>
                     </h3>
-               
                 </div>
 
                 <div className="space-y-3">
-                    {topSellers.map((seller, index) => (
-                        <div 
-                            key={index} 
-                            className="flex justify-between items-center border-b border-gray-100 py-3 hover:bg-gray-50 px-2 rounded-lg transition-colors group"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center font-bold text-white shadow-md">
-                                    {seller.avatar}
+                    {sellerData && sellerData.length > 0 ? (
+                        sellerData.map((seller, index) => (
+                            <div 
+                                key={index} 
+                                className="flex justify-between items-center border-b border-gray-100 py-3 hover:bg-gray-50 px-2 rounded-lg transition-colors group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center font-bold text-white shadow-md">
+                                        {getInitials(seller.shopName || seller._id)}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
+                                            {seller.shopName || seller._id}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
+                                                {seller._id}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-semibold text-gray-800 group-hover:text-blue-600 transition-colors">
-                                        {seller.name}
+                                <div className="text-right">
+                                    <p className="font-bold text-green-600">
+                                        {formatCurrency(seller.totalSold || 0)}
                                     </p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full">
-                                            {seller.category}
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                            {seller.orders} orders
-                                        </span>
+                                    <div className="flex items-center gap-1 mt-1 justify-end">
+                                        <Package className="w-3 h-3 text-gray-400" />
+                                        <span className="text-xs text-gray-500">{seller.totalProducts || 0} products</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <p className="font-bold text-green-600">
-                                    ${(seller.revenue / 1000).toFixed(0)}K
-                                </p>
-                                <div className="flex items-center gap-1 mt-1 justify-end">
-                                    <Package className="w-3 h-3 text-gray-400" />
-                                    <span className="text-xs text-gray-500">{seller.products}</span>
-                                    <Star className="w-3 h-3 text-yellow-400 fill-current ml-1" />
-                                    <span className="text-xs text-gray-500">{seller.rating}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p className="text-center text-gray-500 py-4">No seller data available</p>
+                    )}
                 </div>
-
-         
             </div>
 
-            {/* Top Buyers Section */}
             <div className="bg-white rounded-xl p-6 border hover:shadow-lg transition-shadow">
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-semibold flex items-center gap-2">
                         <Users className="w-5 h-5 text-green-600" />
                         <span className="text-gray-800">Top Buyers</span>
                     </h3>
-                  
                 </div>
 
                 <div className="space-y-3">
-                    {topBuyers.map((buyer, index) => (
-                        <div 
-                            key={index} 
-                            className="flex justify-between items-center border-b border-gray-100 py-3 hover:bg-gray-50 px-2 rounded-lg transition-colors group"
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center font-bold text-white shadow-md">
-                                    {buyer.avatar}
+                    {buyerData && buyerData.length > 0 ? (
+                        buyerData.map((buyer, index) => (
+                            <div 
+                                key={index} 
+                                className="flex justify-between items-center border-b border-gray-100 py-3 hover:bg-gray-50 px-2 rounded-lg transition-colors group"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-full flex items-center justify-center font-bold text-white shadow-md">
+                                        {getInitials(buyer.customerName || buyer._id)}
+                                    </div>
+                                    <div>
+                                        <p className="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
+                                            {buyer.customerName || buyer._id}
+                                        </p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <span className="text-xs text-gray-400">
+                                                📍 {buyer._id}
+                                            </span>
+                                        </div>
+                                    </div>
                                 </div>
-                                <div>
-                                    <p className="font-semibold text-gray-800 group-hover:text-green-600 transition-colors">
-                                        {buyer.name}
+                                <div className="text-right">
+                                    <p className="font-bold text-green-600">
+                                        {formatCurrency(buyer.totalSpent || 0)}
                                     </p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <span className="text-xs text-gray-400">
-                                            📍 {buyer.location}
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                            🕐 {buyer.lastOrder}
-                                        </span>
+                                    <div className="flex items-center gap-2 mt-1 justify-end">
+                                        <ShoppingBag className="w-3 h-3 text-gray-400" />
+                                        <span className="text-xs text-gray-500">{buyer.totalOrders || 0} orders</span>
+                                        <Package className="w-3 h-3 text-gray-400 ml-1" />
+                                        <span className="text-xs text-gray-500">{buyer.totalItems || 0} items</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className="text-right">
-                                <p className="font-bold text-green-600">
-                                    ${(buyer.spent / 1000).toFixed(0)}K
-                                </p>
-                                <div className="flex items-center gap-2 mt-1 justify-end">
-                                    <ShoppingBag className="w-3 h-3 text-gray-400" />
-                                    <span className="text-xs text-gray-500">{buyer.orders}</span>
-                                    <Package className="w-3 h-3 text-gray-400 ml-1" />
-                                    <span className="text-xs text-gray-500">{buyer.items}</span>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
+                        ))
+                    ) : (
+                        <p className="text-center text-gray-500 py-4">No buyer data available</p>
+                    )}
                 </div>
-
-           
             </div>
         </div>
     );

@@ -635,3 +635,30 @@ export const allProductsstatus=async()=>{
     throw err;
   }
 }
+
+
+
+
+
+export const topfiveseller=async()=>{
+  try{
+    const res=await useaxios.get("products/top-sellers")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+export const topfivebuyer=async()=>{
+  try{
+    const res=await useaxios.get("payment/top-buyers")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}

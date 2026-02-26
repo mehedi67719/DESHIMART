@@ -5,19 +5,16 @@ import { useQuery } from '@tanstack/react-query';
 import { allProductsstatus, countpaymentstatus } from '../Api';
 
 const PaymentProductsAndOrderStatus = () => {
-    // Payment status query
     const { data: paymentData, isLoading: paymentLoading, error: paymentError } = useQuery({
         queryKey: ["count-payment-status"],
         queryFn: countpaymentstatus
     });
-
-    // Products status query
+    
     const { data: productsData, isLoading: productsLoading, error: productsError } = useQuery({
         queryKey: ["all-products-status"],
         queryFn: allProductsstatus
     });
 
-    // Transform payment data for chart
     const transformedPaymentData = React.useMemo(() => {
         if (!paymentData) return [];
         
@@ -35,7 +32,6 @@ const PaymentProductsAndOrderStatus = () => {
         ];
     }, [paymentData]);
 
-    // Transform products data for chart
     const transformedProductsData = React.useMemo(() => {
         if (!productsData) return [];
         
@@ -57,26 +53,42 @@ const PaymentProductsAndOrderStatus = () => {
             }
         ];
     }, [productsData]);
-
-    // Calculate totals
+    
     const totalPayments = transformedPaymentData.reduce((sum, item) => sum + item.value, 0);
     const totalProducts = transformedProductsData.reduce((sum, item) => sum + item.value, 0);
 
-    // Loading state
+    const SkeletonCard = () => (
+        <div className="bg-white rounded-xl p-6 border">
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    <div className="w-5 h-5 bg-gray-200 rounded"></div>
+                    <div className="h-5 bg-gray-200 rounded w-32"></div>
+                </div>
+                <div className="h-6 bg-gray-200 rounded w-20"></div>
+            </div>
+            <div className="h-[200px] bg-gray-100 rounded-lg mb-4 flex items-center justify-center">
+                <div className="w-32 h-32 rounded-full bg-gray-200"></div>
+            </div>
+            <div className="flex justify-center gap-4 mt-2">
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="flex items-center gap-1">
+                        <div className="w-3 h-3 rounded-full bg-gray-200"></div>
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                    </div>
+                ))}
+            </div>
+        </div>
+    );
+
     if (paymentLoading || productsLoading) {
         return (
             <div className="grid grid-cols-2 gap-6">
-                {[1, 2].map((i) => (
-                    <div key={i} className="bg-white rounded-xl p-6 border h-64 animate-pulse">
-                        <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
-                        <div className="h-32 bg-gray-200 rounded"></div>
-                    </div>
-                ))}
+                <SkeletonCard />
+                <SkeletonCard />
             </div>
         );
     }
 
-    // Error state
     if (paymentError || productsError) {
         return (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
@@ -87,7 +99,6 @@ const PaymentProductsAndOrderStatus = () => {
 
     return (
         <div className="grid grid-cols-2 gap-6">
-            {/* Payment Status Chart */}
             <div className="bg-white rounded-xl p-6 border hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -130,7 +141,6 @@ const PaymentProductsAndOrderStatus = () => {
                     </PieChart>
                 </ResponsiveContainer>
 
-                {/* Legend */}
                 <div className="flex justify-center gap-4 mt-4">
                     {transformedPaymentData.map((item, index) => (
                         <div key={index} className="flex items-center gap-1">
@@ -143,7 +153,6 @@ const PaymentProductsAndOrderStatus = () => {
                 </div>
             </div>
 
-            {/* Product Approval Chart */}
             <div className="bg-white rounded-xl p-6 border hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center gap-2">
@@ -186,7 +195,6 @@ const PaymentProductsAndOrderStatus = () => {
                     </PieChart>
                 </ResponsiveContainer>
 
-                {/* Legend */}
                 <div className="flex justify-center gap-4 mt-4">
                     {transformedProductsData.map((item, index) => (
                         <div key={index} className="flex items-center gap-1">
