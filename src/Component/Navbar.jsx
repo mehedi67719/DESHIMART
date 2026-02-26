@@ -3,7 +3,6 @@ import { CiSearch } from 'react-icons/ci';
 import {
   FaArrowRight,
   FaBox,
-  FaCog,
   FaHeart,
   FaQuestionCircle,
   FaRegHeart,
@@ -40,6 +39,16 @@ const Navbar = () => {
   const { user, logout } = Useauth();
   const [User, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+
+  const navLinks = [
+    { path: '/', name: 'Home' },
+    { path: '/shop', name: 'Shop' },
+    { path: '/hot-deal', name: 'Hot Deal' },
+    { path: '/collection', name: 'Collection' },
+    { path: '/local-stores', name: 'Local Stores' },
+    { path: '/blog', name: 'Blog' },
+    { path: '/contact', name: 'Contact' }
+  ];
 
   useEffect(() => {
     if (!user?.email) return;
@@ -82,8 +91,6 @@ const Navbar = () => {
     });
   };
 
-
- 
   return (
     <div className="sticky relative top-0 z-50 bg-white py-5">
       <div className="container">
@@ -213,7 +220,6 @@ const Navbar = () => {
                   <ProfileLink to="/favorite" icon={<FaHeart />} text="Wishlist" close={() => setprofileopen(false)} />
                   <ProfileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" close={() => setprofileopen(false)} />
                   <ProfileLink to="/dashboard/becomeaseller" icon={<MdSell />} text="Become a Seller" close={() => setprofileopen(false)} />
-                  <ProfileLink to="/dashboard/settings" icon={<FaCog />} text="Settings" close={() => setprofileopen(false)} />
                   <div className="border-t my-2"></div>
                   <ProfileLink to="/help" icon={<FaQuestionCircle />} text="Help & Support" close={() => setprofileopen(false)} />
                   <div className="border-t my-2"></div>
@@ -312,7 +318,7 @@ const Navbar = () => {
                   <div className="space-y-1">
                     <MobileLink to="/dashboard/my-profile" icon={<FaRegUser />} text="My Profile" onClick={() => setopen(false)} />
                     <MobileLink to="/dashboard" icon={<FaThLarge />} text="Dashboard" onClick={() => setopen(false)} />
-                    <MobileLink to="/dashboard/settings" icon={<FaCog />} text="Settings" onClick={() => setopen(false)} />
+                    <MobileLink to="/dashboard/becomeaseller" icon={<MdSell />} text="Become a Seller" onClick={() => setopen(false)} />
                     <MobileLink to="/help" icon={<FaQuestionCircle />} text="Help & Support" onClick={() => setopen(false)} />
                   </div>
                 </div>
@@ -320,14 +326,23 @@ const Navbar = () => {
                 <div className="mb-6">
                   <h3 className="text-xs font-bold text-green-600 tracking-wider mb-3">NAVIGATION</h3>
                   <div className="space-y-1">
-                    <MobileLink to="/" icon={<HiOutlineHome />} text="Home" onClick={() => setopen(false)} />
-                    <MobileLink to="/shop" icon={<LuShoppingCart />} text="Shop" onClick={() => setopen(false)} />
-                    <MobileLink to="/categories" icon={<LuLayoutGrid />} text="Categories" onClick={() => setopen(false)} />
-                    <MobileLink to="/hot-deal" icon={<LuFlame />} text="Hot Deal" onClick={() => setopen(false)} />
-                    <MobileLink to="/blog" icon={<LuBookOpen />} text="Blog" onClick={() => setopen(false)} />
-                    <MobileLink to="/collection" icon={<MdCollectionsBookmark />} text="Collection" onClick={() => setopen(false)} />
-                    <MobileLink to="/local-stores" icon={<LiaStoreSolid />} text="Local Stores" onClick={() => setopen(false)} />
-                    <MobileLink to="/contact" icon={<BiSolidContact />} text="Contact" onClick={() => setopen(false)} />
+                    {navLinks.map((link, index) => (
+                      <MobileLink 
+                        key={index}
+                        to={link.path} 
+                        icon={
+                          link.path === '/' ? <HiOutlineHome /> :
+                          link.path === '/shop' ? <LuShoppingCart /> :
+                          link.path === '/hot-deal' ? <LuFlame /> :
+                          link.path === '/collection' ? <MdCollectionsBookmark /> :
+                          link.path === '/local-stores' ? <LiaStoreSolid /> :
+                          link.path === '/blog' ? <LuBookOpen /> :
+                          <BiSolidContact />
+                        } 
+                        text={link.name} 
+                        onClick={() => setopen(false)} 
+                      />
+                    ))}
                   </div>
                 </div>
 
@@ -361,10 +376,10 @@ const Navbar = () => {
 
         <div className="hidden md:flex justify-between items-center">
           <div className="flex justify-center gap-6 my-2.5">
-            {['/', '/shop', '/hot-deal', '/collection', '/local-stores', '/blog', '/contact'].map((path, i) => (
+            {navLinks.map((link, index) => (
               <NavLink
-                key={i}
-                to={path}
+                key={index}
+                to={link.path}
                 className={({ isActive }) =>
                   `font-medium text-sm border-b-2 pb-1 transition-colors ${isActive
                     ? 'text-green-600 border-green-600'
@@ -372,7 +387,7 @@ const Navbar = () => {
                   }`
                 }
               >
-                {path === '/' ? 'Home' : path.replace('/', '').replace('-', ' ')}
+                {link.name}
               </NavLink>
             ))}
           </div>

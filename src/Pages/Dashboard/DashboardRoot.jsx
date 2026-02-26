@@ -10,17 +10,20 @@ const DashboardRoot = () => {
     return (
         <div className="min-h-screen flex flex-col">
             <Navbar />
-            
-            <button
-                onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden fixed top-20 left-2 z-50 bg-green-600 text-white p-2 rounded-md shadow-lg"
-            >
-                {sidebarOpen ? '✕' : '☰'}
-            </button>
+
+  <div className="md:hidden fixed top-38 left-4 w-full z-50 bg-white border-b">
+    <button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        className="ml-3 py-2 text-2xl  text-black"
+    >
+        {sidebarOpen ? '✕' : '☰'}
+    </button>
+</div>
+
 
             <div className="flex flex-1 container">
                 <div className={`
-                    fixed md:sticky md:top-16 top-20 left-0 
+                    fixed md:sticky md:top-16 top-45 left-0 
                     h-screen md:h-[calc(100vh-4rem)]
                     w-[240px] md:w-[180px] lg:w-[200px] xl:w-[220px]
                     bg-white border-r border-gray-200 z-40
@@ -39,7 +42,7 @@ const DashboardRoot = () => {
                     />
                 )}
 
-                <div className="flex-1 w-full md:w-[calc(100%-180px)] lg:w-[calc(100%-200px)] my-5 xl:w-[calc(100%-220px)] ml-3">
+                <div className="flex-1 w-full md:w-[calc(100%-180px)] lg:w-[calc(100%-200px)] my-5 xl:w-[calc(100%-220px)]  lg:ml-3 md:ml-3">
                     <div className="min-h-[calc(100vh-12rem)]">
                         <Outlet />
                     </div>
