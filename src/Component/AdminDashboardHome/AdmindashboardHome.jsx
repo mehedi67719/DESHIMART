@@ -18,32 +18,32 @@ const AdminDashboardHome = () => {
 
     
 
-    // ========== ADMIN VIEW ==========
+  
     const AdminView = () => (
         <div className="space-y-6">
-            {/* 🔴 SECTION 1: Stats Cards - MIXED (Dynamic + Static) */}
+      
            
 <DashboardHeader/>
-            {/* 🟢 SECTION 2: Revenue & Orders Charts - DYNAMIC from API */}
+   
         
 <SellingAndOrder/>
-            {/* 🟡 SECTION 3: Growth Chart - PARTIALLY DYNAMIC */}
+    
           
 <PlatformGrowthAndCategories/>
-            {/* 🟢 SECTION 5: Status Charts - MIXED */}
+       
 <PaymentProductsAndOrderStatus/>
 
-            {/* 🟢 SECTION 6: Top Products - STATIC */}
+            
   <TopFiveProducts/>
 
-            {/* 🟢 SECTION 7: Top Sellers & Buyers - STATIC */}
+          
     <Topsellerandbuyer/>
         </div>
     );
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
+
             <div className="bg-white border-b px-6 py-4 sticky top-0 z-10">
                 <div className="flex justify-between items-center">
                     <div>

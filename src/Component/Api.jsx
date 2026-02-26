@@ -662,3 +662,15 @@ export const topfivebuyer=async()=>{
     throw err;
   }
 }
+
+
+export const allTotal=async()=>{
+  try{
+    const res=await useaxios.get("all-total/all-total")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
