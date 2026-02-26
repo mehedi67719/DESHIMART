@@ -607,3 +607,31 @@ export const productuploadsummary=async()=>{
     throw err;
   }
 }
+
+
+
+
+export const countpaymentstatus=async()=>{
+  try{
+    const res=await useaxios.get("payment/order-status-count")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+
+
+export const allProductsstatus=async()=>{
+  try{
+    const res=await useaxios.get("products/allproducts-status-summary")
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}

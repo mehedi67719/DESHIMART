@@ -1,36 +1,92 @@
 import React from 'react';
-import { CreditCard, CheckCircle, ShoppingBag } from 'lucide-react';
+import { CreditCard, CheckCircle } from 'lucide-react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import { useQuery } from '@tanstack/react-query';
+import { allProductsstatus, countpaymentstatus } from '../Api';
 
 const PaymentProductsAndOrderStatus = () => {
+    // Payment status query
+    const { data: paymentData, isLoading: paymentLoading, error: paymentError } = useQuery({
+        queryKey: ["count-payment-status"],
+        queryFn: countpaymentstatus
+    });
 
-    // ========== STATIC DATA ==========
-    const paymentData = [
-        { name: 'Success', value: 44567, color: '#10b981' },
-        { name: 'Failed', value: 567, color: '#ef4444' },
-        { name: 'Refunded', value: 544, color: '#f59e0b' }
-    ];
+    // Products status query
+    const { data: productsData, isLoading: productsLoading, error: productsError } = useQuery({
+        queryKey: ["all-products-status"],
+        queryFn: allProductsstatus
+    });
 
-    const productApprovalData = [
-        { name: 'Approved', value: 9876, color: '#10b981' },
-        { name: 'Pending', value: 1567, color: '#f59e0b' },
-        { name: 'Rejected', value: 902, color: '#ef4444' }
-    ];
+    // Transform payment data for chart
+    const transformedPaymentData = React.useMemo(() => {
+        if (!paymentData) return [];
+        
+        return [
+            { 
+                name: 'Success', 
+                value: paymentData.SUCCESS || 0, 
+                color: '#10b981' 
+            },
+            { 
+                name: 'Cancelled', 
+                value: paymentData.CANCLE || 0, 
+                color: '#ef4444' 
+            }
+        ];
+    }, [paymentData]);
 
-    const orderStatusData = [
-        { name: 'Completed', value: 42345, color: '#10b981' },
-        { name: 'Processing', value: 5678, color: '#3b82f6' },
-        { name: 'Pending', value: 892, color: '#f59e0b' },
-        { name: 'Cancelled', value: 1874, color: '#ef4444' }
-    ];
+    // Transform products data for chart
+    const transformedProductsData = React.useMemo(() => {
+        if (!productsData) return [];
+        
+        return [
+            { 
+                name: 'Approved', 
+                value: productsData.approved || 0, 
+                color: '#10b981' 
+            },
+            { 
+                name: 'Pending', 
+                value: productsData.pending || 0, 
+                color: '#f59e0b' 
+            },
+            { 
+                name: 'Rejected', 
+                value: productsData.rejected || 0, 
+                color: '#ef4444' 
+            }
+        ];
+    }, [productsData]);
 
-    // Calculate percentages for tooltips
-    const totalPayments = paymentData.reduce((sum, item) => sum + item.value, 0);
-    const totalProducts = productApprovalData.reduce((sum, item) => sum + item.value, 0);
-    const totalOrders = orderStatusData.reduce((sum, item) => sum + item.value, 0);
+    // Calculate totals
+    const totalPayments = transformedPaymentData.reduce((sum, item) => sum + item.value, 0);
+    const totalProducts = transformedProductsData.reduce((sum, item) => sum + item.value, 0);
+
+    // Loading state
+    if (paymentLoading || productsLoading) {
+        return (
+            <div className="grid grid-cols-2 gap-6">
+                {[1, 2].map((i) => (
+                    <div key={i} className="bg-white rounded-xl p-6 border h-64 animate-pulse">
+                        <div className="h-4 bg-gray-200 rounded w-1/3 mb-4"></div>
+                        <div className="h-32 bg-gray-200 rounded"></div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
+
+    // Error state
+    if (paymentError || productsError) {
+        return (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                Error loading data. Please try again.
+            </div>
+        );
+    }
 
     return (
-        <div className="grid grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 gap-6">
             {/* Payment Status Chart */}
             <div className="bg-white rounded-xl p-6 border hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
@@ -43,20 +99,22 @@ const PaymentProductsAndOrderStatus = () => {
                     </span>
                 </div>
 
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                         <Pie
-                            data={paymentData}
+                            data={transformedPaymentData}
                             dataKey="value"
                             nameKey="name"
                             cx="50%"
                             cy="50%"
-                            innerRadius={50}
-                            outerRadius={80}
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            innerRadius={60}
+                            outerRadius={90}
+                            label={({ name, percent }) => 
+                                percent > 0 ? `${name} ${(percent * 100).toFixed(0)}%` : ''
+                            }
                             labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
                         >
-                            {paymentData.map((entry, index) => (
+                            {transformedPaymentData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                         </Pie>
@@ -72,12 +130,14 @@ const PaymentProductsAndOrderStatus = () => {
                     </PieChart>
                 </ResponsiveContainer>
 
-                {/* Mini Legend */}
-                <div className="flex justify-center gap-4 mt-2">
-                    {paymentData.map((item, index) => (
+                {/* Legend */}
+                <div className="flex justify-center gap-4 mt-4">
+                    {transformedPaymentData.map((item, index) => (
                         <div key={index} className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></span>
-                            <span className="text-xs text-gray-600">{item.name}</span>
+                            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                            <span className="text-sm text-gray-600">
+                                {item.name}: {item.value.toLocaleString()}
+                            </span>
                         </div>
                     ))}
                 </div>
@@ -95,20 +155,22 @@ const PaymentProductsAndOrderStatus = () => {
                     </span>
                 </div>
 
-                <ResponsiveContainer width="100%" height={200}>
+                <ResponsiveContainer width="100%" height={250}>
                     <PieChart>
                         <Pie
-                            data={productApprovalData}
+                            data={transformedProductsData}
                             dataKey="value"
                             nameKey="name"
                             cx="50%"
                             cy="50%"
-                            innerRadius={50}
-                            outerRadius={80}
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                            innerRadius={60}
+                            outerRadius={90}
+                            label={({ name, percent }) => 
+                                percent > 0 ? `${name} ${(percent * 100).toFixed(0)}%` : ''
+                            }
                             labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
                         >
-                            {productApprovalData.map((entry, index) => (
+                            {transformedProductsData.map((entry, index) => (
                                 <Cell key={`cell-${index}`} fill={entry.color} />
                             ))}
                         </Pie>
@@ -124,64 +186,14 @@ const PaymentProductsAndOrderStatus = () => {
                     </PieChart>
                 </ResponsiveContainer>
 
-                {/* Mini Legend */}
-                <div className="flex justify-center gap-4 mt-2">
-                    {productApprovalData.map((item, index) => (
+                {/* Legend */}
+                <div className="flex justify-center gap-4 mt-4">
+                    {transformedProductsData.map((item, index) => (
                         <div key={index} className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></span>
-                            <span className="text-xs text-gray-600">{item.name}</span>
-                        </div>
-                    ))}
-                </div>
-            </div>
-
-            {/* Order Status Chart */}
-            <div className="bg-white rounded-xl p-6 border hover:shadow-lg transition-shadow">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-2">
-                        <ShoppingBag className="w-5 h-5 text-green-600" />
-                        <h3 className="font-semibold text-gray-800">Order Status</h3>
-                    </div>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                        Total: {totalOrders.toLocaleString()}
-                    </span>
-                </div>
-
-                <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                        <Pie
-                            data={orderStatusData}
-                            dataKey="value"
-                            nameKey="name"
-                            cx="50%"
-                            cy="50%"
-                            innerRadius={50}
-                            outerRadius={80}
-                            label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
-                            labelLine={{ stroke: '#9ca3af', strokeWidth: 1 }}
-                        >
-                            {orderStatusData.map((entry, index) => (
-                                <Cell key={`cell-${index}`} fill={entry.color} />
-                            ))}
-                        </Pie>
-                        <Tooltip
-                            formatter={(value) => [value.toLocaleString(), 'Orders']}
-                            contentStyle={{
-                                backgroundColor: 'white',
-                                border: '1px solid #e5e7eb',
-                                borderRadius: '8px',
-                                boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)'
-                            }}
-                        />
-                    </PieChart>
-                </ResponsiveContainer>
-
-                {/* Mini Legend */}
-                <div className="grid grid-cols-2 gap-2 mt-2">
-                    {orderStatusData.map((item, index) => (
-                        <div key={index} className="flex items-center gap-1">
-                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: item.color }}></span>
-                            <span className="text-xs text-gray-600">{item.name}</span>
+                            <span className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></span>
+                            <span className="text-sm text-gray-600">
+                                {item.name}: {item.value.toLocaleString()}
+                            </span>
                         </div>
                     ))}
                 </div>
