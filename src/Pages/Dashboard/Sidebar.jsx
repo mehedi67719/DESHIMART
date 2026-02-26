@@ -56,7 +56,7 @@ const Sidebar = ({ onItemClick }) => {
                 ...commonMenu,
                 { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag />, key: "buyer-orders" },
                 { path: "/dashboard/becomeaseller", label: "Become a Seller", icon: <MdSell />, key: "become-seller" },
-                { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-buyer" },
+               
             ];
         }
         
@@ -68,8 +68,7 @@ const Sidebar = ({ onItemClick }) => {
                 { path: "/dashboard/buyer-order", label: "Buyer Orders", icon: <FaShoppingBag />, key: "buyer-orders-seller" },
                 { path: "/dashboard/upload-products", label: "Upload New Product", icon: <MdUpload />, key: "upload-product" },
                 { path: "/dashboard/my-customer", label: "My Customers", icon: <FaUsers />, key: "customers" },
-                { path: "/dashboard/seller-analytics", label: "Analytics", icon: <FaChartBar />, key: "analytics-seller" },
-                { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-seller" },
+                
             ];
         }
    
@@ -80,8 +79,7 @@ const Sidebar = ({ onItemClick }) => {
                 { path: "/dashboard/all-products", label: "All Products", icon: <FaBox />, key: "all-products" },
                 { path: "/dashboard/pending-approval", label: "Pending Approvals", icon: <MdUpload />, key: "pending" },
                 { path: "/dashboard/myorder", label: "My Orders", icon: <FaShoppingBag />, key: "buyer-orders" },
-                { path: "/dashboard/admin-analytics", label: "Analytics", icon: <FaChartBar />, key: "analytics-admin" },
-                { path: "/dashboard/settings", label: "Settings", icon: <FaCog />, key: "settings-admin" },
+               
             ];
         }
 
