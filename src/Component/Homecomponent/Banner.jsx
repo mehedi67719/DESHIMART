@@ -4,20 +4,24 @@ import { Link } from 'react-router';
 
 const Banner = () => {
     return (
-        <div className="relative w-screen left-1/2 right-1/2 -mx-[50vw] bg-gradient-to-br from-emerald-950 via-green-900 to-teal-950">
+        <div className="w-full bg-gradient-to-br from-emerald-950 via-green-900 to-teal-950 overflow-hidden">
+      
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3')] bg-cover bg-center opacity-5"></div>
                 <div className="absolute top-10 left-10 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl"></div>
                 <div className="absolute bottom-5 right-5 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl"></div>
             </div>
 
+           
             <div className="absolute inset-0" style={{
                 backgroundImage: `radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0)`,
                 backgroundSize: '32px 32px'
             }}></div>
 
-            <div className="relative container py-4">
-                <div className="grid lg:grid-cols-2 gap-8 items-center">
+          
+            <div className="container">
+                <div className="grid lg:grid-cols-2 gap-8 items-center py-8 md:py-12">
+                 
                     <div className="text-left space-y-4 md:space-y-5">
                         <div className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full px-4 py-1.5">
                             <div className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></div>
@@ -45,36 +49,38 @@ const Banner = () => {
                             </p>
                         </div>
 
+                     
                         <div className="grid grid-cols-3 gap-2 pt-1">
                             <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-xl p-2 border border-white/10">
-                                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <FiTruck className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="hidden sm:block">
-                                    <p className="font-bold text-white text-xs">Free Ship</p>
-                                    <p className="text-[10px] text-white/60">500৳+</p>
+                                <div className="hidden sm:block min-w-0">
+                                    <p className="font-bold text-white text-xs truncate">Free Ship</p>
+                                    <p className="text-[10px] text-white/60 truncate">500৳+</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-xl p-2 border border-white/10">
-                                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-amber-500 to-orange-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <FiShield className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="hidden sm:block">
-                                    <p className="font-bold text-white text-xs">Fresh</p>
-                                    <p className="text-[10px] text-white/60">100%</p>
+                                <div className="hidden sm:block min-w-0">
+                                    <p className="font-bold text-white text-xs truncate">Fresh</p>
+                                    <p className="text-[10px] text-white/60 truncate">100%</p>
                                 </div>
                             </div>
                             <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm rounded-xl p-2 border border-white/10">
-                                <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center">
+                                <div className="w-8 h-8 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-lg flex items-center justify-center flex-shrink-0">
                                     <FiAward className="w-4 h-4 text-white" />
                                 </div>
-                                <div className="hidden sm:block">
-                                    <p className="font-bold text-white text-xs">Premium</p>
-                                    <p className="text-[10px] text-white/60">Quality</p>
+                                <div className="hidden sm:block min-w-0">
+                                    <p className="font-bold text-white text-xs truncate">Premium</p>
+                                    <p className="text-[10px] text-white/60 truncate">Quality</p>
                                 </div>
                             </div>
                         </div>
 
+                     
                         <div className="flex flex-wrap gap-3 pt-2">
                             <Link to='/shop' className="group relative inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-amber-500 via-yellow-500 to-emerald-500 text-gray-900 font-bold rounded-xl hover:shadow-2xl hover:scale-105 transition-all duration-500 overflow-hidden">
                                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
@@ -88,6 +94,7 @@ const Banner = () => {
                             </button>
                         </div>
 
+                        
                         <div className="flex items-center gap-4 pt-3 border-t border-white/10">
                             <div>
                                 <span className="text-xl md:text-2xl font-bold text-white">50k+</span>
@@ -106,17 +113,19 @@ const Banner = () => {
                         </div>
                     </div>
 
+                  
                     <div className="relative hidden lg:block">
                         <div className="relative w-full h-[320px]">
-                            <div className="absolute top-5 -right-5 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform rotate-3 hover:rotate-0 transition-all duration-500">
+                        
+                            <div className="absolute top-5 right-0 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform rotate-3 hover:rotate-0 transition-all duration-500">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center">
+                                    <div className="w-14 h-14 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-xl flex items-center justify-center flex-shrink-0">
                                         <span className="text-white text-2xl">🥬</span>
                                     </div>
-                                    <div>
+                                    <div className="min-w-0">
                                         <div className="flex items-center gap-2">
-                                            <p className="font-bold text-white text-sm">Fresh Veggies</p>
-                                            <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded-full">-25%</span>
+                                            <p className="font-bold text-white text-sm truncate">Fresh Veggies</p>
+                                            <span className="px-1.5 py-0.5 bg-emerald-500/20 text-emerald-400 text-[8px] rounded-full flex-shrink-0">-25%</span>
                                         </div>
                                         <div className="flex items-center gap-1 mt-1">
                                             <p className="text-lg font-bold text-white">30৳</p>
@@ -126,28 +135,30 @@ const Banner = () => {
                                 </div>
                             </div>
 
-                            <div className="absolute top-24 -left-10 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform -rotate-6 hover:rotate-0 transition-all duration-500">
+                          
+                            <div className="absolute top-24 left-0 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform -rotate-6 hover:rotate-0 transition-all duration-500">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center">
+                                    <div className="w-14 h-14 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center flex-shrink-0">
                                         <span className="text-white text-2xl">🍎</span>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-white text-sm">Premium Fruits</p>
+                                    <div className="min-w-0">
+                                        <p className="font-bold text-white text-sm truncate">Premium Fruits</p>
                                         <div className="flex items-center gap-1 mt-1">
-                                            <FiStar className="w-3 h-3 text-amber-400 fill-amber-400" />
+                                            <FiStar className="w-3 h-3 text-amber-400 fill-amber-400 flex-shrink-0" />
                                             <span className="text-white text-xs">4.9</span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <div className="absolute bottom-5 -right-8 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform rotate-12 hover:rotate-0 transition-all duration-500">
+                            {/* Card 3 */}
+                            <div className="absolute bottom-5 right-4 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform rotate-12 hover:rotate-0 transition-all duration-500">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center">
+                                    <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center flex-shrink-0">
                                         <span className="text-white text-2xl">🌾</span>
                                     </div>
-                                    <div>
-                                        <p className="font-bold text-white text-sm">Organic Grains</p>
+                                    <div className="min-w-0">
+                                        <p className="font-bold text-white text-sm truncate">Organic Grains</p>
                                         <p className="text-lg font-bold text-white mt-1">85৳</p>
                                     </div>
                                 </div>
@@ -156,8 +167,6 @@ const Banner = () => {
                     </div>
                 </div>
             </div>
-
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-emerald-500 via-amber-500 to-yellow-500"></div>
         </div>
     );
 };
