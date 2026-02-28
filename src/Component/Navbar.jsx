@@ -29,7 +29,8 @@ import { LiaStoreSolid } from 'react-icons/lia';
 import { BiSolidContact } from 'react-icons/bi';
 import { IoNotifications } from 'react-icons/io5';
 import Logo from './Logo';
-import { getuser } from './Api';
+import { getuser, notification_read_update, unread_Count } from './Api';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Navbar = () => {
   const dropdownRef = useRef(null);
@@ -38,6 +39,7 @@ const Navbar = () => {
   const { user, logout } = Useauth();
   const [User, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   const navLinks = [
     { path: '/', name: 'Home' },
@@ -77,6 +79,15 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
+  const { data: notificationData } = useQuery({
+    queryKey: ["notification-count", user?.email],
+    queryFn: () => unread_Count(user.email),
+    enabled: !!user?.email
+  });
+
+
+  const notificationCount = notificationData?.unreadCount || 0;
+
   const handlelogout = () => {
     logout().then(() => {
       Swal.fire({
@@ -89,6 +100,23 @@ const Navbar = () => {
       });
     });
   };
+
+
+  const mutation = useMutation({
+    mutationFn: notification_read_update,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["notification-count", user?.email]);
+    }
+  });
+
+  const handleNotification = () => {
+    if (!user) return;
+
+    mutation.mutate(user.email);
+  };
+
+
+  console.log(notificationCount)
 
   return (
     <div className="sticky relative top-0 z-50 bg-white py-5">
@@ -127,7 +155,7 @@ const Navbar = () => {
             </div>
 
             <div className='relative hidden md:block'>
-              <Link to='/massenger'>
+              <Link to='/messenger'>
                 <LuMessageCircleMore className='text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors' />
               </Link>
               <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>
@@ -136,11 +164,13 @@ const Navbar = () => {
             </div>
 
             <div className="relative hidden md:block">
-              <Link to="/notification">
-                <IoNotifications className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
-              </Link>
+              <button onClick={handleNotification}>
+                <Link to="/notification">
+                  <IoNotifications className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
+                </Link>
+              </button>
               <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                0
+                {user ? notificationCount : 0}
               </span>
             </div>
 
@@ -259,7 +289,7 @@ const Navbar = () => {
                 <IoNotifications className="text-3xl text-gray-700" />
               </Link>
               <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                0
+                {user ? notificationCount : 0}
               </span>
             </div>
           </div>
@@ -326,20 +356,20 @@ const Navbar = () => {
                   <h3 className="text-xs font-bold text-green-600 tracking-wider mb-3">NAVIGATION</h3>
                   <div className="space-y-1">
                     {navLinks.map((link, index) => (
-                      <MobileLink 
+                      <MobileLink
                         key={index}
-                        to={link.path} 
+                        to={link.path}
                         icon={
                           link.path === '/' ? <HiOutlineHome /> :
-                          link.path === '/shop' ? <LuShoppingCart /> :
-                          link.path === '/hot-deal' ? <LuFlame /> :
-                          link.path === '/collection' ? <MdCollectionsBookmark /> :
-                          link.path === '/local-stores' ? <LiaStoreSolid /> :
-                          link.path === '/blog' ? <LuBookOpen /> :
-                          <BiSolidContact />
-                        } 
-                        text={link.name} 
-                        onClick={() => setopen(false)} 
+                            link.path === '/shop' ? <LuShoppingCart /> :
+                              link.path === '/hot-deal' ? <LuFlame /> :
+                                link.path === '/collection' ? <MdCollectionsBookmark /> :
+                                  link.path === '/local-stores' ? <LiaStoreSolid /> :
+                                    link.path === '/blog' ? <LuBookOpen /> :
+                                      <BiSolidContact />
+                        }
+                        text={link.name}
+                        onClick={() => setopen(false)}
                       />
                     ))}
                   </div>

@@ -688,3 +688,27 @@ export const my_Notification=async(email)=>{
     throw err;
   }
 }
+
+
+
+export const unread_Count=async(email)=>{
+  try{
+    const res=await useaxios.get(`notification/unread-count/${email}`)
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+export const notification_read_update=async(email)=>{
+  try{
+    const res=await useaxios.patch(`notification/update-read/${email}`)
+    return res.data
+  }
+  catch(err){
+    console.log(err)
+  }
+}
