@@ -467,6 +467,30 @@ export const becomeseller = async (data) => {
 };
 
 
+export const adminNotification=async(email)=>{
+  try{
+    const result=await useaxios.get(`admin-notification/${email}`)
+    return result.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
+export const adminNotificationcount=async(email)=>{
+  try{
+    const result=await useaxios.get(`admin-notification/count/${email}`)
+    return result.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
 
 
 
@@ -707,6 +731,17 @@ export const notification_read_update=async(email)=>{
   try{
     const res=await useaxios.patch(`notification/update-read/${email}`)
     return res.data
+  }
+  catch(err){
+    console.log(err)
+  }
+}
+
+
+export const admin_notification_read_update=async(email)=>{
+  try{
+    const res=await useaxios.patch(`admin-notification/update-read/${email}`)
+    return res.data;
   }
   catch(err){
     console.log(err)

@@ -29,7 +29,7 @@ import { LiaStoreSolid } from 'react-icons/lia';
 import { BiSolidContact } from 'react-icons/bi';
 import { IoNotifications } from 'react-icons/io5';
 import Logo from './Logo';
-import { getuser, notification_read_update, unread_Count } from './Api';
+import { admin_notification_read_update, adminNotificationcount, getuser, notification_read_update, unread_Count } from './Api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Navbar = () => {
@@ -79,14 +79,24 @@ const Navbar = () => {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const { data: notificationData } = useQuery({
-    queryKey: ["notification-count", user?.email],
+  const { data: userNotificationData } = useQuery({
+    queryKey: ["user-notification-count", user?.email],
     queryFn: () => unread_Count(user.email),
     enabled: !!user?.email
   });
 
+  const { data: adminNotificationData } = useQuery({
+    queryKey: ["admin-notification-count", user?.email],
+    queryFn: () => adminNotificationcount(user.email),
+    enabled: !!user?.email && User?.role === 'admin'
+  });
 
-  const notificationCount = notificationData?.unreadCount || 0;
+  const userNotificationCount = userNotificationData?.unreadCount || 0;
+  const adminNotificationCount = adminNotificationData?.unreadCount || 0;
+
+  const totalNotificationCount = User?.role === 'admin' 
+    ? userNotificationCount + adminNotificationCount 
+    : userNotificationCount;
 
   const handlelogout = () => {
     logout().then(() => {
@@ -101,22 +111,29 @@ const Navbar = () => {
     });
   };
 
-
-  const mutation = useMutation({
+  const userMutation = useMutation({
     mutationFn: notification_read_update,
     onSuccess: () => {
-      queryClient.invalidateQueries(["notification-count", user?.email]);
+      queryClient.invalidateQueries(["user-notification-count", user?.email]);
+    }
+  });
+
+  const adminMutation = useMutation({
+    mutationFn: admin_notification_read_update,
+    onSuccess: () => {
+      queryClient.invalidateQueries(["admin-notification-count", user?.email]);
     }
   });
 
   const handleNotification = () => {
     if (!user) return;
-
-    mutation.mutate(user.email);
+    
+    userMutation.mutate(user.email);
+    
+    if (User?.role === 'admin') {
+      adminMutation.mutate(user.email);
+    }
   };
-
-
-  console.log(notificationCount)
 
   return (
     <div className="sticky relative top-0 z-50 bg-white py-5">
@@ -155,7 +172,7 @@ const Navbar = () => {
             </div>
 
             <div className='relative hidden md:block'>
-              <Link to='/messenger'>
+              <Link to='/massenger'>
                 <LuMessageCircleMore className='text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors' />
               </Link>
               <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>
@@ -170,7 +187,7 @@ const Navbar = () => {
                 </Link>
               </button>
               <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {user ? notificationCount : 0}
+                {user ? totalNotificationCount : 0}
               </span>
             </div>
 
@@ -276,7 +293,7 @@ const Navbar = () => {
 
           <div className='flex items-center gap-4'>
             <div className='relative'>
-              <Link to='/messenger'>
+              <Link to='/massenger'>
                 <LuMessageCircleMore className='text-3xl text-gray-700' />
               </Link>
               <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>
@@ -289,7 +306,7 @@ const Navbar = () => {
                 <IoNotifications className="text-3xl text-gray-700" />
               </Link>
               <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {user ? notificationCount : 0}
+                {user ? totalNotificationCount : 0}
               </span>
             </div>
           </div>
