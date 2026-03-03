@@ -467,24 +467,24 @@ export const becomeseller = async (data) => {
 };
 
 
-export const adminNotification=async(email)=>{
-  try{
-    const result=await useaxios.get(`admin-notification/${email}`)
+export const adminNotification = async (email) => {
+  try {
+    const result = await useaxios.get(`admin-notification/${email}`)
     return result.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
 }
 
 
-export const adminNotificationcount=async(email)=>{
-  try{
-    const result=await useaxios.get(`admin-notification/count/${email}`)
+export const adminNotificationcount = async (email) => {
+  try {
+    const result = await useaxios.get(`admin-notification/count/${email}`)
     return result.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -594,12 +594,12 @@ export const markAsSeensms = async (chatId, userEmail) => {
 
 
 
-export const ordersummary=async()=>{
-  try{
-    const res=await useaxios.get("payment/all-order-summary")
+export const ordersummary = async () => {
+  try {
+    const res = await useaxios.get("payment/all-order-summary")
     return res.data
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -607,12 +607,12 @@ export const ordersummary=async()=>{
 
 
 
-export const alluserssummary=async()=>{
-  try{
-    const res=await useaxios.get("user/all-users-summary")
+export const alluserssummary = async () => {
+  try {
+    const res = await useaxios.get("user/all-users-summary")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -621,12 +621,12 @@ export const alluserssummary=async()=>{
 
 
 
-export const productuploadsummary=async()=>{
-  try{
-    const res=await useaxios.get("products/product-upload-summary")
+export const productuploadsummary = async () => {
+  try {
+    const res = await useaxios.get("products/product-upload-summary")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -635,12 +635,12 @@ export const productuploadsummary=async()=>{
 
 
 
-export const countpaymentstatus=async()=>{
-  try{
-    const res=await useaxios.get("payment/order-status-count")
+export const countpaymentstatus = async () => {
+  try {
+    const res = await useaxios.get("payment/order-status-count")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -649,12 +649,12 @@ export const countpaymentstatus=async()=>{
 
 
 
-export const allProductsstatus=async()=>{
-  try{
-    const res=await useaxios.get("products/allproducts-status-summary")
+export const allProductsstatus = async () => {
+  try {
+    const res = await useaxios.get("products/allproducts-status-summary")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -664,36 +664,36 @@ export const allProductsstatus=async()=>{
 
 
 
-export const topfiveseller=async()=>{
-  try{
-    const res=await useaxios.get("products/top-sellers")
+export const topfiveseller = async () => {
+  try {
+    const res = await useaxios.get("products/top-sellers")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
 }
 
 
-export const topfivebuyer=async()=>{
-  try{
-    const res=await useaxios.get("payment/top-buyers")
+export const topfivebuyer = async () => {
+  try {
+    const res = await useaxios.get("payment/top-buyers")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
 }
 
 
-export const allTotal=async()=>{
-  try{
-    const res=await useaxios.get("all-total/all-total")
+export const allTotal = async () => {
+  try {
+    const res = await useaxios.get("all-total/all-total")
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -702,12 +702,12 @@ export const allTotal=async()=>{
 
 
 
-export const my_Notification=async(email)=>{
-  try{
-    const res=await useaxios.get(`notification/my-notifications/${email}`)
+export const my_Notification = async (email) => {
+  try {
+    const res = await useaxios.get(`notification/my-notifications/${email}`)
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -715,35 +715,47 @@ export const my_Notification=async(email)=>{
 
 
 
-export const unread_Count=async(email)=>{
-  try{
-    const res=await useaxios.get(`notification/unread-count/${email}`)
+export const unread_Count = async (email) => {
+  try {
+    const res = await useaxios.get(`notification/unread-count/${email}`)
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
 }
 
 
-export const notification_read_update=async(email)=>{
-  try{
-    const res=await useaxios.patch(`notification/update-read/${email}`)
+export const notification_read_update = async (email) => {
+  try {
+    const res = await useaxios.patch(`notification/update-read/${email}`)
     return res.data
   }
-  catch(err){
+  catch (err) {
     console.log(err)
   }
 }
 
 
-export const admin_notification_read_update=async(email)=>{
-  try{
-    const res=await useaxios.patch(`admin-notification/update-read/${email}`)
+export const admin_notification_read_update = async (email) => {
+  try {
+    const res = await useaxios.patch(`admin-notification/update-read/${email}`)
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
   }
+}
+
+
+export const cartCount = async (email) => {
+  const res = await useaxios.get(`cart/cart-count/${email}`);
+  return res.data;
+};
+
+
+export const favoritecount=async(email)=>{
+  const res= await useaxios.get(`favorite/favorite-count/${email}`);
+  return res.data;
 }

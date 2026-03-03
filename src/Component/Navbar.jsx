@@ -29,7 +29,7 @@ import { LiaStoreSolid } from 'react-icons/lia';
 import { BiSolidContact } from 'react-icons/bi';
 import { IoNotifications } from 'react-icons/io5';
 import Logo from './Logo';
-import { admin_notification_read_update, adminNotificationcount, getuser, notification_read_update, unread_Count } from './Api';
+import { admin_notification_read_update, adminNotificationcount, cartCount, favoritecount, getuser, notification_read_update, unread_Count } from './Api';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 const Navbar = () => {
@@ -78,6 +78,21 @@ const Navbar = () => {
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
+
+  const { data: cartData } = useQuery({
+    queryKey: ["cart-count", user?.email],
+    queryFn: () => cartCount(user.email),
+    enabled: !!user?.email
+  });
+
+  const { data: favoriteData } = useQuery({
+    queryKey: ["favorite-count", user?.email],
+    queryFn: () => favoritecount(user.email),
+    enabled: !!user?.email
+  });
+
+  const cartcount = cartData?.count || 0;
+  const favoriteCount = favoriteData?.count || 0;
 
   const { data: userNotificationData } = useQuery({
     queryKey: ["user-notification-count", user?.email],
@@ -158,7 +173,7 @@ const Navbar = () => {
                 <LuShoppingCart className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
               </Link>
               <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                0
+                {user ? cartcount : 0}
               </span>
             </div>
 
@@ -167,7 +182,7 @@ const Navbar = () => {
                 <FaRegHeart className="text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors" />
               </Link>
               <span className="absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                1
+                {user ? favoriteCount : 0}
               </span>
             </div>
 
@@ -347,10 +362,16 @@ const Navbar = () => {
                     <Link to="/cart" onClick={() => setopen(false)} className="bg-gray-50 p-3 rounded-lg flex flex-col items-center gap-1">
                       <LuShoppingCart className="text-xl text-green-600" />
                       <span className="text-xs text-gray-600">Cart</span>
+                      {user && cartcount > 0 && (
+                        <span className="text-xs bg-green-500 text-white px-1.5 rounded-full">{cartcount}</span>
+                      )}
                     </Link>
                     <Link to="/favorite" onClick={() => setopen(false)} className="bg-gray-50 p-3 rounded-lg flex flex-col items-center gap-1">
                       <FaRegHeart className="text-xl text-green-600" />
                       <span className="text-xs text-gray-600">Wishlist</span>
+                      {user && favoriteCount > 0 && (
+                        <span className="text-xs bg-green-500 text-white px-1.5 rounded-full">{favoriteCount}</span>
+                      )}
                     </Link>
                     <Link to="/dashboard/myorder" onClick={() => setopen(false)} className="bg-gray-50 p-3 rounded-lg flex flex-col items-center gap-1">
                       <LuPackage className="text-xl text-green-600" />
