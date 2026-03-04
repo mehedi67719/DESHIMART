@@ -3,10 +3,12 @@ import { FaHeart, FaShoppingCart, FaTag, FaEye, FaTrash, FaStar, FaPercentage, F
 import { useNavigate } from 'react-router';
 import Useauth from '../../Component/Useauth';
 import { getUserFavorites, removeFavorite, addtocartFromfavorite } from '../../Component/Api';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Favorite = () => {
     const navigate = useNavigate();
     const { user } = Useauth();
+    const queryClient = useQueryClient();
     const [favorites, setFavorites] = useState([]);
     const [loading, setLoading] = useState(true);
     const [sortConfig, setSortConfig] = useState({ key: 'createdAt', direction: 'desc' });
@@ -40,6 +42,7 @@ const Favorite = () => {
             await removeFavorite({ productId: itemId, userEmail: user.email });
             setFavorites(prev => prev.filter(item => item._id !== itemId));
             setSelectedItems(prev => prev.filter(id => id !== itemId));
+            queryClient.invalidateQueries(["favorite-count", user?.email]);
         } catch (error) {
             console.error("Failed to remove item:", error);
         }
@@ -52,6 +55,7 @@ const Favorite = () => {
             }
             setFavorites(prev => prev.filter(item => !selectedItems.includes(item._id)));
             setSelectedItems([]);
+            queryClient.invalidateQueries(["favorite-count", user?.email]);
         } catch (error) {
             console.error("Failed to remove selected items:", error);
         }
@@ -74,28 +78,23 @@ const Favorite = () => {
                 sellerEmail: sellerEmail
             };
 
-
             await addtocartFromfavorite(cartdata);
-
-
             await removeFavorite({
                 productId: item._id,
                 userEmail: user.email
             });
 
-
             setFavorites(prev => prev.filter(fav => fav._id !== item._id));
-
+            
+            queryClient.invalidateQueries(["cart-count", user?.email]);
+            queryClient.invalidateQueries(["favorite-count", user?.email]);
+            
             alert("Added to cart and removed from favorites");
-
         } catch (error) {
             console.error("Failed:", error);
             alert("Failed to add to cart");
         }
     };
-
-
-
 
     const handleAddSelectedToCart = async () => {
         if (!user) {
@@ -123,11 +122,7 @@ const Favorite = () => {
                         sellerEmail: item.sellerEmail
                     };
 
-                    // console.log(cartdata)
-
                     await addtocartFromfavorite(cartdata);
-
-
                     await removeFavorite({
                         productId: item._id,
                         userEmail: user.email
@@ -135,24 +130,21 @@ const Favorite = () => {
                 }
             }
 
-
             setFavorites(prev =>
                 prev.filter(item => !selectedItems.includes(item._id))
             );
 
             setSelectedItems([]);
-
+            
+            queryClient.invalidateQueries(["cart-count", user?.email]);
+            queryClient.invalidateQueries(["favorite-count", user?.email]);
+            
             alert("Items added to cart and removed from favorites");
-
         } catch (error) {
             console.error(error);
             alert("Failed");
         }
     };
-
-
-
-
 
     const handleSort = (key) => {
         let direction = 'asc';

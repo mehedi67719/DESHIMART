@@ -15,6 +15,16 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 };
 
 
+export const searchproducts = async (searchTerm) => {
+  try {
+    const response = await useaxios.get(`/products/search?q=${encodeURIComponent(searchTerm)}`);
+    return response.data;
+  } catch (error) {
+    console.error("Search error:", error);
+    return [];
+  }
+}
+
 
 
 export const PendingProducts = async () => {
@@ -755,7 +765,7 @@ export const cartCount = async (email) => {
 };
 
 
-export const favoritecount=async(email)=>{
-  const res= await useaxios.get(`favorite/favorite-count/${email}`);
+export const favoritecount = async (email) => {
+  const res = await useaxios.get(`favorite/favorite-count/${email}`);
   return res.data;
 }

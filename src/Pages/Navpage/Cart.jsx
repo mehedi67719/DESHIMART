@@ -4,10 +4,12 @@ import Useauth from '../../Component/Useauth';
 import { cartdata, paymemtinit, removecart } from '../../Component/Api';
 import AddtocartCard from '../../Component/AddtocartCard';
 import { Link, useNavigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 
 const Cart = () => {
     const navigate = useNavigate();
     const { user } = Useauth();
+    const queryClient = useQueryClient();
     const [cartItems, setCartItems] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -34,22 +36,15 @@ const Cart = () => {
         }
     };
 
-
-
     const removeItem = async (id) => {
         try {
-
-            await removecart(id)
-
+            await removecart(id);
             setCartItems(prevItems => prevItems.filter(item => item._id !== id));
+            queryClient.invalidateQueries(["cart-count", user?.email]);
         } catch (error) {
             alert("Failed to remove item", error);
         }
     };
-
-    console.log(cartItems)
-
-
 
     const calculateSubtotal = () => {
         return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
@@ -59,34 +54,27 @@ const Cart = () => {
         return calculateSubtotal();
     };
 
-    const handleCheckout =async () => {
+    const handleCheckout = async () => {
         const payload = {
             userEmail: user.email,
             items: cartItems.map((i) => ({
                 id: i._id,
                 name: i.ProductName,
-                Productimg:i.Productimg,
+                Productimg: i.Productimg,
                 price: i.price,
                 quantity: i.quantity,
-                sellerEmail:i.sellerEmail
+                sellerEmail: i.sellerEmail
             })),
-
-            
             totalAmount: calculateTotal(),
-            Name:user.displayName
+            Name: user.displayName
         };
 
-        try{
-           const data=await paymemtinit(payload)
-           window.location.href = data.url;
+        try {
+            const data = await paymemtinit(payload);
+            window.location.href = data.url;
+        } catch (err) {
+            console.log(err);
         }
-        catch(err){
-            console.log(err)
-        }
-
-
-        
-
     };
 
     const continueShopping = () => {
@@ -108,7 +96,6 @@ const Cart = () => {
         );
     }
 
-   
     return (
         <div className="min-h-screen bg-gray-50 py-8">
             <div className="container mx-auto px-4">
@@ -120,7 +107,6 @@ const Cart = () => {
                 </div>
 
                 <div className="flex flex-col lg:flex-row gap-8">
-
                     <div className="lg:w-2/3">
                         <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                             <div className="p-6 border-b border-gray-200">
@@ -171,7 +157,6 @@ const Cart = () => {
                         </div>
                     </div>
 
-
                     <div className="lg:w-1/3">
                         <div className="sticky top-6">
                             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -181,7 +166,6 @@ const Cart = () => {
                                 </div>
 
                                 <div className="p-6">
-
                                     <div className="space-y-4 mb-6">
                                         <div className="flex justify-between">
                                             <span className="text-gray-600">Subtotal ({cartItems.length} items)</span>
@@ -196,7 +180,6 @@ const Cart = () => {
                                         </div>
                                     </div>
 
-
                                     <div className="bg-green-50 rounded-xl p-4 mb-6">
                                         <div className="flex items-center gap-3 mb-2">
                                             <FaLock className="text-green-600" />
@@ -206,7 +189,6 @@ const Cart = () => {
                                             Your payment information is encrypted and secure.
                                         </p>
                                     </div>
-
 
                                     <button
                                         onClick={handleCheckout}
@@ -219,7 +201,6 @@ const Cart = () => {
                                         Proceed to Checkout
                                         <FaArrowRight />
                                     </button>
-
 
                                     <div className="mt-6 pt-6 border-t border-gray-200">
                                         <p className="text-gray-600 text-sm text-center mb-4">We Accept</p>

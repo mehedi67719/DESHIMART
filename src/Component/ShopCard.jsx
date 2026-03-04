@@ -3,10 +3,12 @@ import { FaHeart, FaRegStar, FaShoppingCart, FaStar, FaStarHalf } from 'react-ic
 import { Link } from 'react-router';
 import Useauth from './Useauth';
 import { addfavorite, addtocart, getfavorite, removeFavorite } from './Api';
+import { useQueryClient } from '@tanstack/react-query';
 
 const ShopCard = ({ item }) => {
     const [isFavorite, setIsFavorite] = useState(false);
     const { user } = Useauth();
+    const queryClient = useQueryClient();
 
     const Stars = ({ rating }) => {
         const stars = [];
@@ -29,21 +31,21 @@ const ShopCard = ({ item }) => {
 
         try {
             if (isFavorite) {
-         
                 await removeFavorite({
                     productId: item._id,
                     userEmail: user.email,
                 });
                 setIsFavorite(false);
+                queryClient.invalidateQueries(["favorite-count", user?.email]);
                 alert("Removed from favorites 💔");
             } else {
-         
                 const favorite = {
                     productId: item._id,
                     userEmail: user.email,
                 };
                 await addfavorite(favorite);
                 setIsFavorite(true);
+                queryClient.invalidateQueries(["favorite-count", user?.email]);
                 alert("Added to favorites ❤️");
             }
         } catch (error) {
@@ -65,7 +67,6 @@ const ShopCard = ({ item }) => {
                     userEmail: user.email,
                 });
 
-    
                 if (data?.exists || data?.favorited) {
                     setIsFavorite(true);
                 } else {
@@ -92,12 +93,13 @@ const ShopCard = ({ item }) => {
             quantity: 1,
             Productimg: product.image,
             price: product.price,
-            sellerEmail:product.sellerEmail
+            sellerEmail: product.sellerEmail
         };
 
         try {
             const result = await addtocart(cartdata);
             console.log(result);
+            queryClient.invalidateQueries(["cart-count", user?.email]);
             alert("Added to cart successfully");
         } catch (err) {
             console.log(err);
@@ -128,7 +130,6 @@ const ShopCard = ({ item }) => {
                         )}
                     </div>
 
-                   
                     <button
                         onClick={handleFavoriteClick}
                         className="absolute top-3 right-3 z-20 p-2 bg-white/80 backdrop-blur-sm rounded-full transition-all duration-300 hover:bg-white hover:shadow-md"

@@ -4,7 +4,7 @@ import { Link } from 'react-router';
 
 const Banner = () => {
     return (
-        <div className="w-full bg-gradient-to-br from-emerald-950 via-green-900 to-teal-950 overflow-hidden">
+        <div className="w-full bg-gradient-to-br from-emerald-950 via-green-900 to-teal-950 overflow-hidden relative">
       
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 w-full h-full bg-[url('https://images.unsplash.com/photo-1605000797499-95a51c5269ae?ixlib=rb-4.0.3')] bg-cover bg-center opacity-5"></div>
@@ -19,7 +19,7 @@ const Banner = () => {
             }}></div>
 
           
-            <div className="container">
+            <div className="container mx-auto px-4">
                 <div className="grid lg:grid-cols-2 gap-8 items-center py-8 md:py-12">
                  
                     <div className="text-left space-y-4 md:space-y-5">
@@ -151,7 +151,7 @@ const Banner = () => {
                                 </div>
                             </div>
 
-                            {/* Card 3 */}
+                          
                             <div className="absolute bottom-5 right-4 w-64 bg-white/10 backdrop-blur-xl rounded-xl p-4 border border-white/20 shadow-2xl transform rotate-12 hover:rotate-0 transition-all duration-500">
                                 <div className="flex items-center gap-3">
                                     <div className="w-14 h-14 bg-gradient-to-br from-yellow-500 to-amber-600 rounded-xl flex items-center justify-center flex-shrink-0">
