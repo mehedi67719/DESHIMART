@@ -31,7 +31,7 @@ export const getSimilarProducts = async (category) => {
     const res = await useaxios.get(`products/similar-products/${category}`);
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -602,17 +602,18 @@ export const sendmassage = async (chat) => {
 
 
 
-export const markAsSeensms = async (chatId, userEmail) => {
+
+export const markAsRead = async (chatId, userEmail) => {
   try {
-    const res = await useaxios.put(`chat/mark-seen/${chatId}`, {
+    const res = await useaxios.patch(`chat/mark-read/${chatId}`, {
       userEmail: userEmail
     });
     return res.data;
   } catch (err) {
-    console.log(err);
+    console.log("Mark as read error:", err);
     throw err;
   }
-}
+};
 
 
 
