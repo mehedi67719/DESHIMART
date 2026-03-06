@@ -33,6 +33,7 @@ import All_Products from "../Pages/Dashboard/Admin/All_Products";
 import Admin_analytics from "../Pages/Dashboard/Admin/Admin_analytics";
 import Seller_analytics from "../Pages/Dashboard/seller/Seller_analytics";
 import PendingApproval from "../Pages/Dashboard/Admin/PendingApproval";
+import PrivateRouter from "./PrivateRouter";
 
 
 
@@ -86,19 +87,19 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/cart",
-                Component: Cart
+                element:<PrivateRouter><Cart/></PrivateRouter>
             },
             {
                 path: '/favorite',
-                Component: Favorite
+                element:<PrivateRouter><Favorite/></PrivateRouter>
             },
             {
                 path: '/messenger',
-                Component: Messenger
+                element:<PrivateRouter><Messenger/></PrivateRouter>
             },
             {
                 path: "/notification",
-                Component: Notification
+                element:<PrivateRouter><Notification/></PrivateRouter>
             },
             {
                 path: "/payment-success",
@@ -124,7 +125,7 @@ export const router = createBrowserRouter([
 
     {
         path: "/dashboard",
-        Component: DashboardRoot,
+        element:<PrivateRouter><DashboardRoot/></PrivateRouter>,
         children: [
             {
                 index: true,
