@@ -1,5 +1,5 @@
 
-import { Ear } from "lucide-react";
+import { Candy, Ear } from "lucide-react";
 import useaxios from "./Useaxios";
 
 export const products = async ({ pageParam = null, category = "", brand = '', priceRange = '' }) => {
@@ -17,13 +17,25 @@ export const products = async ({ pageParam = null, category = "", brand = '', pr
 
 export const searchproducts = async (searchTerm) => {
   try {
-    const response = await useaxios.get(`/products/search?q=${encodeURIComponent(searchTerm)}`);
+    const response = await useaxios.get(`products/search?q=${encodeURIComponent(searchTerm)}`);
     return response.data;
   } catch (error) {
     console.error("Search error:", error);
     return [];
   }
 }
+
+
+export const getSimilarProducts = async (category) => {
+  try {
+    const res = await useaxios.get(`products/similar-products/${category}`);
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+};
 
 
 
