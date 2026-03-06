@@ -129,7 +129,7 @@ const ViewProductsDetels = () => {
 
       const result = await chatlistpost(chatListData);
 
-      navigate('/massenger', {
+      navigate('/messenger', {
         state: {
           contactSeller: {
             id: product.sellerId || product._id,
@@ -185,7 +185,7 @@ const ViewProductsDetels = () => {
     try {
       const result = await addtocart(cartdata);
       
-      // Invalidate cart queries to refresh cart data in real-time
+  
       queryClient.invalidateQueries(["cart-count", user?.email]);
       queryClient.invalidateQueries(["cart", user?.email]);
       queryClient.invalidateQueries(["cart-items", user?.email]);
