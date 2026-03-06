@@ -617,6 +617,18 @@ export const markAsRead = async (chatId, userEmail) => {
 
 
 
+export const unreadcount=async(email)=>{
+  try{
+    const res=await useaxios.get(`chat/total-unreadchat/${email}`)
+    return res.data;
+  }
+  catch(err){
+    console.log(err)
+    throw err;
+  }
+}
+
+
 export const ordersummary = async () => {
   try {
     const res = await useaxios.get("payment/all-order-summary")

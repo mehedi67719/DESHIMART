@@ -93,7 +93,7 @@ export const router = createBrowserRouter([
                 Component: Favorite
             },
             {
-                path: '/massenger',
+                path: '/messenger',
                 Component: Messenger
             },
             {

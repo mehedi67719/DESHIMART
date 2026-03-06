@@ -307,7 +307,7 @@ const Navbar = () => {
             </div>
 
             <div className='relative hidden md:block'>
-              <Link to='/massenger'>
+              <Link to='/messenger'>
                 <LuMessageCircleMore className='text-2xl sm:text-3xl lg:text-4xl text-gray-700 hover:text-green-500 transition-colors' />
               </Link>
               <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>5</span>
@@ -399,7 +399,7 @@ const Navbar = () => {
           </button>
           <div className='flex items-center gap-4'>
             <div className='relative'>
-              <Link to='/massenger'>
+              <Link to='/messenger'>
                 <LuMessageCircleMore className='text-3xl text-gray-700' />
               </Link>
               <span className='absolute -top-2 -right-2 bg-green-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full'>5</span>
