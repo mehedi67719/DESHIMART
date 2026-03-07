@@ -4,6 +4,7 @@ import { Link } from 'react-router';
 import Useauth from './Useauth';
 import { addfavorite, addtocart, getfavorite, removeFavorite } from './Api';
 import { useQueryClient } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
 
 const ShopCard = ({ item }) => {
     const [isFavorite, setIsFavorite] = useState(false);
@@ -25,7 +26,12 @@ const ShopCard = ({ item }) => {
         e.stopPropagation();
 
         if (!user) {
-            alert("Please login first");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'Please login first to add items to favorites',
+                confirmButtonColor: '#3085d6'
+            });
             return;
         }
 
@@ -37,7 +43,13 @@ const ShopCard = ({ item }) => {
                 });
                 setIsFavorite(false);
                 queryClient.invalidateQueries(["favorite-count", user?.email]);
-                alert("Removed from favorites 💔");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed!',
+                    text: 'Item removed from favorites',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             } else {
                 const favorite = {
                     productId: item._id,
@@ -46,11 +58,22 @@ const ShopCard = ({ item }) => {
                 await addfavorite(favorite);
                 setIsFavorite(true);
                 queryClient.invalidateQueries(["favorite-count", user?.email]);
-                alert("Added to favorites ❤️");
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Added!',
+                    text: 'Item added to favorites',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
         } catch (error) {
             console.log(error);
-            alert("Failed to update favorite");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to update favorite',
+                confirmButtonColor: '#d33'
+            });
         }
     };
 
@@ -83,7 +106,13 @@ const ShopCard = ({ item }) => {
 
     const handleAddToCart = async (product) => {
         if (!user) {
-            return alert("Please login first");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'Please login first to add items to cart',
+                confirmButtonColor: '#3085d6'
+            });
+            return;
         }
 
         const cartdata = {
@@ -100,10 +129,21 @@ const ShopCard = ({ item }) => {
             const result = await addtocart(cartdata);
             console.log(result);
             queryClient.invalidateQueries(["cart-count", user?.email]);
-            alert("Added to cart successfully");
+            Swal.fire({
+                icon: 'success',
+                title: 'Added to Cart!',
+                text: 'Item added successfully',
+                showConfirmButton: false,
+                timer: 1500
+            });
         } catch (err) {
             console.log(err);
-            alert(err.message || "Failed to add to cart");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: err.message || "Failed to add to cart",
+                confirmButtonColor: '#d33'
+            });
         }
     };
 
