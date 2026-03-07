@@ -17,8 +17,7 @@
 ## 📸 Project Screenshots
 
 
-
-> **Note**: Replace placeholder images with actual screenshots by adding your images to a `/screenshots` folder and updating the paths above.
+<img src="https://github.com/mehedi67719/assets/blob/main/Screenshot%202026-03-07%20215552.png?raw=true">
 
 ---
 
