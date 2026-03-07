@@ -5,6 +5,7 @@ import { cartdata, paymemtinit, removecart } from '../../Component/Api';
 import AddtocartCard from '../../Component/AddtocartCard';
 import { Link, useNavigate } from 'react-router';
 import { useQueryClient } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -36,13 +37,42 @@ const Cart = () => {
         }
     };
 
-    const removeItem = async (id) => {
+    const removeItem = async (id, productName) => {
         try {
-            await removecart(id);
-            setCartItems(prevItems => prevItems.filter(item => item._id !== id));
-            queryClient.invalidateQueries(["cart-count", user?.email]);
+            const result = await Swal.fire({
+                title: 'Remove Item?',
+                text: `Are you sure you want to remove "${productName}" from your cart?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                await removecart(id);
+                setCartItems(prevItems => prevItems.filter(item => item._id !== id));
+                queryClient.invalidateQueries(["cart-count", user?.email]);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed!',
+                    text: 'Item has been removed from your cart',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
         } catch (error) {
-            alert("Failed to remove item", error);
+            console.log("Failed to remove item", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to remove item from cart',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     };
 
@@ -55,6 +85,18 @@ const Cart = () => {
     };
 
     const handleCheckout = async () => {
+        if (cartItems.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Empty Cart',
+                text: 'Your cart is empty. Add some items before checkout.',
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
         const payload = {
             userEmail: user.email,
             items: cartItems.map((i) => ({
@@ -74,11 +116,62 @@ const Cart = () => {
             window.location.href = data.url;
         } catch (err) {
             console.log(err);
+            Swal.fire({
+                icon: 'error',
+                title: 'Checkout Failed',
+                text: 'Something went wrong. Please try again.',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     };
 
     const continueShopping = () => {
         navigate('/products');
+    };
+
+    const clearCart = async () => {
+        if (cartItems.length === 0) return;
+
+        try {
+            const result = await Swal.fire({
+                title: 'Clear Cart?',
+                text: `Are you sure you want to remove all ${cartItems.length} items from your cart?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, clear all!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                for (const item of cartItems) {
+                    await removecart(item._id);
+                }
+                setCartItems([]);
+                queryClient.invalidateQueries(["cart-count", user?.email]);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Cart Cleared!',
+                    text: 'All items have been removed from your cart',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
+        } catch (error) {
+            console.log("Failed to clear cart", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to clear cart',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
+        }
     };
 
     useEffect(() => {
@@ -112,7 +205,7 @@ const Cart = () => {
         </div>
     );
 
-    // Order Summary Skeleton
+
     const OrderSummarySkeleton = () => (
         <div className="sticky top-6">
             <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
@@ -199,12 +292,22 @@ const Cart = () => {
                                                 <p className="text-gray-600 text-sm">Review your items</p>
                                             </div>
                                         </div>
-                                        <Link
-                                            to='/shop'
-                                            className="px-6 py-2 border-2 border-green-600 text-green-600 hover:bg-green-50 rounded-xl font-medium transition duration-300"
-                                        >
-                                            Continue Shopping
-                                        </Link>
+                                        <div className="flex gap-3">
+                                            {cartItems.length > 0 && (
+                                                <button
+                                                    onClick={clearCart}
+                                                    className="px-6 py-2 border-2 border-red-600 text-red-600 hover:bg-red-50 rounded-xl font-medium transition duration-300"
+                                                >
+                                                    Clear Cart
+                                                </button>
+                                            )}
+                                            <Link
+                                                to='/shop'
+                                                className="px-6 py-2 border-2 border-green-600 text-green-600 hover:bg-green-50 rounded-xl font-medium transition duration-300"
+                                            >
+                                                Continue Shopping
+                                            </Link>
+                                        </div>
                                     </div>
                                 )}
                             </div>
@@ -218,7 +321,7 @@ const Cart = () => {
                                             <AddtocartCard
                                                 key={item._id}
                                                 item={item}
-                                                removeItem={removeItem}
+                                                removeItem={() => removeItem(item._id, item.ProductName)}
                                             />
                                         ))
                                     ) : (
