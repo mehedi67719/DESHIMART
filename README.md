@@ -22,7 +22,7 @@
 
 
 ### Backend
-- **API Server**: [https://deshimart-server.vercel.app](https://deshimart-server.vercel.app)
+- **API Server**: [https://deshimart-server.onrender.com/](https://deshimart-server.onrender.com/)
 - **GitHub Repository**: [https://github.com/mehedi67719/DESHIMART-Server](https://github.com/mehedi67719/DESHIMART-Server)
 
 <div align="center">
