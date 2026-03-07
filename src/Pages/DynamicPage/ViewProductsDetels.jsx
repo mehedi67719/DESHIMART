@@ -28,6 +28,7 @@ import { MdLocalShipping, MdSecurity } from "react-icons/md";
 import { LuMessageCircleMore } from "react-icons/lu";
 import Useauth from "../../Component/Useauth";
 import ShopCard from "../../Component/ShopCard";
+import Swal from "sweetalert2";
 
 const ViewProductsDetels = () => {
   const { user } = Useauth();
@@ -105,7 +106,15 @@ const ViewProductsDetels = () => {
 
   const handleContactSeller = async () => {
     if (!user) {
-      return alert("Please login first to contact the seller");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Login Required',
+        text: 'Please login first to contact the seller',
+        confirmButtonColor: '#3085d6',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      return;
     }
 
     setIsCreatingChat(true);
@@ -147,7 +156,14 @@ const ViewProductsDetels = () => {
 
     } catch (error) {
       console.error("Error creating chat:", error);
-      alert("Failed to create chat. Please try again.");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Failed to create chat. Please try again.',
+        confirmButtonColor: '#d33',
+        timer: 1500,
+        showConfirmButton: false
+      });
     } finally {
       setIsCreatingChat(false);
     }
@@ -162,13 +178,27 @@ const ViewProductsDetels = () => {
       });
     } else {
       navigator.clipboard.writeText(window.location.href);
-      alert("Link copied to clipboard!");
+      Swal.fire({
+        icon: 'success',
+        title: 'Copied!',
+        text: 'Link copied to clipboard',
+        showConfirmButton: false,
+        timer: 1000
+      });
     }
   };
 
   const handleAddToCart = async () => {
     if (!user) {
-      return alert("Please login first");
+      Swal.fire({
+        icon: 'warning',
+        title: 'Login Required',
+        text: 'Please login first to add items to cart',
+        confirmButtonColor: '#3085d6',
+        timer: 1500,
+        showConfirmButton: false
+      });
+      return;
     }
 
     const cartdata = {
@@ -185,15 +215,27 @@ const ViewProductsDetels = () => {
     try {
       const result = await addtocart(cartdata);
       
-  
       queryClient.invalidateQueries(["cart-count", user?.email]);
       queryClient.invalidateQueries(["cart", user?.email]);
       queryClient.invalidateQueries(["cart-items", user?.email]);
       
-      alert("Product added to cart successfully!");
+      Swal.fire({
+        icon: 'success',
+        title: 'Success!',
+        text: 'Product added to cart',
+        showConfirmButton: false,
+        timer: 800
+      });
     } catch (err) {
       console.log(err);
-      alert(err.message || "Failed to add to cart");
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: err.message || "Failed to add to cart",
+        confirmButtonColor: '#d33',
+        timer: 1500,
+        showConfirmButton: false
+      });
     }
   };
 

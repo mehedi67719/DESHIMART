@@ -4,6 +4,7 @@ import { useNavigate } from 'react-router';
 import Useauth from '../../Component/Useauth';
 import { getUserFavorites, removeFavorite, addtocartFromfavorite } from '../../Component/Api';
 import { useQueryClient } from '@tanstack/react-query';
+import Swal from 'sweetalert2';
 
 const Favorite = () => {
     const navigate = useNavigate();
@@ -37,33 +38,110 @@ const Favorite = () => {
         }
     };
 
-    const handleRemoveItem = async (itemId) => {
+    const handleRemoveItem = async (itemId, itemName) => {
         try {
-            await removeFavorite({ productId: itemId, userEmail: user.email });
-            setFavorites(prev => prev.filter(item => item._id !== itemId));
-            setSelectedItems(prev => prev.filter(id => id !== itemId));
-            queryClient.invalidateQueries(["favorite-count", user?.email]);
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `Remove "${itemName}" from favorites?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                await removeFavorite({ productId: itemId, userEmail: user.email });
+                setFavorites(prev => prev.filter(item => item._id !== itemId));
+                setSelectedItems(prev => prev.filter(id => id !== itemId));
+                queryClient.invalidateQueries(["favorite-count", user?.email]);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed!',
+                    text: 'Item removed from favorites',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+            }
         } catch (error) {
             console.error("Failed to remove item:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to remove item from favorites',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     };
 
     const removeSelected = async () => {
+        if (selectedItems.length === 0) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Items Selected',
+                text: 'Please select items to remove',
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
+            });
+            return;
+        }
+
         try {
-            for (const itemId of selectedItems) {
-                await removeFavorite({ productId: itemId, userEmail: user.email });
+            const result = await Swal.fire({
+                title: 'Are you sure?',
+                text: `Remove ${selectedItems.length} item(s) from favorites?`,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Yes, remove them!',
+                cancelButtonText: 'Cancel'
+            });
+
+            if (result.isConfirmed) {
+                for (const itemId of selectedItems) {
+                    await removeFavorite({ productId: itemId, userEmail: user.email });
+                }
+                setFavorites(prev => prev.filter(item => !selectedItems.includes(item._id)));
+                setSelectedItems([]);
+                queryClient.invalidateQueries(["favorite-count", user?.email]);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Removed!',
+                    text: 'Selected items removed from favorites',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
-            setFavorites(prev => prev.filter(item => !selectedItems.includes(item._id)));
-            setSelectedItems([]);
-            queryClient.invalidateQueries(["favorite-count", user?.email]);
         } catch (error) {
             console.error("Failed to remove selected items:", error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to remove selected items',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     };
 
     const handleAddToCart = async (item, sellerEmail) => {
         if (!user) {
-            alert("Please login first");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'Please login first to add items to cart',
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
+            });
             return;
         }
 
@@ -89,60 +167,113 @@ const Favorite = () => {
             queryClient.invalidateQueries(["cart-count", user?.email]);
             queryClient.invalidateQueries(["favorite-count", user?.email]);
             
-            alert("Added to cart and removed from favorites");
+            Swal.fire({
+                icon: 'success',
+                title: 'Added to Cart!',
+                text: 'Item added to cart and removed from favorites',
+                showConfirmButton: false,
+                timer: 1500
+            });
         } catch (error) {
             console.error("Failed:", error);
-            alert("Failed to add to cart");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add to cart',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     };
 
     const handleAddSelectedToCart = async () => {
         if (!user) {
-            alert("Please login first");
+            Swal.fire({
+                icon: 'warning',
+                title: 'Login Required',
+                text: 'Please login first to add items to cart',
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
+            });
             return;
         }
 
         if (selectedItems.length === 0) {
-            alert("Please select items to add to cart");
+            Swal.fire({
+                icon: 'warning',
+                title: 'No Items Selected',
+                text: 'Please select items to add to cart',
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
+            });
             return;
         }
 
         try {
-            for (const itemId of selectedItems) {
-                const item = favorites.find(f => f._id === itemId);
+            const result = await Swal.fire({
+                title: 'Confirm',
+                text: `Add ${selectedItems.length} item(s) to cart and remove from favorites?`,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonColor: '#28a745',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, add to cart!',
+                cancelButtonText: 'Cancel'
+            });
 
-                if (item) {
-                    const cartdata = {
-                        userEmail: user.email,
-                        productId: item._id,
-                        ProductName: item.name,
-                        quantity: 1,
-                        Productimg: item.image,
-                        price: item.price,
-                        sellerEmail: item.sellerEmail
-                    };
+            if (result.isConfirmed) {
+                for (const itemId of selectedItems) {
+                    const item = favorites.find(f => f._id === itemId);
 
-                    await addtocartFromfavorite(cartdata);
-                    await removeFavorite({
-                        productId: item._id,
-                        userEmail: user.email
-                    });
+                    if (item) {
+                        const cartdata = {
+                            userEmail: user.email,
+                            productId: item._id,
+                            ProductName: item.name,
+                            quantity: 1,
+                            Productimg: item.image,
+                            price: item.price,
+                            sellerEmail: item.sellerEmail
+                        };
+
+                        await addtocartFromfavorite(cartdata);
+                        await removeFavorite({
+                            productId: item._id,
+                            userEmail: user.email
+                        });
+                    }
                 }
+
+                setFavorites(prev =>
+                    prev.filter(item => !selectedItems.includes(item._id))
+                );
+
+                setSelectedItems([]);
+                
+                queryClient.invalidateQueries(["cart-count", user?.email]);
+                queryClient.invalidateQueries(["favorite-count", user?.email]);
+                
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success!',
+                    text: 'Items added to cart and removed from favorites',
+                    showConfirmButton: false,
+                    timer: 1500
+                });
             }
-
-            setFavorites(prev =>
-                prev.filter(item => !selectedItems.includes(item._id))
-            );
-
-            setSelectedItems([]);
-            
-            queryClient.invalidateQueries(["cart-count", user?.email]);
-            queryClient.invalidateQueries(["favorite-count", user?.email]);
-            
-            alert("Items added to cart and removed from favorites");
         } catch (error) {
             console.error(error);
-            alert("Failed");
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Failed to add items to cart',
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
+            });
         }
     };
 
@@ -385,7 +516,7 @@ const Favorite = () => {
                                                 <div className="flex items-center gap-1">
                                                     <button onClick={() => navigate(`/productsdetels/${item._id}`)} className="w-7 h-7 flex items-center justify-center text-blue-600 hover:bg-blue-50 rounded" title="View Details"><FaEye className="text-sm" /></button>
                                                     <button onClick={() => handleAddToCart(item, item.sellerEmail)} className="w-7 h-7 flex items-center justify-center text-green-600 hover:bg-green-50 rounded" title="Add to Cart"><FaShoppingCart className="text-sm" /></button>
-                                                    <button onClick={() => handleRemoveItem(item._id)} className="w-7 h-7 flex items-center justify-center text-red-600 hover:bg-red-50 rounded" title="Remove"><FaTrash className="text-sm" /></button>
+                                                    <button onClick={() => handleRemoveItem(item._id, item.name)} className="w-7 h-7 flex items-center justify-center text-red-600 hover:bg-red-50 rounded" title="Remove"><FaTrash className="text-sm" /></button>
                                                 </div>
                                             </td>
                                         </tr>

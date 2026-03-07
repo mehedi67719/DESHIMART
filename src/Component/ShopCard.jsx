@@ -30,7 +30,9 @@ const ShopCard = ({ item }) => {
                 icon: 'warning',
                 title: 'Login Required',
                 text: 'Please login first to add items to favorites',
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
             });
             return;
         }
@@ -48,7 +50,7 @@ const ShopCard = ({ item }) => {
                     title: 'Removed!',
                     text: 'Item removed from favorites',
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 1000
                 });
             } else {
                 const favorite = {
@@ -63,7 +65,7 @@ const ShopCard = ({ item }) => {
                     title: 'Added!',
                     text: 'Item added to favorites',
                     showConfirmButton: false,
-                    timer: 1500
+                    timer: 1000
                 });
             }
         } catch (error) {
@@ -72,7 +74,9 @@ const ShopCard = ({ item }) => {
                 icon: 'error',
                 title: 'Error',
                 text: 'Failed to update favorite',
-                confirmButtonColor: '#d33'
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
             });
         }
     };
@@ -110,7 +114,9 @@ const ShopCard = ({ item }) => {
                 icon: 'warning',
                 title: 'Login Required',
                 text: 'Please login first to add items to cart',
-                confirmButtonColor: '#3085d6'
+                confirmButtonColor: '#3085d6',
+                timer: 1500,
+                showConfirmButton: false
             });
             return;
         }
@@ -131,10 +137,10 @@ const ShopCard = ({ item }) => {
             queryClient.invalidateQueries(["cart-count", user?.email]);
             Swal.fire({
                 icon: 'success',
-                title: 'Added to Cart!',
-                text: 'Item added successfully',
+                title: 'Success!',
+                text: 'Added to cart',
                 showConfirmButton: false,
-                timer: 1500
+                timer: 800
             });
         } catch (err) {
             console.log(err);
@@ -142,7 +148,9 @@ const ShopCard = ({ item }) => {
                 icon: 'error',
                 title: 'Error',
                 text: err.message || "Failed to add to cart",
-                confirmButtonColor: '#d33'
+                confirmButtonColor: '#d33',
+                timer: 1500,
+                showConfirmButton: false
             });
         }
     };
