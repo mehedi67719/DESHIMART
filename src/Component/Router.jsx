@@ -34,6 +34,7 @@ import Admin_analytics from "../Pages/Dashboard/Admin/Admin_analytics";
 import Seller_analytics from "../Pages/Dashboard/seller/Seller_analytics";
 import PendingApproval from "../Pages/Dashboard/Admin/PendingApproval";
 import PrivateRouter from "./PrivateRouter";
+import SingleBlog from "./blog/SingleBlog";
 
 
 
@@ -113,6 +114,10 @@ export const router = createBrowserRouter([
                 path: "/payment-fail",
                 Component: PaymentFail
             },
+            {
+                path:"/blog/:id",
+                Component:SingleBlog
+            }
 
 
 

@@ -617,12 +617,12 @@ export const markAsRead = async (chatId, userEmail) => {
 
 
 
-export const unreadcount=async(email)=>{
-  try{
-    const res=await useaxios.get(`chat/total-unreadchat/${email}`)
+export const unreadcount = async (email) => {
+  try {
+    const res = await useaxios.get(`chat/total-unreadchat/${email}`)
     return res.data;
   }
-  catch(err){
+  catch (err) {
     console.log(err)
     throw err;
   }
@@ -794,3 +794,49 @@ export const favoritecount = async (email) => {
   const res = await useaxios.get(`favorite/favorite-count/${email}`);
   return res.data;
 }
+
+
+
+
+
+
+
+
+
+export const blogs = async ({ pageParam = 1, category = "", search = "" }) => {
+  try {
+    const res = await useaxios.get("blog", {
+      params: {
+        page: pageParam,
+        category,
+        search
+      }
+    });
+
+    return res.data;
+  } catch (err) {
+    console.log("Blog fetch error:", err);
+    throw err;
+  }
+};
+
+
+
+
+export const singleblog = async (id) => {
+  const res = await useaxios.get(`blog/${id}`);
+  return res.data;
+};
+
+
+
+
+export const blogcategories = async () => {
+  try {
+    const res = await useaxios.get("blog/categories");
+    return res.data;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
