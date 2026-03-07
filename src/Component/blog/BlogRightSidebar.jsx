@@ -5,7 +5,7 @@ const BlogRightSidebar = ({ allBlogs, savedPosts }) => {
   return (
     <div className="hidden lg:block w-64 flex-shrink-0">
       <div className="sticky top-24 space-y-6">
-        {/* Most Viewed */}
+    
         <div className="bg-white rounded-xl shadow-sm p-5">
           <h2 className="text-lg font-bold text-gray-800 mb-4">🔥 Most Viewed</h2>
           <div className="space-y-3">
@@ -25,7 +25,7 @@ const BlogRightSidebar = ({ allBlogs, savedPosts }) => {
           </div>
         </div>
         
-        {/* Profile Stats */}
+  
         <div className="bg-white rounded-xl shadow-sm p-5">
           <h2 className="text-lg font-bold text-gray-800 mb-4">Your Profile</h2>
           <div className="space-y-3">
@@ -47,7 +47,7 @@ const BlogRightSidebar = ({ allBlogs, savedPosts }) => {
           </div>
         </div>
 
-        {/* Newsletter */}
+        
         <div className="bg-gradient-to-r from-green-500 to-blue-500 rounded-xl p-5 text-white">
           <h3 className="text-lg font-bold mb-3">📬 Stay Updated</h3>
           <p className="text-sm opacity-90 mb-4">

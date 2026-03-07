@@ -1,16 +1,26 @@
-import React from 'react';
-import { FaUser } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaUser, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 import { Link } from 'react-router';
 
 const BlogSidebar = ({ categories, activeCategory, setActiveCategory, allBlogs }) => {
+  const [showAllCategories, setShowAllCategories] = useState(false);
+  
+  // প্রথমে ৫টি ক্যাটাগরি দেখাবে, তারপর বাকিগুলো
+  const initialDisplayCount = 5;
+  const displayedCategories = showAllCategories 
+    ? categories 
+    : categories.slice(0, initialDisplayCount);
+  
+  const hasMoreCategories = categories.length > initialDisplayCount;
+
   return (
     <div className="hidden lg:block w-64 flex-shrink-0">
       <div className="sticky top-24 space-y-6">
-        {/* Categories */}
+        {/* Categories with Show More */}
         <div className="bg-white rounded-xl shadow-sm p-5">
           <h2 className="text-lg font-bold text-gray-800 mb-4">Categories</h2>
           <div className="space-y-2">
-            {categories.map((cat) => (
+            {displayedCategories.map((cat) => (
               <button
                 key={cat.name}
                 onClick={() => setActiveCategory(cat.name)}
@@ -31,6 +41,24 @@ const BlogSidebar = ({ categories, activeCategory, setActiveCategory, allBlogs }
                 </span>
               </button>
             ))}
+            
+            {/* Show More / Show Less Button */}
+            {hasMoreCategories && (
+              <button
+                onClick={() => setShowAllCategories(!showAllCategories)}
+                className="w-full flex items-center justify-center gap-2 mt-3 px-4 py-2 bg-gray-50 hover:bg-gray-100 text-gray-700 rounded-lg transition-colors duration-200 text-sm font-medium"
+              >
+                {showAllCategories ? (
+                  <>
+                    <FaChevronUp size={14} /> Show Less
+                  </>
+                ) : (
+                  <>
+                    <FaChevronDown size={14} /> Show More ({categories.length - initialDisplayCount} more)
+                  </>
+                )}
+              </button>
+            )}
           </div>
         </div>
 

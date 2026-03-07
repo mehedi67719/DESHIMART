@@ -20,10 +20,10 @@ const Blog = () => {
   const [likedPosts, setLikedPosts] = useState([]);
   const [showMobileFilter, setShowMobileFilter] = useState(false);
 
-  // Intersection Observer for infinite scroll
+ 
   const { ref, inView } = useInView();
 
-  // Categories Query
+
   const { 
     data: categoriesData, 
     isLoading: categoriesLoading 
@@ -33,7 +33,7 @@ const Blog = () => {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Categories format for UI
+
   const getCategoryIcon = (category) => {
     const icons = {
       'E-commerce': '🛒',
@@ -55,7 +55,7 @@ const Blog = () => {
     }))
   ] : [];
 
-  // Blogs Infinite Query
+ 
   const {
     data,
     fetchNextPage,
@@ -82,24 +82,25 @@ const Blog = () => {
     initialPageParam: 1,
   });
 
-  // Load more when scroll reaches bottom
+
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
     }
   }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-  // Flatten all blog posts from pages
+ 
   const allBlogs = data?.pages.flatMap(page => page.blogs) || [];
 
-  // Featured এবং Trending পোস্ট
+
   const featuredPosts = allBlogs.filter(post => post.featured === true).slice(0, 2);
   const trendingPosts = allBlogs.filter(post => post.trending === true).slice(0, 3);
   
   const displayFeatured = featuredPosts.length > 0 ? featuredPosts : allBlogs.slice(0, 2);
   const displayTrending = trendingPosts.length > 0 ? trendingPosts : allBlogs.slice(2, 5);
 
-  // Handlers
+
+
   const toggleSave = (postId) => {
     if (savedPosts.includes(postId)) {
       setSavedPosts(savedPosts.filter(id => id !== postId));

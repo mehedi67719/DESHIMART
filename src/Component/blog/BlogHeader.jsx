@@ -14,7 +14,6 @@ const BlogHeader = ({ searchTerm, handleSearch, clearSearch, setShowMobileFilter
           </Link>
           <p className="hidden md:block text-gray-600 text-sm">Learn smarter shopping tips</p>
           
-          {/* Desktop Search */}
           <div className="hidden md:block flex-1 max-w-xl mx-8">
             <div className="relative">
               <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
@@ -36,7 +35,6 @@ const BlogHeader = ({ searchTerm, handleSearch, clearSearch, setShowMobileFilter
             </div>
           </div>
 
-          {/* Mobile Filter Button */}
           <button 
             onClick={() => setShowMobileFilter(true)}
             className="md:hidden bg-green-600 text-white p-2 rounded-lg"
@@ -45,7 +43,6 @@ const BlogHeader = ({ searchTerm, handleSearch, clearSearch, setShowMobileFilter
           </button>
         </div>
 
-        {/* Mobile Search */}
         <div className="md:hidden mt-4">
           <div className="relative">
             <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
