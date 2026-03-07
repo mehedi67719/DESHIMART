@@ -14,6 +14,25 @@
 
 ---
 
+
+## 🌐 Live Links & Repositories
+
+### Frontend
+- **Live Demo**: [https://deshimart-1451e.web.app](https://deshimart-1451e.web.app)
+
+
+### Backend
+- **API Server**: [https://deshimart-server.vercel.app](https://deshimart-server.vercel.app)
+- **GitHub Repository**: [https://github.com/mehedi67719/DESHIMART-Server](https://github.com/mehedi67719/DESHIMART-Server)
+
+<div align="center">
+
+[![Frontend Repo](https://img.shields.io/badge/Frontend-Repo-181717?style=for-the-badge&logo=github)](https://github.com/mehedi67719/DESHIMART)
+[![Backend Repo](https://img.shields.io/badge/Backend-Repo-181717?style=for-the-badge&logo=github)](https://github.com/mehedi67719/DESHIMART-Server)
+[![Live Site](https://img.shields.io/badge/Live-Site-00C853?style=for-the-badge&logo=firebase)](https://deshimart-1451e.web.app)
+
+</div>
+
 ## 📸 Project Screenshots
 
 
