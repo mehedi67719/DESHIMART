@@ -33,6 +33,26 @@
 
 </div>
 
+## 🔑 Demo Login Credentials
+
+You can use the following accounts to test the platform:
+
+### Admin
+- **Email:**  meh67711@gmail.com 
+- **Password:** mehedi123123
+
+### Seller
+- **Email:** meh67719@gmail.com 
+- **Password:** mehedi123
+
+### Buyer
+- **Email:** jewel@gmail.com  
+- **Password:** jewel123
+
+> 💡 Note: These credentials are for testing purposes only. Please do not use them in production.
+>
+> 
+
 ## 📸 Project Screenshots
 
 
