@@ -215,7 +215,7 @@ const Localstores = () => {
                 </div>
             )}
 
-            {/* ইনফিনিট স্ক্রল ইফেক্টের জন্য ইন্টারসেপশন অবজারভার */}
+    
             {hasNextPage && !isFetchingNextPage && (
                 <div 
                     className="h-10 w-full"

@@ -229,7 +229,7 @@ export const collection = async ({ pageParam = null, type }) => {
 
 
 export const storesapi = async ({ pageParam = null }) => {
-  const res = await useaxios.get('/stores', {
+  const res = await useaxios.get('Stores/stores', {
     params: {
       cursor: pageParam,
     }
