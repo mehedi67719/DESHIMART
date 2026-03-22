@@ -316,7 +316,7 @@ export const getfavorite = async (params) => {
   }
 };
 
- const removeFavorite = async (params) => {
+export const removeFavorite = async (params) => {
   try {
     const res = await useaxios.delete("/favorite", {
       data: {
