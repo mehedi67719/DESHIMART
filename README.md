@@ -39,7 +39,7 @@ You can use the following accounts to test the platform:
 
 ### Admin
 - **Email:**  meh67711@gmail.com 
-- **Password:** mehedi123123
+- **Password:** mehedi123
 
 ### Seller
 - **Email:** meh67719@gmail.com 
