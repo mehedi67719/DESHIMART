@@ -3,7 +3,7 @@ import { getAuth } from "firebase/auth";
 
 
 const useaxios = axios.create({
-    baseURL: "http://localhost:3000/"
+    baseURL: "https://deshimart-server.onrender.com/"
 });
 
 useaxios.interceptors.request.use(
