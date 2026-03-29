@@ -2,6 +2,11 @@
 import { Candy, Ear } from "lucide-react";
 import useaxios from "./Useaxios";
 
+
+
+
+
+
 export const products = async ({ pageParam = null, category = "", brand = '', priceRange = '' }) => {
   try {
     const res = await useaxios.get("products", {

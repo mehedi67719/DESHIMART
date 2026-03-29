@@ -200,6 +200,8 @@ const Navbar = () => {
     setSearchTerm('');
   };
 
+  console.log(user)
+
   return (
     <div className="sticky relative top-0 z-50 bg-white py-5">
       <div className="container">

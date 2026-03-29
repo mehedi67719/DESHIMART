@@ -3,6 +3,7 @@ import { Authcontext } from './Authcontext';
 import { createUserWithEmailAndPassword, GoogleAuthProvider, onAuthStateChanged, signInWithEmailAndPassword, signInWithPopup, signOut, updateProfile } from 'firebase/auth';
 import { auth } from './firebase.init';
 import { userpost } from './Api';
+import useaxios from './Useaxios';
 
 const Authprovider = ({ children }) => {
 
@@ -10,15 +11,50 @@ const Authprovider = ({ children }) => {
 
 
     const [user, setUser] = useState(null);
+    const [loading, setLoading] = useState(true); 
 
 
 
     useEffect(() => {
         const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
             setUser(currentUser);
+            setLoading(false);
         });
         return () => unsubscribe();
     }, []);
+
+//     useEffect(() => {
+//     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+//         setUser(currentUser);
+//         setLoading(false);
+
+//         // যখন ইউজার লগইন করে, তখনই টোকেন পাঠাও
+//         if (currentUser) {
+//             try {
+//                 const token = await currentUser.getIdToken();
+                
+//                 // টোকেন লোকালস্টোরেজে রাখো
+//                 localStorage.setItem('authToken', token);
+                
+//                 // এক্সিস করো
+//                 const res = await useaxios.get("/users/profile", {
+//                     headers: {
+//                         Authorization: `Bearer ${token}` 
+//                     }
+//                 });
+
+//                 console.log("User profile:", res.data);
+//             } catch (error) {
+//                 console.error("Error fetching profile:", error);
+//             }
+//         } else {
+//             // লগআউট হলে টোকেন রিমুভ করো
+//             localStorage.removeItem('authToken');
+//         }
+//     });
+
+//     return () => unsubscribe();
+// }, []); 
 
 
 
@@ -84,7 +120,32 @@ const Authprovider = ({ children }) => {
     }
 
 
-    // console.log(user)
+
+    // useEffect(() => {
+    //     const fetchUserProfile = async () => {
+    //         if (!auth.currentUser) return;
+
+    //         try {
+               
+    //             const token = await auth.currentUser.getIdToken();
+
+    //             // console.log(token)
+    //             const res = await useaxios.get("/users/profile", {
+    //                 headers: {
+    //                     Authorization: `Bearer ${token}` 
+    //                 }
+    //             });
+
+    //             console.log("User profile:", res.data);
+    //         } catch (error) {
+    //             console.error("Error fetching profile:", error);
+    //         }
+    //     };
+
+    //     fetchUserProfile();
+    // }, [auth.currentUser]);
+
+
 
 
     const authinfo = {
@@ -92,7 +153,8 @@ const Authprovider = ({ children }) => {
         loginwithemail,
         Loginwithgoogle,
         user,
-        logout
+        logout,
+        loading
     }
 
 
