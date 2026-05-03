@@ -330,54 +330,7 @@ You can use the following accounts to test the platform:
 - **Frontend Repository**: [https://github.com/mehedi67719/DESHIMART](https://github.com/mehedi67719/DESHIMART)
 - **Backend Repository**: [https://github.com/mehedi67719/DESHIMART-Server](https://github.com/mehedi67719/DESHIMART-Server)
 
-## 📁 Project Structure
 
-```
-DeshiMart (Frontend)/
-├── src/
-│   ├── Component/          # Reusable components
-│   │   ├── AdminDashboardHome/
-│   │   ├── BuyerDashboardHome/
-│   │   ├── SellerDashboardHome/
-│   │   ├── Homecomponent/
-│   │   ├── blog/
-│   │   └── ...
-│   ├── Pages/              # Page components
-│   │   ├── Authentication/
-│   │   ├── Dashboard/
-│   │   ├── DynamicPage/
-│   │   ├── Navpage/
-│   │   └── Payment/
-│   ├── assets/             # Static assets
-│   ├── App.jsx             # Main App component
-│   ├── Router.jsx          # Route configuration
-│   └── main.jsx            # Entry point
-├── public/                 # Public assets
-├── .env                    # Environment variables
-├── firebase.json           # Firebase configuration
-├── package.json            # Dependencies
-└── vite.config.js          # Vite configuration
-
-DESHIMART-Server (Backend)/
-├── routes/                 # API route handlers
-│   ├── Products.js         # Product endpoints
-│   ├── user.js             # User endpoints
-│   ├── payment.js          # Payment endpoints
-│   ├── cart.js             # Cart endpoints
-│   ├── favorite.js         # Favorites endpoints
-│   ├── chat.js             # Chat endpoints
-│   ├── blog.js             # Blog endpoints
-│   ├── category.js         # Category endpoints
-│   ├── brands.js           # Brand endpoints
-│   ├── Stores.js           # Stores endpoints
-│   ├── Notifications.js    # Notification endpoints
-│   ├── adminnotification.js# Admin notification endpoints
-│   └── altotal.js          # Analytics endpoints
-├── .env                    # Environment variables
-├── index.js                # Express server entry point
-├── package.json            # Dependencies
-└── .gitignore
-```
 
 ## 🛠️ Available Scripts
 
